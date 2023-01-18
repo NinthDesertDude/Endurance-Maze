@@ -12,8 +12,52 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="Content\bin\**" />
+    <Compile Remove="Content\obj\**" />
+    <EmbeddedResource Remove="Content\bin\**" />
+    <EmbeddedResource Remove="Content\obj\**" />
+    <None Remove="Content\bin\**" />
+    <None Remove="Content\obj\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Levels\LvlDoom1.lvl" />
+    <None Remove="Levels\LvlEasy1.lvl" />
+    <None Remove="Levels\LvlEasy2.lvl" />
+    <None Remove="Levels\LvlHard1.lvl" />
+    <None Remove="Levels\LvlHard2.lvl" />
+    <None Remove="Levels\LvlHard3.lvl" />
+    <None Remove="Levels\LvlHard4.lvl" />
+    <None Remove="Levels\LvlHard5.lvl" />
+    <None Remove="Levels\LvlNormal1.lvl" />
+    <None Remove="Levels\LvlNormal2.lvl" />
+    <None Remove="Levels\LvlNormal3.lvl" />
+    <None Remove="Levels\LvlNormal4.lvl" />
+    <None Remove="Levels\LvlNormal5.lvl" />
+    <None Remove="Levels\LvlNormal6.lvl" />
+    <None Remove="Levels\LvlNormal7.lvl" />
+    <None Remove="Levels\LvlNormal8.lvl" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="MonoGame.Framework.WindowsDX" Version="3.8.1.303" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.1.303" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Levels\LvlDoom1.lvl" />
+    <EmbeddedResource Include="Levels\LvlEasy1.lvl" />
+    <EmbeddedResource Include="Levels\LvlEasy2.lvl" />
+    <EmbeddedResource Include="Levels\LvlHard1.lvl" />
+    <EmbeddedResource Include="Levels\LvlHard2.lvl" />
+    <EmbeddedResource Include="Levels\LvlHard3.lvl" />
+    <EmbeddedResource Include="Levels\LvlHard4.lvl" />
+    <EmbeddedResource Include="Levels\LvlHard5.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal1.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal2.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal3.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal4.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal5.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal6.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal7.lvl" />
+    <EmbeddedResource Include="Levels\LvlNormal8.lvl" />
   </ItemGroup>
   <Target Name="RestoreDotnetTools" BeforeTargets="Restore">
     <Message Text="Restoring dotnet tools" Importance="High" />
