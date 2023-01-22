@@ -47,7 +47,7 @@ namespace ImpossiMaze
         {
             this.game = game;
 
-            //Sets the sound playlist.
+            //Sets the song playlist.
             music = new List<Song>();
 
             //Sets the volume to full (default).
@@ -186,7 +186,7 @@ namespace ImpossiMaze
         /// </summary>
         public void Update()
         {
-            //When the current sound has stopped (assuming it finished), plays
+            //When the current Song has stopped (assuming it finished), plays
             //a different one on shuffle.
             if (MediaPlayer.State == MediaState.Stopped)
             {

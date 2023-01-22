@@ -34,8 +34,7 @@ namespace EnduranceTheMaze
         Sprite sprCopyright, sprTitle, sprMenuOptions, sprMenuInfo;
 
         //The menu buttons.
-        TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay, bttnMuteSfx,
-            bttnBack;
+        TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay, bttnMusicVolume, bttnSfxVolume, bttnBack;
 
         //The level editor buttons.
         TitleItemEdit bttnEdit, bttnTest, bttnSave, bttnLoad, bttnClear;
@@ -84,8 +83,10 @@ namespace EnduranceTheMaze
                 (game, TexBttnMain, 334, 142, 1);
             bttnHowToPlay = new TitleItemMain
                 (game, TexBttnMain, 334, 188, 2);
-            bttnMuteSfx = new TitleItemMain
+            bttnMusicVolume = new TitleItemMain
                 (game, TexBttnMain, 334, 280, 4);
+            bttnSfxVolume = new TitleItemMain
+                (game, TexBttnMain, 334, 326, 5);
             bttnBack = new TitleItemMain
                 (game, TexBttnMain, 339, 0, 3);
 
@@ -136,7 +137,8 @@ namespace EnduranceTheMaze
                     bttnCampaign.Update();
                     bttnLevelEditor.Update();
                     bttnHowToPlay.Update();
-                    bttnMuteSfx.Update();
+                    bttnMusicVolume.Update();
+                    bttnSfxVolume.Update();
 
                     if (bttnCampaign.isClicked)
                     {
@@ -157,13 +159,36 @@ namespace EnduranceTheMaze
                         game.GmState = GameState.stateHowtoPlay;
                         game.SetScreenCaption("How to play");
                     }
-                    else if (bttnMuteSfx.isClicked)
+                    else if (bttnMusicVolume.isClicked)
                     {
-                        bttnMuteSfx.isClicked = false;
-                        game.isSoundMuted = !game.isSoundMuted;
-                        MediaPlayer.IsMuted = game.isSoundMuted;
-                        SoundEffect.MasterVolume =
-                            Convert.ToInt32(!game.isSoundMuted);
+                        bttnMusicVolume.isClicked = false;
+
+                        if (game.Prefs.VolumeMusic == 1) { game.Prefs.VolumeMusic = 0; }
+                        else if (game.Prefs.VolumeMusic >= 0.5f) { game.Prefs.VolumeMusic = 1; }
+                        else if (game.Prefs.VolumeMusic >= 0.3f) { game.Prefs.VolumeMusic = 0.5f; }
+                        else if (game.Prefs.VolumeMusic >= 0.1f) { game.Prefs.VolumeMusic = 0.3f; }
+                        else { game.Prefs.VolumeMusic = 0.1f; }
+
+                        bool isSoundMuted = game.Prefs.VolumeMusic == 0 && game.Prefs.VolumeSfx == 0;
+                        game.playlist.Song.Volume = game.Prefs.VolumeMusic;
+                        SfxPlaylist.musicVolume = game.Prefs.VolumeMusic;
+                        MediaPlayer.IsMuted = isSoundMuted;
+                        FileUtils.SavePreferences(game.Prefs);
+                    }
+                    else if (bttnSfxVolume.isClicked)
+                    {
+                        bttnSfxVolume.isClicked = false;
+
+                        if (game.Prefs.VolumeSfx == 1) { game.Prefs.VolumeSfx = 0; }
+                        else if (game.Prefs.VolumeSfx >= 0.5f) { game.Prefs.VolumeSfx = 1; }
+                        else if (game.Prefs.VolumeSfx >= 0.3f) { game.Prefs.VolumeSfx = 0.5f; }
+                        else if (game.Prefs.VolumeSfx >= 0.1f) { game.Prefs.VolumeSfx = 0.3f; }
+                        else { game.Prefs.VolumeSfx = 0.1f; }
+
+                        bool isSoundMuted = !(game.Prefs.VolumeMusic == 0 && game.Prefs.VolumeSfx == 0);
+                        SfxPlaylist.sfxVolume = game.Prefs.VolumeSfx;
+                        SoundEffect.MasterVolume = game.Prefs.VolumeSfx;
+                        FileUtils.SavePreferences(game.Prefs);
                     }
                     break;
                 //If the how to play screen is active.
@@ -380,10 +405,28 @@ namespace EnduranceTheMaze
                     bttnCampaign.Draw();
                     bttnHowToPlay.Draw();
                     bttnLevelEditor.Draw();
-                    bttnMuteSfx.Draw();
+                    bttnMusicVolume.Draw();
+                    bttnSfxVolume.Draw();
                     sprMenuOptions.Draw(game.GameSpriteBatch);
                     sprCopyright.Draw(game.GameSpriteBatch);
                     sprTitle.Draw(game.GameSpriteBatch);
+
+                    game.GameSpriteBatch.DrawString(game.fntBold,
+                        $"{(int)(game.Prefs.VolumeMusic * 100)}%",
+                        new Vector2(
+                            bttnMusicVolume.BttnSprite.rectDest.X +
+                            bttnMusicVolume.BttnSprite.rectDest.Width,
+                            bttnMusicVolume.BttnSprite.rectDest.Y + 4),
+                        Color.Black);
+
+                    game.GameSpriteBatch.DrawString(game.fntBold,
+                        $"{(int)(game.Prefs.VolumeSfx * 100)}%",
+                        new Vector2(
+                            bttnSfxVolume.BttnSprite.rectDest.X +
+                            bttnSfxVolume.BttnSprite.rectDest.Width,
+                            bttnSfxVolume.BttnSprite.rectDest.Y + 4),
+                        Color.Black);
+
                     break;
                 //If the how to play screen is active.
                 case GameState.stateHowtoPlay:

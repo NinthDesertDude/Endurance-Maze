@@ -2,7 +2,9 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
+using System.Drawing;
 
 namespace EnduranceTheMaze
 {
@@ -16,6 +18,11 @@ namespace EnduranceTheMaze
         //Handles graphic display and sprite drawing; respectively.
         public GraphicsDeviceManager Graphics { get; private set; }
         public SpriteBatch GameSpriteBatch { get; private set; }
+
+        /// <summary>
+        /// User preferences across the game.
+        /// </summary>
+        public Preferences Prefs { get; private set; }
 
         //Contains the current game state.
         public GameState GmState { get; set; }
@@ -42,9 +49,6 @@ namespace EnduranceTheMaze
         public SfxPlaylist playlist;
         public SoundEffect sndSong1, sndSong2, sndSong3, sndSong4;
 
-        //If sound and music are audible or not.
-        public bool isSoundMuted;
-
         /// <summary>
         /// Sets up variables and basic preferences.
         /// </summary>
@@ -57,14 +61,20 @@ namespace EnduranceTheMaze
             GmState = GameState.stateMenu; //set to main menu.
             SetScreenCaption("Main Menu"); //Indicates the current state.
             IsMouseVisible = true; //Makes the mouse visible.
-            isSoundMuted = false; //Makes sound audible.
 
             //Centers the window.
-            Window.Position = Window.ClientBounds.Center;
+            Window.Position = new Microsoft.Xna.Framework.Point(
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
+                (Graphics.PreferredBackBufferWidth / 2),
+                (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
+                (Graphics.PreferredBackBufferHeight / 2));
 
             //Sets up keyboard and mouse input.
             MsStateOld = MsState = Mouse.GetState();
             KbStateOld = KbState = Keyboard.GetState();
+
+            // Reads default preferences.
+            Prefs = FileUtils.LoadPreferences();
 
             //Initializes objects to control all aspects of the game.
             mngrTitle = new MngrTitle(this);
@@ -84,6 +94,11 @@ namespace EnduranceTheMaze
 
             //Initializes an empty playlist.
             playlist = new SfxPlaylist(this);
+            bool isSoundMuted = Prefs.VolumeMusic == 0 && Prefs.VolumeSfx == 0;
+            SfxPlaylist.musicVolume = Prefs.VolumeMusic;
+            SfxPlaylist.sfxVolume = Prefs.VolumeSfx;
+            MediaPlayer.IsMuted = isSoundMuted;
+            SoundEffect.MasterVolume = isSoundMuted ? 0 : 1;
         }
 
         #region Xna methods (init, load content, update, draw)
@@ -198,7 +213,7 @@ namespace EnduranceTheMaze
         protected override void Draw(GameTime gameTime)
         {
             //Ensures drawing over consecutive frames is clean.
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
 
             //Draws with screen translation if the state is gameplay.
             if (GmState == GameState.stateGameplay ||
@@ -268,13 +283,13 @@ namespace EnduranceTheMaze
         /// Returns the visible bounds of the screen in world space as
         /// a rectangle.
         /// </summary>
-        public Rectangle GetVisibleBounds(Matrix camera, float zoom)
+        public Microsoft.Xna.Framework.Rectangle GetVisibleBounds(Matrix camera, float zoom)
         {
             int xPos = (int)Vector2.Transform(Vector2.Zero, Matrix.Invert(camera)).X;
             int yPos = (int)Vector2.Transform(Vector2.Zero, Matrix.Invert(camera)).Y;
             int width = (int)Math.Ceiling(GetScreenSize().X * (1 / zoom));
             int height = (int)Math.Ceiling(GetScreenSize().Y * (1 / zoom));
-            return new Rectangle(xPos, yPos, width, height);
+            return new Microsoft.Xna.Framework.Rectangle(xPos, yPos, width, height);
         }
 
         /// <summary>

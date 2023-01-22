@@ -2,11 +2,12 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Windows.Forms;
+using static System.Net.Mime.MediaTypeNames;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace EnduranceTheMaze
@@ -509,10 +510,15 @@ namespace EnduranceTheMaze
         /// </summary>
         public void Update()
         {
+            bool pausedDuringThisFrame = false;
+
             //Enables pausing the game.
-            if (game.KbState.IsKeyDown(Keys.Space))
+            if (!isPaused && !isMessageShown &&
+                game.KbState.IsKeyUp(Keys.P) &&
+                game.KbStateOld.IsKeyDown(Keys.P))
             {
                 isPaused = true;
+                pausedDuringThisFrame = true;
             }
 
             //Enables basic zooming.
@@ -562,7 +568,9 @@ namespace EnduranceTheMaze
             //Does not update the game while a message is displayed.
             if (isPaused || isMessageShown)
             {
-                if (game.KbState.IsKeyDown(Keys.Enter))
+                if (!pausedDuringThisFrame &&
+                    game.KbState.IsKeyUp(Keys.P) &&
+                    game.KbStateOld.IsKeyDown(Keys.P))
                 {
                     isPaused = false;
                     isMessageShown = false;
@@ -623,7 +631,7 @@ namespace EnduranceTheMaze
                     if (item2.BlockType == Type.Actor)
                     {
                         (item2 as MazeActor).hp -= 25;
-                        game.playlist.Play(sndHit, item.X, item.Y);
+                        game.playlist.Play(sndHit, item.X / 32, item.Y / 32);
                     }
 
                     #region Interaction: MazeMultiWay
@@ -955,6 +963,30 @@ namespace EnduranceTheMaze
                 (OpMaxSteps != 0 && LvlSteps >= OpMaxSteps))
             {
                 doRevert = true;
+
+                // Checks to see if any actors satisfy win condition for finish line, because we don't want to fail
+                // them if they reach in the exact no. steps. This also tracks how many goals are collected in the same
+                // step to see if it meets the required count.
+                List<GameObj> actors = game.mngrLvl.items.Where(o => o.BlockType == Type.Actor).ToList();
+                bool onFinish = false;
+                int goalsAdded = 0;
+
+                for (int i = 0; i < actors.Count; i++)
+                {
+                    onFinish = onFinish || game.mngrLvl.items.Any(o => o.BlockType == Type.Finish &&
+                    o.X == actors[i].X && o.Y == actors[i].Y && o.Layer == actors[i].Layer);
+
+                    goalsAdded += game.mngrLvl.items.Count(o => o.BlockType == Type.Goal &&
+                    o.X == actors[i].X && o.Y == actors[i].Y && o.Layer == actors[i].Layer);
+
+                    if (onFinish &&
+                        game.mngrLvl.ActorGoals + goalsAdded >= game.mngrLvl.OpReqGoals)
+                    {
+                        doWin = true;
+                        doRevert = false;
+                        break;
+                    }
+                }
             }
 
             #region Player reverts/restarts level
@@ -1040,10 +1072,11 @@ namespace EnduranceTheMaze
                 scrnBounds.X + scrnBounds.Width / 2f,
                 scrnBounds.Y + scrnBounds.Height / 2f);
 
+                string pausedText = "Paused: Press P to unpause.";
                 game.GameSpriteBatch.DrawString(game.fntBold,
-                    "Paused: Press enter to unpause.", scrnCenter, Color.Black,
-                    0, game.fntBold.MeasureString(message) * 0.5f,
-                    1, SpriteEffects.None, 0);
+                    pausedText,
+                    game.GetScreenSize() / 2 - (game.fntBold.MeasureString(pausedText) / 2),
+                    Color.Black);
 
                 return;
             }
@@ -1067,9 +1100,10 @@ namespace EnduranceTheMaze
                 scrnBounds.X + scrnBounds.Width / 2f,
                 scrnBounds.Y + 16 + scrnBounds.Height / 2f);
 
+                string pauseText = "Press P to continue.";
                 game.GameSpriteBatch.DrawString(game.fntDefault,
-                    "Press enter to continue.", scrnCenter + new Vector2(0, 24),
-                    Color.Black, 0, game.fntDefault.MeasureString("Press enter to continue.") / 2,
+                    pauseText, scrnCenter + new Vector2(0, 24),
+                    Color.Black, 0, game.fntDefault.MeasureString(pauseText) / 2,
                     1, SpriteEffects.None, 0);
 
                 return;

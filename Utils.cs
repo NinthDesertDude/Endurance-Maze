@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework;
-using System.IO;
 
 namespace EnduranceTheMaze
 {
@@ -11,7 +7,6 @@ namespace EnduranceTheMaze
     public static class Utils
     {
         public static Random Rng { get; private set; }
-        public static Game game;
 
         /// <summary>
         /// Sets the Random instance.

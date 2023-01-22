@@ -87,7 +87,7 @@ namespace EnduranceTheMaze
             {
                 if (ActionType > 4)
                 {
-                    //Deactivates the item and plays a sound.
+                    //Deactivates the item and plays a Song.
                     IsActivated = false;
 
                     //Gets a list of solid objects in the way.
@@ -107,7 +107,7 @@ namespace EnduranceTheMaze
                     //Creates an item if there are no solid objects.
                     if (items.Count == 0)
                     {
-                        //Plays a sound when an object is spawned.
+                        //Plays a Song when an object is spawned.
                         game.playlist.Play(sndActivated, X, Y);
 
                         //Creates different blocks based on action type.

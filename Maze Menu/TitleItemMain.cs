@@ -51,7 +51,7 @@ namespace EnduranceTheMaze
             BttnSprite.rectDest.Y = yPos;
             BttnSprite.drawBehavior = SpriteDraw.all;
 
-            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 133, 28, 10, 2, 5);
+            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 133, 28, 12, 2, 6);
             BttnSpriteAtlas.frame = frame;
         }
 

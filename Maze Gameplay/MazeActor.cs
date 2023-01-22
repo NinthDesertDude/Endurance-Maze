@@ -432,7 +432,7 @@ namespace EnduranceTheMaze
                                         }
                                         #endregion
 
-                                        //Plays the crate-moving sound.
+                                        //Plays the crate-moving Song.
                                         game.playlist.Play
                                             (sndMoveCrate, X, Y);
 
@@ -556,11 +556,11 @@ namespace EnduranceTheMaze
 
                         #region Interaction: MazeTurretBullet.cs
                         //Finds all bullets skipped over by moving 32px at a time.
-                        //The +32 at the end accounts for sprite width and height.
-                        float xMin = Math.Min(X * 32, (X + Utils.DirVector(BlockDir).X) * 32);
-                        float xMax = Math.Max(X * 32, (X + Utils.DirVector(BlockDir).X) * 32) + 32;
-                        float yMin = Math.Min(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32);
-                        float yMax = Math.Max(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32) + 32;
+                        // The +8 and +24 effectively shrinks collision box by 8px around.
+                        float xMin = Math.Min(X * 32, (X + Utils.DirVector(BlockDir).X) * 32) + 8;
+                        float xMax = Math.Max(X * 32, (X + Utils.DirVector(BlockDir).X) * 32) + 24;
+                        float yMin = Math.Min(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32) + 8;
+                        float yMax = Math.Max(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32) + 24;
                         List<GameObj> bullets = game.mngrLvl.items.Where(o =>
                             o.BlockType == Type.TurretBullet &&
                             o.Layer == Layer &&
@@ -571,8 +571,13 @@ namespace EnduranceTheMaze
                         List<GameObj> thisActor = new List<GameObj>();
                         thisActor.Add(this);
 
+                        // Bullets are deleted if the player moves into them here, and also in MngrLvl
+                        // if the bullet moves into the player. In both cases, subtracts health.
                         hp -= 25 * bullets.Count;
-                        game.playlist.Play(MngrLvl.sndHit, X, Y);
+                        if (bullets.Count > 0)
+                        {
+                            game.playlist.Play(MngrLvl.sndHit, X, Y);
+                        }
 
                         for (int i = 0; i < bullets.Count; i++)
                         {

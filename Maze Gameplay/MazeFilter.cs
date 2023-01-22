@@ -109,7 +109,7 @@ namespace EnduranceTheMaze
             //Handles activation behavior.
             if (IsEnabled && (IsActivated || CustInt1 == 0))
             {
-                //Plays the activation sound.
+                //Plays the activation Song.
                 game.playlist.Play(sndActivated, X, Y);
 
                 //Removes this block from the level.

@@ -80,7 +80,7 @@ namespace EnduranceTheMaze
             //If the crate breaks.
             if (IsActivated && ActionType == 5)
             {
-                //Deactivates and plays the crate breaking sound.
+                //Deactivates and plays the crate breaking Song.
                 IsActivated = false;
                 game.playlist.Play(sndBreakCrate, X, Y);
 
