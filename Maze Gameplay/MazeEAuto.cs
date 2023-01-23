@@ -122,7 +122,7 @@ namespace EnduranceTheMaze
                 //Handles automated activation.
                 if (IsActivated && ActionType > 4)
                 {
-                    //Deactivates the item and plays a Song.
+                    //Deactivates the item and plays a sound.
                     IsActivated = false;
                     hasActivated = true;
                     game.playlist.Play(sndActivateAuto, X, Y);

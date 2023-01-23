@@ -356,9 +356,9 @@ namespace EnduranceTheMaze
                     #region Creating blocks.
                     //Whether the player holds Ctrl + V.
                     bool isPasting =
-                        ((game.KbState.IsKeyDown(Keys.LeftControl) ||
+                        (game.KbState.IsKeyDown(Keys.LeftControl) ||
                         game.KbState.IsKeyDown(Keys.RightControl)) &&
-                        game.KbState.IsKeyDown(Keys.V));
+                        game.KbState.IsKeyDown(Keys.V);
 
                     //If clicking to set a block or pressing Ctrl + V.
                     if ((game.MsState.LeftButton == ButtonState.Pressed &&
@@ -385,12 +385,19 @@ namespace EnduranceTheMaze
                             //If the block to be placed is not solid.
                             Type typeToUse = (isPasting) ? copyType : activeType;
 
+                            bool isSpeciallyStackable = typeToUse == Type.Filter
+                                || typeToUse == Type.Teleporter
+                                || typeToUse == Type.Rotate;
+
+                            bool sameTypeInLoc = blocks.Any(o => o.BlockType == typeToUse);
+                            bool firstPress = isPasting
+                                ? game.KbStateOld.IsKeyUp(Keys.V)
+                                : game.MsStateOld.LeftButton == ButtonState.Released;
+
                             if (!(Utils.BlockFromType
                                 (game, typeToUse, 0, 0, 0).IsSolid &&
                                 blocks.Any(o => o.IsSolid)) &&
-                                !(blocks.Any(o => o.BlockType == typeToUse)
-                                && typeToUse != Type.Filter &&
-                                typeToUse != Type.Teleporter))
+                                ((isSpeciallyStackable && firstPress) || !sameTypeInLoc))
                             {
                                 //Adds the position.
                                 itemDragPos.Add(new Vector2(

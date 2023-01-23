@@ -33,7 +33,7 @@ namespace EnduranceTheMaze
         public float VolumeMusic { get; set; } = 0.3f;
 
         /// <summary>
-        /// The preferred musicVolume for Song effects.
+        /// The preferred musicVolume for sound effects.
         /// </summary>
         [JsonPropertyName("VolumeSfx")]
         public float VolumeSfx { get; set; } = 0.4f;

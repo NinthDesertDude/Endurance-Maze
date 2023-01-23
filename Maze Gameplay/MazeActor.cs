@@ -35,8 +35,8 @@ namespace EnduranceTheMaze
         public List<Color> keys; //Keys listed by their color.
 
         //An update timer for character movement.
-        private int _countdownStart, _countdown;
-        public bool IsTimerZero { get; private set; }
+        private int countdownStart, countdown;
+        private bool isTimerZero;
 
         /// <summary>Sets the block location and default values.</summary>
         /// <param name="x">The column number.</param>
@@ -54,8 +54,8 @@ namespace EnduranceTheMaze
             keys = new List<Color>();
 
             //Sets the timer defaults.
-            _countdown = _countdownStart = 8;
-            IsTimerZero = false;
+            countdown = countdownStart = 8;
+            isTimerZero = false;
 
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexActor);
@@ -100,9 +100,9 @@ namespace EnduranceTheMaze
 
             //Sets specific variables.
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
-            newBlock._countdown = _countdown;
-            newBlock._countdownStart = _countdownStart;
-            newBlock.IsTimerZero = IsTimerZero;
+            newBlock.countdown = countdown;
+            newBlock.countdownStart = countdownStart;
+            newBlock.isTimerZero = isTimerZero;
             newBlock.hp = hp;
             newBlock.keys = new List<Color>(keys);
 
@@ -144,15 +144,15 @@ namespace EnduranceTheMaze
             #endregion
 
             #region Updates timer.
-            _countdown--;
-            if (_countdown == 0)
+            countdown--;
+            if (countdown == 0)
             {
-                _countdown = _countdownStart;
-                IsTimerZero = true;
+                countdown = countdownStart;
+                isTimerZero = true;
             }
             else
             {
-                IsTimerZero = false;
+                isTimerZero = false;
             }
             #endregion
 
@@ -195,37 +195,37 @@ namespace EnduranceTheMaze
                         (game.KbState.IsKeyDown(Keys.Right) &&
                         game.KbStateOld.IsKeyUp(Keys.Right)))
                     {
-                        _countdown = _countdownStart;
-                        IsTimerZero = true;
+                        countdown = countdownStart;
+                        isTimerZero = true;
                     }
                     else if ((game.KbState.IsKeyDown(Keys.S) &&
                         game.KbStateOld.IsKeyUp(Keys.S)) ||
                         (game.KbState.IsKeyDown(Keys.Down) &&
                         game.KbStateOld.IsKeyUp(Keys.Down)))
                     {
-                        _countdown = _countdownStart;
-                        IsTimerZero = true;
+                        countdown = countdownStart;
+                        isTimerZero = true;
                     }
                     else if ((game.KbState.IsKeyDown(Keys.A) &&
                         game.KbStateOld.IsKeyUp(Keys.A)) ||
                         (game.KbState.IsKeyDown(Keys.Left) &&
                         game.KbStateOld.IsKeyUp(Keys.Left)))
                     {
-                        _countdown = _countdownStart;
-                        IsTimerZero = true;
+                        countdown = countdownStart;
+                        isTimerZero = true;
                     }
                     else if ((game.KbState.IsKeyDown(Keys.W) &&
                         game.KbStateOld.IsKeyUp(Keys.W)) ||
                         (game.KbState.IsKeyDown(Keys.Up) &&
                         game.KbStateOld.IsKeyUp(Keys.Up)))
                     {
-                        _countdown = _countdownStart;
-                        IsTimerZero = true;
+                        countdown = countdownStart;
+                        isTimerZero = true;
                     }
 
                     //Updates the player direction based on movement.
                     //Prevents keystroke processing when app is inactive.
-                    if (game.IsActive && IsTimerZero)
+                    if (game.IsActive && isTimerZero)
                     {
                         if (game.KbState.IsKeyDown(Keys.D) ||
                             game.KbState.IsKeyDown(Keys.Right))
@@ -432,7 +432,7 @@ namespace EnduranceTheMaze
                                         }
                                         #endregion
 
-                                        //Plays the crate-moving Song.
+                                        //Plays the crate-moving sound.
                                         game.playlist.Play
                                             (sndMoveCrate, X, Y);
 

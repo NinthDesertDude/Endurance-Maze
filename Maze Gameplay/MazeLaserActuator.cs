@@ -127,7 +127,7 @@ namespace EnduranceTheMaze
             List<GameObj> items = game.mngrLvl.items.Where(o =>
                 o.ActionIndex == ActionIndex2).ToList();
 
-            //If there are linked items to activate, plays Song.
+            //If there are linked items to activate, plays sound.
             if (items.Count != 0)
             {
                 game.playlist.Play(sndActivated, X, Y);

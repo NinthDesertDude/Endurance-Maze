@@ -375,12 +375,14 @@ namespace EnduranceTheMaze
                     {
                         bttnLoad.isClicked = false;
                         bool didLevelLoad = game.mngrEditor.LoadEdit();
-                        RefreshButtonState(didLevelLoad);
+                        if (didLevelLoad) { game.mngrEditor.activeItem = null; }
+                        RefreshButtonState(didLevelLoad || game.mngrEditor.items.Count > 0);
                     }
                     else if (bttnClear.isClicked)
                     {
                         bttnClear.isClicked = false;
                         RefreshButtonState(false);
+                        game.mngrEditor.activeItem = null;
 
                         if (game.mngrEditor.items.Count > 0)
                         {

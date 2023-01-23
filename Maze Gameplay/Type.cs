@@ -41,7 +41,6 @@
         */
         Click = 29,
         Rotate = 30,
-        CrateBroken = 31, //Not an editor object.
         Turret = 32,
         TurretBullet = 33, //Not an editor object.
         Mirror = 34,

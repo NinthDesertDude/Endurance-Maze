@@ -150,7 +150,7 @@ namespace EnduranceTheMaze
                         items = items.Where(o => o.Layer == Layer).ToList();
                     }
 
-                    //Deactivates the item and plays Song.
+                    //Deactivates the item and plays sound.
                     IsActivated = false;
                     game.playlist.Play(sndActivated, X, Y);
 

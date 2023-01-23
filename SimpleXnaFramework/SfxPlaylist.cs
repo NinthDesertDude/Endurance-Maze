@@ -77,18 +77,18 @@ namespace EnduranceTheMaze
 
         #region Methods
         /// <summary>
-        /// Plays the given Song at the desired location with respect
+        /// Plays the given sound at the desired location with respect
         /// attenuated by distance to the listener position.
         /// </summary>
         /// <param name="snd">
-        /// The Song to play.
+        /// The sound to play.
         /// </param>
         /// <param name="x">
-        /// The x-position of the Song, to be compared to the active
+        /// The x-position of the sound, to be compared to the active
         /// actor's position.
         /// </param>
         /// <param name="y">
-        /// The y-position of the Song, to be compared to the active
+        /// The y-position of the sound, to be compared to the active
         /// actor's position.
         /// </param>
         public void Play(SoundEffect snd, int x, int y)
@@ -99,7 +99,7 @@ namespace EnduranceTheMaze
             #region Interaction: MngrLvl.cs
             if (game.mngrLvl.actor != null)
             {
-                //Attenuates the sfx volume based on distance to Song.
+                //Attenuates the sfx volume based on distance to sound.
                 int xPos = Math.Abs(x - game.mngrLvl.actor.X);
                 int yPos = Math.Abs(y - game.mngrLvl.actor.Y);
 
@@ -121,10 +121,10 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Plays the given Song.
+        /// Plays the given sound.
         /// </summary>
         /// <param name="snd">
-        /// The Song to play.
+        /// The sound to play.
         /// </param>
         public static void Play(SoundEffect snd)
         {
@@ -160,37 +160,6 @@ namespace EnduranceTheMaze
             Song.Volume = musicVolume;
             Song.Play();
             return soundIndex;
-        }
-
-        /// <summary>
-        /// Pauses or resumes the active Song from the playlist.
-        /// </summary>
-        public void Pause(bool doPause)
-        {
-            if (doPause)
-            {
-                Song?.Pause();
-            }
-            else if (Song?.State == SoundState.Paused)
-            {
-                Song?.Resume();
-            }
-        }
-
-        /// <summary>
-        /// Shuffles the Song list.
-        /// </summary>
-        public void Shuffle()
-        {
-            Random rng = new Random();
-            int numSongs = sounds.Count;
-
-            while (numSongs > 1)
-            {
-                numSongs--;
-                int next = rng.Next(numSongs + 1);
-                (sounds[numSongs], sounds[next]) = (sounds[next], sounds[numSongs]);
-            }
         }
 
         /// <summary>

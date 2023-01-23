@@ -111,7 +111,8 @@ namespace EnduranceTheMaze
                 //Gets a list of all blocks on the sender.
                 itemsTop = game.mngrLvl.items.Where(o =>
                     o.X == X && o.Y == Y && o.Layer == Layer &&
-                    (o.BlockSprite.depth < BlockSprite.depth)).ToList();
+                    (o.BlockSprite.depth < BlockSprite.depth) &&
+                    o.BlockType != Type.MultiWay).ToList(); // don't teleport multi-ways.
 
                 #region Interaction: MazeTurretBullet
                 itemsTop.AddRange(game.mngrLvl.items.Where(o =>

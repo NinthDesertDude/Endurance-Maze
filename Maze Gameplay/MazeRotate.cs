@@ -107,7 +107,7 @@ namespace EnduranceTheMaze
 
             if (IsActivated && ActionType > 4)
             {
-                //Deactivates the object and plays a Song.
+                //Deactivates the object and plays a sound.
                 IsActivated = false;
                 game.playlist.Play(sndActivated, X, Y);
 

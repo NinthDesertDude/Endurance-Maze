@@ -121,7 +121,7 @@ namespace EnduranceTheMaze
                                 .ToList();
                         }
 
-                        //If there are linked items to activate, plays Song.
+                        //If there are linked items to activate, plays sound.
                         if (items.Count != 0)
                         {
                             game.playlist.Play(sndActivated, X, Y);

@@ -224,8 +224,6 @@ namespace EnduranceTheMaze
                     return new MazeCoinLock(game, x, y, layer);
                 case Type.Crate:
                     return new MazeCrate(game, x, y, layer);
-                case Type.CrateBroken:
-                    return new MazeCrateBroken(game, x, y, layer);
                 case Type.CrateHole:
                     return new MazeCrateHole(game, x, y, layer);
                 case Type.EAuto:

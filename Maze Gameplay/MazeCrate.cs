@@ -39,7 +39,7 @@ namespace EnduranceTheMaze
             BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
             BlockSprite.rectDest.Width = 32;
             BlockSprite.rectDest.Height = 32;
-            BlockSprite.drawBehavior = SpriteDraw.basicAnimated;
+            BlockSprite.drawBehavior = SpriteDraw.basic;
         }
 
         /// <summary>
@@ -80,14 +80,13 @@ namespace EnduranceTheMaze
             //If the crate breaks.
             if (IsActivated && ActionType == 5)
             {
-                //Deactivates and plays the crate breaking Song.
+                //Deactivates and plays the crate breaking sound.
                 IsActivated = false;
                 game.playlist.Play(sndBreakCrate, X, Y);
 
-                //Removes the crate, adds a broken crate picture, and adds
-                //the contained item, if any.
+                //Removes the crate and spawns the contained item, if any.
                 game.mngrLvl.RemoveItem(this);
-                game.mngrLvl.AddItem(new MazeCrateBroken(game, X, Y, Layer));
+
                 if (CustInt1 != 0)
                 {
                     game.mngrLvl.AddItem(Utils.BlockFromType
