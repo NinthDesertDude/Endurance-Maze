@@ -33,7 +33,19 @@ namespace EnduranceTheMaze
         public Sprite BttnSprite { get; protected set; }
 
         //Object location in pixels.
-        public Vector2 Pos { get; private set; }
+        private Vector2 pos;
+        public Vector2 Pos {
+            get
+            {
+                return pos;
+            }
+            set
+            {
+                pos = value;
+                BttnSprite.rectDest.X = pos.X;
+                BttnSprite.rectDest.Y = pos.Y;
+            }
+        }
 
         //If the button is hovered or clicked.
         public bool IsHovered { get; private set; }
@@ -56,10 +68,6 @@ namespace EnduranceTheMaze
             this.BttnSprite = sprite;
             this.Pos = pos;            
             IsHovered = false;
-
-            //Sets the sprite position.
-            sprite.rectDest.X = pos.X;
-            sprite.rectDest.Y = pos.Y;
         }
 
         ///<summary>
@@ -89,8 +97,8 @@ namespace EnduranceTheMaze
         public virtual void Update()
         {
             //If hovered, sets hovered to true. Else, sets it to false.
-            if (game.MsState.X >= Pos.X && game.MsState.X <= Pos.X + 32 &&
-                game.MsState.Y >= Pos.Y && game.MsState.Y <= Pos.Y + 32)
+            if (game.MsState.X >= pos.X && game.MsState.X <= pos.X + 32 &&
+                game.MsState.Y >= pos.Y && game.MsState.Y <= pos.Y + 32)
             {
                 IsHovered = true;
             }

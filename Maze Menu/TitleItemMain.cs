@@ -24,6 +24,7 @@ namespace EnduranceTheMaze
         //If the button is hovered or clicked.
         public bool IsHovered { get; protected set; }
         public bool isClicked;
+        public bool isDisabled;
 
         /// <summary>
         /// Sets up a new button object.
@@ -35,8 +36,7 @@ namespace EnduranceTheMaze
         /// <param name="frame">
         /// The frame to use.
         /// </param>
-        public TitleItemMain(MainLoop game, Texture2D tex, float xPos,
-            float yPos, int frame)
+        public TitleItemMain(MainLoop game, Texture2D tex, int frame)
         {
             //Sets the game instance.
             this.game = game;
@@ -44,14 +44,13 @@ namespace EnduranceTheMaze
             //Sets up detectors.
             IsHovered = false;
             isClicked = false;
+            isDisabled = false;
 
             //Sets up the relevant sprite.
             BttnSprite = new Sprite(true, tex);
-            BttnSprite.rectDest.X = xPos;
-            BttnSprite.rectDest.Y = yPos;
             BttnSprite.drawBehavior = SpriteDraw.all;
 
-            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 133, 28, 12, 2, 6);
+            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 133, 28, 16, 4, 4);
             BttnSpriteAtlas.frame = frame;
         }
 
@@ -73,7 +72,7 @@ namespace EnduranceTheMaze
         public void Update()
         {
             //If the mouse becomes hovered.
-            if (Sprite.IsIntersecting(BttnSprite, new SmoothRect(
+            if (!isDisabled && Sprite.IsIntersecting(BttnSprite, new SmoothRect(
                 game.MsState.X, game.MsState.Y, 1, 1)))
             {
                 if (!IsHovered)
@@ -85,14 +84,16 @@ namespace EnduranceTheMaze
                     SfxPlaylist.Play(sndBttnHover);
                 }
             }
+
             //If the mouse is no longer hovered.
             else if (IsHovered)
             {
                 IsHovered = false;
                 BttnSpriteAtlas.frame -= BttnSpriteAtlas.atlasCols;
             }
+
             //If the mouse is hovered and clicked.
-            if (IsHovered && game.MsState.LeftButton ==
+            if (!isDisabled && IsHovered && game.MsState.LeftButton ==
                 ButtonState.Released && game.MsStateOld.LeftButton ==
                 ButtonState.Pressed)
             {
@@ -108,6 +109,7 @@ namespace EnduranceTheMaze
         /// </summary>
         public void Draw()
         {
+            BttnSprite.alpha = isDisabled ? 0.5f : 1;
             BttnSprite.Draw(game.GameSpriteBatch);
         }
     }

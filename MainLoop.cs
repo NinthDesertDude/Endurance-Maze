@@ -18,6 +18,7 @@ namespace EnduranceTheMaze
         //Handles graphic display and sprite drawing; respectively.
         public GraphicsDeviceManager Graphics { get; private set; }
         public SpriteBatch GameSpriteBatch { get; private set; }
+        public ScreenResizeUtils FullscreenHandler { get; private set; }
 
         /// <summary>
         /// User preferences across the game.
@@ -56,13 +57,16 @@ namespace EnduranceTheMaze
         {
             //Sets up xna components.
             Graphics = new GraphicsDeviceManager(this);
+            Graphics.PreferredBackBufferHeight = 510;
+            Graphics.PreferredBackBufferWidth = 800;
             Content.RootDirectory = "Content";
 
             GmState = GameState.stateMenu; //set to main menu.
-            SetScreenCaption("Main Menu"); //Indicates the current state.
+            SetScreenCaption("Endurance (Menu)"); //Indicates the current state.
             IsMouseVisible = true; //Makes the mouse visible.
 
-            //Centers the window.
+            //Centers the window, sets up fullscreen-remembering logic.
+            FullscreenHandler = new ScreenResizeUtils(Graphics);
             Window.Position = new Microsoft.Xna.Framework.Point(
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
                 (Graphics.PreferredBackBufferWidth / 2),
@@ -75,6 +79,12 @@ namespace EnduranceTheMaze
 
             // Reads default preferences.
             Prefs = FileUtils.LoadPreferences();
+
+            // Starts fullscreened if saved in fullscreen.
+            if (Prefs.Fullscreen)
+            {
+                FullscreenHandler.ToggleFullscreen();
+            }
 
             //Initializes objects to control all aspects of the game.
             mngrTitle = new MngrTitle(this);
@@ -153,6 +163,15 @@ namespace EnduranceTheMaze
             MsState = Mouse.GetState();
             KbState = Keyboard.GetState();
 
+            // Toggles fullscreen.
+            if (KbState.IsKeyDown(Keys.F11) &&
+                KbStateOld.IsKeyUp(Keys.F11))
+            {
+                FullscreenHandler.ToggleFullscreen();
+                Prefs.Fullscreen = FullscreenHandler.IsFullscreen;
+                FileUtils.SavePreferences(Prefs);
+            }
+
             //Allows the player to navigate the rooms.
             if (KbState.IsKeyDown(Keys.Escape) &&
                 KbStateOld.IsKeyUp(Keys.Escape))
@@ -162,14 +181,14 @@ namespace EnduranceTheMaze
                     GmState == GameState.stateGameplaySeriesComplete)
                 {
                     GmState = GameState.stateCampaignModes;
-                    SetScreenCaption("Campaign");
+                    SetScreenCaption("Endurance (Menu)");
                 }
                 //Goes from testing levels to the editor menu.
                 else if (GmState == GameState.stateGameplayEditor ||
                     GmState == GameState.stateEditor)
                 {
                     GmState = GameState.stateMenuEditor;
-                    SetScreenCaption("Editor");
+                    SetScreenCaption("Endurance (Editor)");
                 }
                 //Goes from submenus to the main menu.
                 else if (GmState == GameState.stateCampaignModes ||
@@ -177,7 +196,7 @@ namespace EnduranceTheMaze
                     GmState == GameState.stateMenuEditor)
                 {
                     GmState = GameState.stateMenu;
-                    SetScreenCaption("Main menu");
+                    SetScreenCaption("Endurance (Menu)");
                 }
             }
 

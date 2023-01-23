@@ -182,6 +182,16 @@ namespace EnduranceTheMaze
             ItemsOrig = new List<GameObj>();
             itemsChkpt = new List<GameObj>();
             items = new List<GameObj>();
+
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+        }
+
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            sprHudOverlay.rectDest = new SmoothRect
+                (0, game.GetScreenSize().Y - 32, game.GetScreenSize().X, 32);
+            sprMenuHud.rectDest = new SmoothRect
+                (0, game.GetScreenSize().Y - 32, 64, 32);
         }
 
         ///<summary>

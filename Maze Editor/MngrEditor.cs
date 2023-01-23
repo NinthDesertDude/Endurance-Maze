@@ -88,6 +88,8 @@ namespace EnduranceTheMaze
                 new Vector3(game.GetScreenSize().X * 0.5f,
                             game.GetScreenSize().Y * 0.5f, 0));
 
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+
             //Sets the default level settings.
             opGameDelay = 8;
             opMaxSteps = 0;
@@ -104,6 +106,30 @@ namespace EnduranceTheMaze
             copyIsEnabled = true;
             copyCustStr = "";
             copyType = 0;
+        }
+
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            float yPos = game.GetScreenSize().Y;
+            sprToolbar.rectDest.Width = game.GetScreenSize().X;
+            sprToolbar.rectDest.Y = yPos - 32;
+
+            bttnGameDelay.Pos = new Vector2(bttnGameDelay.Pos.X, yPos - 32);
+            bttnLvlLink.Pos = new Vector2(bttnLvlLink.Pos.X, yPos - 32);
+            bttnMaxSteps.Pos = new Vector2(bttnMaxSteps.Pos.X, yPos - 32);
+            bttnMinGoals.Pos = new Vector2(bttnMinGoals.Pos.X, yPos - 32);
+            bttnSyncActors.Pos = new Vector2(bttnSyncActors.Pos.X, yPos - 32);
+            bttnSyncDeath.Pos = new Vector2(bttnSyncDeath.Pos.X, yPos - 32);
+
+            bttnActionIndex1.Pos = new Vector2(bttnActionIndex1.Pos.X, yPos - 32);
+            bttnActionIndex2.Pos = new Vector2(bttnActionIndex2.Pos.X, yPos - 32);
+            bttnActionType.Pos = new Vector2(bttnActionType.Pos.X, yPos - 32);
+            bttnVal1.Pos = new Vector2(bttnVal1.Pos.X, yPos - 32);
+            bttnVal2.Pos = new Vector2(bttnVal2.Pos.X, yPos - 32);
+            bttnText.Pos = new Vector2(bttnText.Pos.X, yPos - 32);
+            bttnIsEnabled.Pos = new Vector2(bttnIsEnabled.Pos.X, yPos - 32);
+            bttnDir.Pos = new Vector2(bttnDir.Pos.X, yPos - 32);
+            sprSidebar.rectDest.Height = yPos - 32;
         }
 
         /// <summary>
@@ -2090,9 +2116,10 @@ namespace EnduranceTheMaze
 
         /// <summary>
         /// Loads a level from a file with a given path.
+        /// Returns true if loaded, false otherwise.
         /// </summary>
         /// <param name="path">The path and filename.</param>
-        public void LoadEdit(string path)
+        public bool LoadEdit(string path)
         {
             if (File.Exists(path))
             {
@@ -2114,6 +2141,10 @@ namespace EnduranceTheMaze
                 if (strItems.Count > 0)
                 {
                     items.Clear();
+                }
+                else
+                {
+                    return false;
                 }
 
                 for (int i = 0; i < strItems.Count; i++)
@@ -2190,18 +2221,26 @@ namespace EnduranceTheMaze
                             //Adjusts the block sprite.
                             tempBlock.AdjustSprite();
                         }
+
+                        else
+                        {
+                            return false;
+                        }
                     }
                 }
 
                 //Closes resources.
                 stream.Close();
+                return true;
             }
+
+            return false;
         }
 
         /// <summary>
-        /// Loads a level from a file.
+        /// Loads a level from a file, returning true if successful, false otherwise.
         /// </summary>
-        public void LoadEdit()
+        public bool LoadEdit()
         {
             //Creates a dialog to display.
             OpenFileDialog dlg = new OpenFileDialog();
@@ -2210,8 +2249,9 @@ namespace EnduranceTheMaze
             //If a result is chosen from the dialog.
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                LoadEdit(dlg.FileName);
+                return LoadEdit(dlg.FileName);
             }
+            return false;
         }
 
         /// <summary>

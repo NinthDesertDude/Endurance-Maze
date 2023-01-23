@@ -122,7 +122,7 @@ namespace EnduranceTheMaze
                 if (seriesList[seriesIndex].LevelExists())
                 {
                     game.GmState = GameState.stateGameplay;
-                    game.SetScreenCaption("Gameplay");
+                    game.SetScreenCaption("Endurance");
                     seriesList[seriesIndex].LoadCampaign();
                 }
                 else
@@ -157,7 +157,7 @@ namespace EnduranceTheMaze
             if (seriesList[seriesIndex].LevelExists())
             {
                 game.GmState = GameState.stateGameplay;
-                game.SetScreenCaption("Gameplay");
+                game.SetScreenCaption("Endurance");
                 seriesList[seriesIndex].LoadCampaign();
             }
             else

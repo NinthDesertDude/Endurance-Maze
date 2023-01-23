@@ -34,7 +34,9 @@ namespace EnduranceTheMaze
         Sprite sprCopyright, sprTitle, sprMenuOptions, sprMenuInfo;
 
         //The menu buttons.
-        TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay, bttnMusicVolume, bttnSfxVolume, bttnBack;
+        TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay,
+            bttnMusicVolume, bttnSfxVolume, bttnToggleFullscreen,
+            bttnQuit, bttnBack;
 
         //The level editor buttons.
         TitleItemEdit bttnEdit, bttnTest, bttnSave, bttnLoad, bttnClear;
@@ -54,6 +56,66 @@ namespace EnduranceTheMaze
         {
             this.game = game;
             _infoPage = 0; //Sets the current information page.
+
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+        }
+
+        /// <summary>
+        /// Adjusts all positions to deal with resizing.
+        /// </summary>
+        private void Window_ClientSizeChanged(object sender, EventArgs e)
+        {
+            var screenOffset = game.FullscreenHandler.GetCurrentOffset();
+
+            bttnCampaign.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnLevelEditor.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnHowToPlay.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnMusicVolume.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnSfxVolume.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnToggleFullscreen.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnQuit.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
+            bttnBack.BttnSprite.rectDest.X = screenOffset.Item1 + 339;
+
+            bttnCampaign.BttnSprite.rectDest.Y = screenOffset.Item2 + 96;
+            bttnLevelEditor.BttnSprite.rectDest.Y = screenOffset.Item2 + 142;
+            bttnHowToPlay.BttnSprite.rectDest.Y = screenOffset.Item2 + 188;
+            bttnMusicVolume.BttnSprite.rectDest.Y = screenOffset.Item2 + 280;
+            bttnSfxVolume.BttnSprite.rectDest.Y = screenOffset.Item2 + 326;
+            bttnToggleFullscreen.BttnSprite.rectDest.Y = screenOffset.Item2 + 372;
+            bttnQuit.BttnSprite.rectDest.Y = screenOffset.Item2 + 418;
+            bttnBack.BttnSprite.rectDest.Y = screenOffset.Item2;
+
+            bttnEdit.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+            bttnTest.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+            bttnSave.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+            bttnLoad.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+            bttnClear.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+
+            bttnEdit.BttnSprite.rectDest.Y = screenOffset.Item2 + 96;
+            bttnTest.BttnSprite.rectDest.Y = screenOffset.Item2 + 142;
+            bttnSave.BttnSprite.rectDest.Y = screenOffset.Item2 + 188;
+            bttnLoad.BttnSprite.rectDest.Y = screenOffset.Item2 + 234;
+            bttnClear.BttnSprite.rectDest.Y = screenOffset.Item2 + 280;
+
+            bttnCmpgnEasy.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
+            bttnCmpgnNormal.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
+            bttnCmpgnHard.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
+            bttnCmpgnDoom.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
+
+            bttnCmpgnEasy.BttnSprite.rectDest.Y = screenOffset.Item2 + 32;
+            bttnCmpgnNormal.BttnSprite.rectDest.Y = screenOffset.Item2 + 132;
+            bttnCmpgnHard.BttnSprite.rectDest.Y = screenOffset.Item2 + 232;
+            bttnCmpgnDoom.BttnSprite.rectDest.Y = screenOffset.Item2 + 332;
+
+            sprCopyright.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight - 16;
+            sprCopyright.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprCopyright.rectDest.Width / 2);
+
+            sprTitle.rectDest.X = screenOffset.Item1 + 194;
+            sprTitle.rectDest.Y = screenOffset.Item2 + 8;
+            sprMenuOptions.rectDest.X = screenOffset.Item1 + 203;
+            sprMenuOptions.rectDest.Y = screenOffset.Item2 + 248;
+            sprMenuInfo.rectDest.X = screenOffset.Item1;
+            sprMenuInfo.rectDest.Y = screenOffset.Item2 + 28;
         }
 
         /// <summary>
@@ -77,50 +139,32 @@ namespace EnduranceTheMaze
             TexMenuInfo3 = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuInfo3");
 
             //Creates buttons after the textures have loaded.
-            bttnCampaign = new TitleItemMain
-                (game, TexBttnMain, 334, 96, 0);
-            bttnLevelEditor = new TitleItemMain
-                (game, TexBttnMain, 334, 142, 1);
-            bttnHowToPlay = new TitleItemMain
-                (game, TexBttnMain, 334, 188, 2);
-            bttnMusicVolume = new TitleItemMain
-                (game, TexBttnMain, 334, 280, 4);
-            bttnSfxVolume = new TitleItemMain
-                (game, TexBttnMain, 334, 326, 5);
-            bttnBack = new TitleItemMain
-                (game, TexBttnMain, 339, 0, 3);
+            bttnCampaign = new TitleItemMain(game, TexBttnMain, 0);
+            bttnLevelEditor = new TitleItemMain(game, TexBttnMain, 1);
+            bttnHowToPlay = new TitleItemMain(game, TexBttnMain, 2);
+            bttnMusicVolume = new TitleItemMain(game, TexBttnMain, 8);
+            bttnSfxVolume = new TitleItemMain(game, TexBttnMain, 9);
+            bttnToggleFullscreen = new TitleItemMain(game, TexBttnMain, 10);
+            bttnQuit = new TitleItemMain(game, TexBttnMain, 11);
+            bttnBack = new TitleItemMain(game, TexBttnMain, 3);
 
-            bttnEdit = new TitleItemEdit(game, TexBttnEdit, 378, 96, 0);
-            bttnTest = new TitleItemEdit(game, TexBttnEdit, 378, 142, 1);
-            bttnSave = new TitleItemEdit(game, TexBttnEdit, 378, 188, 2);
-            bttnLoad = new TitleItemEdit(game, TexBttnEdit, 378, 234, 3);
-            bttnClear = new TitleItemEdit(game, TexBttnEdit, 378, 280, 4);
+            bttnEdit = new TitleItemEdit(game, TexBttnEdit, 0, false);
+            bttnTest = new TitleItemEdit(game, TexBttnEdit, 1, true);
+            bttnSave = new TitleItemEdit(game, TexBttnEdit, 2, true);
+            bttnLoad = new TitleItemEdit(game, TexBttnEdit, 3, false);
+            bttnClear = new TitleItemEdit(game, TexBttnEdit, 4, true);
 
             bttnCmpgnEasy = new TitleItemCmpgn(game, TexBttnCmpgn, 360, 32, 0);
             bttnCmpgnNormal = new TitleItemCmpgn(game, TexBttnCmpgn, 360, 132, 1);
             bttnCmpgnHard = new TitleItemCmpgn(game, TexBttnCmpgn, 360, 232, 2);
             bttnCmpgnDoom = new TitleItemCmpgn(game, TexBttnCmpgn, 360, 332, 3);
 
-            //Creates the copyright sprite.
             sprCopyright = new Sprite(true, TexCopyright);
-            sprCopyright.rectDest.Y = game.GetScreenSize().Y - 16;
-            sprCopyright.rectDest.X =
-                game.GetScreenSize().X / 2 -
-                (sprCopyright.rectDest.Width / 2);            
-
-            //Creates the title sprite.
             sprTitle = new Sprite(true, TexMenuTitle);            
-            sprTitle.rectDest.X = 194; //(scr. width - img. width) / 2
-            sprTitle.rectDest.Y = 8; //img. width / 2
-            
-            //Creates the options sprite.
             sprMenuOptions = new Sprite(true, TexMenuOptions);
-            sprMenuOptions.rectDest.X = 203; //(scr. width - img. width) / 2
-            sprMenuOptions.rectDest.Y = 248;
-            
-            //Creates the info sprite.
             sprMenuInfo = new Sprite(true, TexMenuInfo1);
-            sprMenuInfo.rectDest.Y = 28; //Room for a back button.
+
+            Window_ClientSizeChanged(null, null);
         }
 
         /// <summary>
@@ -139,25 +183,27 @@ namespace EnduranceTheMaze
                     bttnHowToPlay.Update();
                     bttnMusicVolume.Update();
                     bttnSfxVolume.Update();
+                    bttnToggleFullscreen.Update();
+                    bttnQuit.Update();
 
                     if (bttnCampaign.isClicked)
                     {
                         bttnCampaign.isClicked = false;
 
                         game.GmState = GameState.stateCampaignModes;
-                        game.SetScreenCaption("Gameplay Modes");
+                        game.SetScreenCaption("Endurance (Menu)");
                     }
                     else if (bttnLevelEditor.isClicked)
                     {
                         bttnLevelEditor.isClicked = false;
                         game.GmState = GameState.stateMenuEditor;
-                        game.SetScreenCaption("Level editor");
+                        game.SetScreenCaption("Endurance (Editor)");
                     }
                     else if (bttnHowToPlay.isClicked)
                     {
                         bttnHowToPlay.isClicked = false;
                         game.GmState = GameState.stateHowtoPlay;
-                        game.SetScreenCaption("How to play");
+                        game.SetScreenCaption("Endurance (Menu)");
                     }
                     else if (bttnMusicVolume.isClicked)
                     {
@@ -189,6 +235,18 @@ namespace EnduranceTheMaze
                         SfxPlaylist.sfxVolume = game.Prefs.VolumeSfx;
                         SoundEffect.MasterVolume = game.Prefs.VolumeSfx;
                         FileUtils.SavePreferences(game.Prefs);
+                    }
+                    else if (bttnToggleFullscreen.isClicked)
+                    {
+                        bttnToggleFullscreen.isClicked = false;
+                        game.FullscreenHandler.ToggleFullscreen();
+                        game.Prefs.Fullscreen = game.FullscreenHandler.IsFullscreen;
+                        FileUtils.SavePreferences(game.Prefs);
+                    }
+                    else if (bttnQuit.isClicked)
+                    {
+                        bttnQuit.isClicked = false;
+                        game.Exit();
                     }
                     break;
                 //If the how to play screen is active.
@@ -243,7 +301,7 @@ namespace EnduranceTheMaze
                     {
                         bttnBack.isClicked = false;
                         game.GmState = GameState.stateMenu;
-                        game.SetScreenCaption("Main menu");
+                        game.SetScreenCaption("Endurance (Menu)");
                     }
                     break;
                 //If the edit screen is active.
@@ -259,8 +317,11 @@ namespace EnduranceTheMaze
                     if (bttnEdit.isClicked)
                     {
                         bttnEdit.isClicked = false;
+                        bttnClear.isDisabled = false;
+                        bttnSave.isDisabled = false;
+                        bttnTest.isDisabled = false;
                         game.GmState = GameState.stateEditor;
-                        game.SetScreenCaption("Level Editor");
+                        game.SetScreenCaption("Endurance (Editor)");
                     }
                     else if (bttnTest.isClicked)
                     {
@@ -289,7 +350,7 @@ namespace EnduranceTheMaze
                                 game.mngrEditor.opSyncDeath;
 
                             game.GmState = GameState.stateGameplayEditor;
-                            game.SetScreenCaption("Level Editor");
+                            game.SetScreenCaption("Endurance (Editor)");
                         }
                     }
                     else if (bttnSave.isClicked)
@@ -307,11 +368,17 @@ namespace EnduranceTheMaze
                     {
                         bttnLoad.isClicked = false;
 
-                        game.mngrEditor.LoadEdit();
+                        bool didLevelLoad = game.mngrEditor.LoadEdit();
+                        bttnClear.isDisabled = !didLevelLoad;
+                        bttnSave.isDisabled = !didLevelLoad;
+                        bttnTest.isDisabled = !didLevelLoad;
                     }
                     else if (bttnClear.isClicked)
                     {
                         bttnClear.isClicked = false;
+                        bttnClear.isDisabled = true;
+                        bttnSave.isDisabled = true;
+                        bttnTest.isDisabled = true;
 
                         if (game.mngrEditor.items.Count > 0)
                         {
@@ -328,7 +395,7 @@ namespace EnduranceTheMaze
                     {
                         bttnBack.isClicked = false;
                         game.GmState = GameState.stateMenu;
-                        game.SetScreenCaption("Main menu");
+                        game.SetScreenCaption("Endurance (Menu)");
                     }
                     break;
                 //If the campaign mode screen is active.
@@ -390,7 +457,7 @@ namespace EnduranceTheMaze
                     {
                         bttnBack.isClicked = false;
                         game.GmState = GameState.stateMenu;
-                        game.SetScreenCaption("Main menu");
+                        game.SetScreenCaption("Endurance (Menu)");
                     }
                     break;
             }
@@ -407,6 +474,8 @@ namespace EnduranceTheMaze
                     bttnLevelEditor.Draw();
                     bttnMusicVolume.Draw();
                     bttnSfxVolume.Draw();
+                    bttnToggleFullscreen.Draw();
+                    bttnQuit.Draw();
                     sprMenuOptions.Draw(game.GameSpriteBatch);
                     sprCopyright.Draw(game.GameSpriteBatch);
                     sprTitle.Draw(game.GameSpriteBatch);
@@ -425,6 +494,14 @@ namespace EnduranceTheMaze
                             bttnSfxVolume.BttnSprite.rectDest.X +
                             bttnSfxVolume.BttnSprite.rectDest.Width,
                             bttnSfxVolume.BttnSprite.rectDest.Y + 4),
+                        Color.Black);
+
+                    game.GameSpriteBatch.DrawString(game.fntBold,
+                        game.Prefs.Fullscreen ? "Fullscreen" : "Windowed",
+                        new Vector2(
+                            bttnToggleFullscreen.BttnSprite.rectDest.X +
+                            bttnToggleFullscreen.BttnSprite.rectDest.Width,
+                            bttnToggleFullscreen.BttnSprite.rectDest.Y + 4),
                         Color.Black);
 
                     break;
@@ -456,7 +533,7 @@ namespace EnduranceTheMaze
                     if (game.LvlSeriesEasy.LevelExists())
                     {
                         game.GameSpriteBatch.DrawString(game.fntBold,
-                            "On level: " + game.LvlSeriesEasy.LevelNum,
+                            "On level " + game.LvlSeriesEasy.LevelNum,
                             new Vector2(
                                 bttnCmpgnEasy.BttnSprite.rectDest.X +
                                 bttnCmpgnEasy.BttnSprite.rectDest.Width + 4,
@@ -479,7 +556,7 @@ namespace EnduranceTheMaze
                     if (game.LvlSeriesNormal.LevelExists())
                     {
                         game.GameSpriteBatch.DrawString(game.fntBold,
-                            "On level: " + game.LvlSeriesNormal.LevelNum,
+                            "On level " + game.LvlSeriesNormal.LevelNum,
                             new Vector2(
                                 bttnCmpgnNormal.BttnSprite.rectDest.X +
                                 bttnCmpgnNormal.BttnSprite.rectDest.Width + 4,
@@ -502,7 +579,7 @@ namespace EnduranceTheMaze
                     if (game.LvlSeriesHard.LevelExists())
                     {
                         game.GameSpriteBatch.DrawString(game.fntBold,
-                            "On level: " + game.LvlSeriesHard.LevelNum,
+                            "On level " + game.LvlSeriesHard.LevelNum,
                             new Vector2(
                                 bttnCmpgnHard.BttnSprite.rectDest.X +
                                 bttnCmpgnHard.BttnSprite.rectDest.Width + 4,
@@ -525,7 +602,7 @@ namespace EnduranceTheMaze
                     if (game.LvlSeriesDoom.LevelExists())
                     {
                         game.GameSpriteBatch.DrawString(game.fntBold,
-                            "On level: " + game.LvlSeriesDoom.LevelNum,
+                            "On level " + game.LvlSeriesDoom.LevelNum,
                             new Vector2(
                                 bttnCmpgnDoom.BttnSprite.rectDest.X +
                                 bttnCmpgnDoom.BttnSprite.rectDest.Width + 4,

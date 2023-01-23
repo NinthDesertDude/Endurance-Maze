@@ -19,7 +19,7 @@ namespace EnduranceTheMaze
         /// The frame to use.
         /// </param>
         public TitleItemCmpgn(MainLoop game, Texture2D tex, float xPos,
-            float yPos, int frame) : base(game, tex, xPos, yPos, frame)
+            float yPos, int frame) : base(game, tex, frame)
         {
             BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 96, 96, 8, 2, 4);
             BttnSpriteAtlas.frame = frame;

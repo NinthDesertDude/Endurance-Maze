@@ -19,11 +19,11 @@ namespace EnduranceTheMaze
         /// <param name="frame">
         /// The frame to use.
         /// </param>
-        public TitleItemEdit(MainLoop game, Texture2D tex, float xPos,
-            float yPos, int frame) : base(game, tex, xPos, yPos, frame)
+        public TitleItemEdit(MainLoop game, Texture2D tex, int frame, bool isDisabled) : base(game, tex, frame)
         {
             BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 53, 23, 10, 2, 5);
             BttnSpriteAtlas.frame = frame;
+            this.isDisabled = isDisabled;
         }
 
         /// <summary>
