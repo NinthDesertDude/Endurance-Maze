@@ -822,8 +822,8 @@ namespace EnduranceTheMaze
                         .ToList();
 
                     //if there are no belts on the ice.
-                    if (itemsTop.Where(o => o.BlockType == Type.Belt
-                        && o.IsEnabled).Count() == 0)
+                    if (!itemsTop.Any(o => o.BlockType == Type.Belt
+                        && o.IsEnabled))
                     {
                         foreach (GameObj block in itemsTop)
                         {

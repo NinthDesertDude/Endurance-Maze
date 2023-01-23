@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
@@ -31,22 +32,37 @@ namespace EnduranceTheMaze
         public static Texture2D TexMenuInfo3 { get; private set; }
 
         //The title, options section, and how to play.
-        Sprite sprCopyright, sprTitle, sprMenuOptions, sprMenuInfo;
+        private Sprite sprCopyright, sprTitle, sprMenuOptions, sprMenuInfo;
 
         //The menu buttons.
-        TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay,
+        private TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay,
             bttnMusicVolume, bttnSfxVolume, bttnToggleFullscreen,
             bttnQuit, bttnBack;
 
         //The level editor buttons.
-        TitleItemEdit bttnEdit, bttnTest, bttnSave, bttnLoad, bttnClear;
+        private TitleItemEdit bttnEdit, bttnTest, bttnSave, bttnLoad, bttnClear;
 
         //The campaign buttons.
-        TitleItemCmpgn bttnCmpgnEasy, bttnCmpgnNormal, bttnCmpgnHard,
+        private TitleItemCmpgn bttnCmpgnEasy, bttnCmpgnNormal, bttnCmpgnHard,
             bttnCmpgnDoom;
 
         //The current page of the how to play screen; used when active.
         private int _infoPage;
+
+        /// <summary>
+        /// Refreshes whether test, save, and clear are enabled or not based on level validity.
+        /// </summary>
+        /// <param name="isValid"></param>
+        public void RefreshButtonState(bool isValid)
+        {
+            // Disables buttons when returning to the editor, depending on the level state.
+            bool isValidWithActors = isValid && !(game.mngrEditor.items.Count == 0 ||
+                !game.mngrEditor.items.Any(o => o.BlockType == Type.Actor));
+
+            bttnTest.isDisabled = !isValidWithActors;
+            bttnSave.isDisabled = !isValid;
+            bttnClear.isDisabled = !isValid;
+        }
 
         /// <summary>
         /// Sets the game instance.
@@ -317,9 +333,6 @@ namespace EnduranceTheMaze
                     if (bttnEdit.isClicked)
                     {
                         bttnEdit.isClicked = false;
-                        bttnClear.isDisabled = false;
-                        bttnSave.isDisabled = false;
-                        bttnTest.isDisabled = false;
                         game.GmState = GameState.stateEditor;
                         game.SetScreenCaption("Endurance (Editor)");
                     }
@@ -329,8 +342,8 @@ namespace EnduranceTheMaze
 
                         //If there is at least one actor block.
                         if (game.mngrEditor.items.Count > 0 &&
-                        game.mngrEditor.items.Where(o =>
-                        o.BlockType == Type.Actor).Count() > 0)
+                        game.mngrEditor.items.Any(o =>
+                        o.BlockType == Type.Actor))
                         {
                             //Loads the level.
                             game.mngrEditor.LoadTest();
@@ -356,29 +369,18 @@ namespace EnduranceTheMaze
                     else if (bttnSave.isClicked)
                     {
                         bttnSave.isClicked = false;
-
-                        if (game.mngrEditor.items.Count > 0 &&
-                        game.mngrEditor.items.Where(o =>
-                        o.BlockType == Type.Actor).Count() > 0)
-                        {
-                            game.mngrEditor.LevelSave();
-                        }
+                        game.mngrEditor.LevelSave();
                     }
                     else if (bttnLoad.isClicked)
                     {
                         bttnLoad.isClicked = false;
-
                         bool didLevelLoad = game.mngrEditor.LoadEdit();
-                        bttnClear.isDisabled = !didLevelLoad;
-                        bttnSave.isDisabled = !didLevelLoad;
-                        bttnTest.isDisabled = !didLevelLoad;
+                        RefreshButtonState(didLevelLoad);
                     }
                     else if (bttnClear.isClicked)
                     {
                         bttnClear.isClicked = false;
-                        bttnClear.isDisabled = true;
-                        bttnSave.isDisabled = true;
-                        bttnTest.isDisabled = true;
+                        RefreshButtonState(false);
 
                         if (game.mngrEditor.items.Count > 0)
                         {

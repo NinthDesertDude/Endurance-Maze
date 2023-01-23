@@ -326,7 +326,6 @@ namespace EnduranceTheMaze
                         sidebarScroll -= 32;
 
                         //Clamps the scrolling to the last item in the list.
-                        //480 = screen height / 32.
                         if (sidebarScroll < itemTypes.Count * -32 + (int)game.GetScreenSize().Y)
                         {
                             sidebarScroll = itemTypes.Count * -32 + (int)game.GetScreenSize().Y;
@@ -379,19 +378,18 @@ namespace EnduranceTheMaze
                         }
 
                         //If the position is open for the mouse.
-                        if (itemDragPos.Where(o =>
+                        if (!itemDragPos.Any(o =>
                             o.X == (int)Math.Round(mouseX / 32f) &&
-                            o.Y == (int)Math.Round(mouseY / 32f))
-                            .Count() == 0)
+                            o.Y == (int)Math.Round(mouseY / 32f)))
                         {
                             //If the block to be placed is not solid.
                             Type typeToUse = (isPasting) ? copyType : activeType;
 
                             if (!(Utils.BlockFromType
                                 (game, typeToUse, 0, 0, 0).IsSolid &&
-                                blocks.Where(o => o.IsSolid).Count() != 0) &&
-                                !(blocks.Where(o => o.BlockType == typeToUse)
-                                .Count() > 0 && typeToUse != Type.Filter &&
+                                blocks.Any(o => o.IsSolid)) &&
+                                !(blocks.Any(o => o.BlockType == typeToUse)
+                                && typeToUse != Type.Filter &&
                                 typeToUse != Type.Teleporter))
                             {
                                 //Adds the position.
@@ -427,8 +425,7 @@ namespace EnduranceTheMaze
                                 }
 
                                 //Adds a floor panel if there aren't any.
-                                if (blocks.Where(o => o.BlockType == Type.Floor)
-                                    .Count() == 0 && typeToUse != Type.Floor)
+                                if (typeToUse != Type.Floor && !blocks.Any(o => o.BlockType == Type.Floor))
                                 {
                                     items.Add(new ImgBlock(game, Type.Floor,
                                         (int)Math.Round(mouseX / 32f),
@@ -459,10 +456,9 @@ namespace EnduranceTheMaze
                             o.Layer == camLayer).ToList();
 
                         //If the position is open, removes the item.
-                        if (itemDragPos.Where(o =>
+                        if (!itemDragPos.Any(o =>
                             o.X == (int)Math.Round(mouseX / 32f) &&
-                            o.Y == (int)Math.Round(mouseY / 32f))
-                            .Count() == 0)
+                            o.Y == (int)Math.Round(mouseY / 32f)))
                         {
                             //Adds the position.
                             itemDragPos.Add(new Vector2(
@@ -473,8 +469,7 @@ namespace EnduranceTheMaze
                             if (tempList.Count > 0)
                             {
                                 //Organizes by depth so top item is topmost.
-                                tempList.OrderBy(o => o.BlockSprite.depth);
-                                tempList.Reverse();
+                                tempList = tempList.OrderBy(o => o.BlockSprite.depth).ToList();
 
                                 //Removes the item.
                                 items.Remove(tempList[0]);
@@ -487,8 +482,7 @@ namespace EnduranceTheMaze
 
                                 //Removes the floor block if it stands alone.
                                 tempList.RemoveAt(0);
-                                if (tempList.Where(o => o.BlockType != Type.Floor)
-                                    .Count() == 0)
+                                if (!tempList.Any(o => o.BlockType != Type.Floor))
                                 {
                                     foreach (ImgBlock item in tempList)
                                     {
@@ -629,15 +623,15 @@ namespace EnduranceTheMaze
                     {
                         camX += 8;
                     }
-                    else if ((game.KbState.IsKeyDown(Keys.S) ||
-                        (game.KbState.IsKeyDown(Keys.Down))))
-                    {
-                        camY += 8;
-                    }
                     else if ((game.KbState.IsKeyDown(Keys.A) ||
                         (game.KbState.IsKeyDown(Keys.Left))))
                     {
                         camX -= 8;
+                    }
+                    if ((game.KbState.IsKeyDown(Keys.S) ||
+                        (game.KbState.IsKeyDown(Keys.Down))))
+                    {
+                        camY += 8;
                     }
                     else if ((game.KbState.IsKeyDown(Keys.W) ||
                         (game.KbState.IsKeyDown(Keys.Up))))
@@ -1394,7 +1388,7 @@ namespace EnduranceTheMaze
                 if (game.KbState.IsKeyDown(Keys.LeftControl) ||
                     game.KbState.IsKeyDown(Keys.RightControl))
                 {
-                    blk = new ImgBlock(game, (Type)copyType,
+                    blk = new ImgBlock(game, copyType,
                         selX, selY, 0);
 
                     blk.ActionIndex = copyActIndex1;
@@ -2221,11 +2215,6 @@ namespace EnduranceTheMaze
                             //Adjusts the block sprite.
                             tempBlock.AdjustSprite();
                         }
-
-                        else
-                        {
-                            return false;
-                        }
                     }
                 }
 
@@ -2251,6 +2240,7 @@ namespace EnduranceTheMaze
             {
                 return LoadEdit(dlg.FileName);
             }
+
             return false;
         }
 

@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
-using System.Drawing;
 
 namespace EnduranceTheMaze
 {
@@ -189,6 +188,7 @@ namespace EnduranceTheMaze
                 {
                     GmState = GameState.stateMenuEditor;
                     SetScreenCaption("Endurance (Editor)");
+                    mngrTitle.RefreshButtonState(true);
                 }
                 //Goes from submenus to the main menu.
                 else if (GmState == GameState.stateCampaignModes ||
