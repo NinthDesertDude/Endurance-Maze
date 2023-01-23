@@ -39,6 +39,8 @@ namespace EnduranceTheMaze
         public Type activeType; //The active block type selected.
         public ImgBlock activeItem; //The active existing block selected.
         public List<ImgBlock> items; //All items in the level.
+        private Dir lastDirStrict = Dir.Right; // The most recent direction used/set on a block. New blocks paste in this dir.
+        private Dir lastDirEnemy = Dir.Right; // The most recent direction used/set on a block including diagonals.
 
         //Contains the camera position and zoom.
         public Matrix Camera { get; private set; }
@@ -408,6 +410,11 @@ namespace EnduranceTheMaze
                                 items.Add(new ImgBlock(game, typeToUse,
                                     (int)Math.Round(mouseX / 32f),
                                     (int)Math.Round(mouseY / 32f), camLayer));
+
+                                // Sets the block direction.
+                                items[^1].BlockDir = items[^1].BlockType == Type.Enemy
+                                    ? lastDirEnemy
+                                    : lastDirStrict;
 
                                 //Sets the new item as the active one.
                                 activeItem = items[items.Count - 1];
@@ -911,7 +918,10 @@ namespace EnduranceTheMaze
                         else
                         {
                             activeItem.BlockDir = Utils.DirNext(activeItem.BlockDir);
+                            lastDirStrict = activeItem.BlockDir;
                         }
+
+                        lastDirEnemy = activeItem.BlockDir;
                     }
 
                     //Right clicking or scrolling down.
@@ -927,7 +937,10 @@ namespace EnduranceTheMaze
                         else
                         {
                             activeItem.BlockDir = Utils.DirPrev(activeItem.BlockDir);
+                            lastDirStrict = activeItem.BlockDir;
                         }
+
+                        lastDirEnemy = activeItem.BlockDir;
                     }
                 }
                 else if (bttnVal1.IsHovered && bttnVal1.IsVisible)
@@ -1395,9 +1408,7 @@ namespace EnduranceTheMaze
                 if (game.KbState.IsKeyDown(Keys.LeftControl) ||
                     game.KbState.IsKeyDown(Keys.RightControl))
                 {
-                    blk = new ImgBlock(game, copyType,
-                        selX, selY, 0);
-
+                    blk = new ImgBlock(game, copyType, selX, selY, 0);
                     blk.ActionIndex = copyActIndex1;
                     blk.ActionIndex2 = copyActIndex2;
                     blk.ActionType = copyActType;
@@ -1408,8 +1419,8 @@ namespace EnduranceTheMaze
                 }
                 else
                 {
-                    blk = new ImgBlock(game, (Type)activeType,
-                        selX, selY, 0);
+                    blk = new ImgBlock(game, activeType, selX, selY, 0);
+                    blk.BlockDir = blk.BlockType == Type.Enemy ? lastDirEnemy : lastDirStrict;
 
                     SetDefaults(blk);
                 }
