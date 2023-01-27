@@ -249,7 +249,7 @@ namespace EnduranceTheMaze
 
                         bool isSoundMuted = !(game.Prefs.VolumeMusic == 0 && game.Prefs.VolumeSfx == 0);
                         SfxPlaylist.sfxVolume = game.Prefs.VolumeSfx;
-                        SoundEffect.MasterVolume = game.Prefs.VolumeSfx;
+                        MediaPlayer.IsMuted = isSoundMuted;
                         FileUtils.SavePreferences(game.Prefs);
                     }
                     else if (bttnToggleFullscreen.isClicked)
@@ -349,7 +349,7 @@ namespace EnduranceTheMaze
                             game.mngrEditor.LoadTest();
 
                             //Loads level settings.
-                            game.mngrLvl._countdownStart =
+                            game.mngrLvl.countdownStart =
                                 game.mngrEditor.opGameDelay;
                             game.mngrLvl.opLvlLink =
                                 game.mngrEditor.opLvlLink;

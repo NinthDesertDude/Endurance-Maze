@@ -199,6 +199,25 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
+        /// Converts the given direction to its counterpart rotation in radians.
+        /// </summary>
+        public static double DirToRadians(Dir dir)
+        {
+            return dir switch
+            {
+                Dir.Right => 0,
+                Dir.DownRight => Math.PI / 4d,
+                Dir.Down => Math.PI / 2d,
+                Dir.DownLeft => Math.PI * 3d / 2d,
+                Dir.Left => Math.PI,
+                Dir.UpLeft => Math.PI * 1.25d,
+                Dir.Up => Math.PI * 1.5d,
+                Dir.UpRight => Math.PI * 1.75d,
+                _ => 0,
+            };
+        }
+
+        /// <summary>
         /// Returns a block corresponding to the given type.
         /// </summary>
         /// <param name="type">A block type.</param>

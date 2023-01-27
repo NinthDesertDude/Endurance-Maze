@@ -2,7 +2,6 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using SharpDX.Direct2D1;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +27,7 @@ namespace EnduranceTheMaze
 
         public static Texture2D TexPixel { get; private set; }
         public static Texture2D TexMenuHud { get; private set; }
+        public static Texture2D TexFx { get; private set; }
 
         //HUD assets (sprites and text).
         private Sprite sprHudOverlay, sprMenuHud;
@@ -105,6 +105,7 @@ namespace EnduranceTheMaze
         public List<GameObj> ItemsOrig { get; private set; }
         public List<GameObj> itemsChkpt;
         public List<GameObj> items;
+        public List<GameObj> itemsDecor;
 
         public MazeActor actor; //active player.
         private int _actorCoins, _actorGoals; //total coins and goals.
@@ -145,7 +146,7 @@ namespace EnduranceTheMaze
         private float camZoom;
 
         //An update timer for objects to utilize as needed.
-        internal int _countdownStart, _countdown;
+        internal int countdownStart, _countdown;
         public bool IsTimerZero { get; private set; }
 
         /// <summary>
@@ -172,7 +173,7 @@ namespace EnduranceTheMaze
             doRestart = doRevert = doCheckpoint = doWin = false;
 
             //Sets the timer defaults.
-            _countdown = _countdownStart = 8;
+            _countdown = countdownStart = 8;
             IsTimerZero = false;
 
             //Controls the position of the screen (zoom).
@@ -182,6 +183,7 @@ namespace EnduranceTheMaze
             ItemsOrig = new List<GameObj>();
             itemsChkpt = new List<GameObj>();
             items = new List<GameObj>();
+            itemsDecor = new List<GameObj>();
 
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
         }
@@ -209,6 +211,7 @@ namespace EnduranceTheMaze
             TexPixel = new Texture2D(game.GraphicsDevice, 1, 1);
             TexPixel.SetData(new Color[] { Color.White });
             TexMenuHud = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuHud");
+            TexFx = game.Content.Load<Texture2D>("Content/Sprites/Game/sprFx");
 
             //Sets up hud sprites.
             sprHudOverlay = new Sprite(true, TexPixel);
@@ -229,6 +232,7 @@ namespace EnduranceTheMaze
             MazeCoinLock.LoadContent(game.Content);
             MazeCrate.LoadContent(game.Content);
             MazeCrateHole.LoadContent(game.Content);
+            FxCratePush.LoadContent(game.Content);
             MazeEnemy.LoadContent(game.Content);
             MazeFilter.LoadContent(game.Content);
             MazeFloor.LoadContent(game.Content);
@@ -276,6 +280,7 @@ namespace EnduranceTheMaze
             //Resets the item lists.
             ItemsOrig.Clear();
             itemsChkpt.Clear();
+            itemsDecor.Clear();
             ActorCoins = 0;
             ActorGoals = 0;
             LvlSteps = 0;
@@ -400,7 +405,7 @@ namespace EnduranceTheMaze
                             continue;
                         }
 
-                        Int32.TryParse(strBlock[1], out _countdownStart);
+                        Int32.TryParse(strBlock[1], out countdownStart);
                         opLvlLink = strBlock[2];
                         Int32.TryParse(strBlock[3], out _lvlMaxSteps);
                         Int32.TryParse(strBlock[4], out _opReqGoals);
@@ -495,6 +500,17 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
+        /// Equivalent of itemsDecor.Add(), but also works in loops.
+        /// </summary>
+        /// <param name="item">The item to add.</param>
+        public void AddDecor(GameObj item)
+        {
+            List<GameObj> newItems = new List<GameObj>(itemsDecor);
+            newItems.Add(item);
+            itemsDecor = newItems;
+        }
+
+        /// <summary>
         /// Equivalent of items.Remove(), but also works in loops.
         /// </summary>
         /// <param name="item">The item to remove.</param>
@@ -513,6 +529,27 @@ namespace EnduranceTheMaze
             }
 
             items = newItems;
+        }
+
+        /// <summary>
+        /// Equivalent of items.Remove(), but also works in loops.
+        /// </summary>
+        /// <param name="item">The item to remove.</param>
+        public void RemoveDecor(GameObj item)
+        {
+            List<GameObj> newItems = new List<GameObj>();
+
+            //Creates a shallow copy of the original list by copying all
+            //objects except for the specified one.
+            foreach (GameObj currentItem in itemsDecor)
+            {
+                if (item != currentItem)
+                {
+                    newItems.Add(currentItem);
+                }
+            }
+
+            itemsDecor = newItems;
         }
 
         /// <summary>
@@ -547,7 +584,7 @@ namespace EnduranceTheMaze
             }
             else if (game.MsState.ScrollWheelValue <
                 game.MsStateOld.ScrollWheelValue)
-            {                
+            {
                 if (camZoom <= 0.5)
                 {
                     camZoom = 0.5f;
@@ -609,7 +646,7 @@ namespace EnduranceTheMaze
             _countdown--;
             if (_countdown == 0)
             {
-                _countdown = _countdownStart;
+                _countdown = countdownStart;
                 IsTimerZero = true;
             }
             else
@@ -628,7 +665,7 @@ namespace EnduranceTheMaze
                 //Moves the bullet.
                 item.X += ((int)Utils.DirVector(item.BlockDir).X * item.CustInt2);
                 item.Y += ((int)Utils.DirVector(item.BlockDir).Y * item.CustInt2);
-                
+
                 //Gets a list of all solids in front of the bullet.
                 List<GameObj> itemsFront = items.Where(obj =>
                     Math.Abs((obj.X * 32 + 16) - ((item.X + item.CustInt2))) < 7 && //TODO: 4 or custInt2?
@@ -641,6 +678,7 @@ namespace EnduranceTheMaze
                     if (item2.BlockType == Type.Actor)
                     {
                         (item2 as MazeActor).hp -= 25;
+                        (item2 as MazeActor).PerformHurtAnimation();
                         game.playlist.Play(sndHit, item.X / 32, item.Y / 32);
                     }
 
@@ -791,13 +829,14 @@ namespace EnduranceTheMaze
                     else
                     {
                         item.BlockDir = Utils.DirOpp(item.BlockDir);
-                        
+
                         //Damages all actors it bounces off of.
                         foreach (GameObj item2 in itemsFront)
                         {
                             if (item2.BlockType == Type.Actor)
                             {
                                 (item2 as MazeActor).hp -= 25;
+                                (item2 as MazeActor).PerformHurtAnimation();
                                 game.playlist.Play(sndHit, item.X, item.Y);
                             }
                         }
@@ -916,6 +955,12 @@ namespace EnduranceTheMaze
                 {
                     break;
                 }
+            }
+
+            // Updates decor.
+            foreach (GameObj item in itemsDecor)
+            {
+                item.Update();
             }
 
             //Handles winning.
@@ -1136,6 +1181,15 @@ namespace EnduranceTheMaze
                 if (item.Layer == actor.Layer ||
                     item.Layer == actor.Layer + 1 ||
                     item.Layer == actor.Layer - 1)
+                {
+                    item.Draw();
+                }
+            }
+
+            // Draws decor (only for current layer).
+            foreach (GameObj item in itemsDecor)
+            {
+                if (item.Layer == actor.Layer)
                 {
                     item.Draw();
                 }

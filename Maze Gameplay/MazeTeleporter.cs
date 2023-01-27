@@ -199,6 +199,9 @@ namespace EnduranceTheMaze
 
                         game.playlist.Play(sndTeleport, X, Y);
 
+                        var teleportEffect = new FxTeleported(game, X, Y, Layer);
+                        game.mngrLvl.AddDecor(teleportEffect);
+
                         #region Interaction: MazeTurretBullet
                         if (item.BlockType == Type.TurretBullet)
                         {
@@ -215,6 +218,9 @@ namespace EnduranceTheMaze
                         #endregion
 
                         item.Layer = receiver.Layer;
+
+                        var receivedEffect = new FxReceived(game, receiver.X, receiver.Y, receiver.Layer);
+                        game.mngrLvl.AddDecor(receivedEffect);
                     }
                 }
             }

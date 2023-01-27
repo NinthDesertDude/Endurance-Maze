@@ -38,6 +38,10 @@ namespace EnduranceTheMaze
         private int countdownStart, countdown;
         private bool isTimerZero;
 
+        // Color-blend animation for when hurt.
+        private int isHurtCountdownStart = 8;
+        private int isHurtCountdown = 0;
+
         /// <summary>Sets the block location and default values.</summary>
         /// <param name="x">The column number.</param>
         /// <param name="y">The row number.</param>
@@ -54,7 +58,7 @@ namespace EnduranceTheMaze
             keys = new List<Color>();
 
             //Sets the timer defaults.
-            countdown = countdownStart = 8;
+            countdown = countdownStart = game.mngrLvl.countdownStart;
             isTimerZero = false;
 
             //Sets sprite information.
@@ -436,6 +440,10 @@ namespace EnduranceTheMaze
                                         game.playlist.Play
                                             (sndMoveCrate, X, Y);
 
+                                        var pushEffect = new FxCratePush(game, X, Y, Layer);
+                                        pushEffect.BlockSprite.angle = (float)Utils.DirToRadians(BlockDir);
+                                        game.mngrLvl.AddDecor(pushEffect);
+
                                         item.BlockDir = BlockDir; //used for ice.
                                         item.X += (int)Utils.DirVector(BlockDir).X;
                                         item.Y += (int)Utils.DirVector(BlockDir).Y;
@@ -577,6 +585,7 @@ namespace EnduranceTheMaze
                         if (bullets.Count > 0)
                         {
                             game.playlist.Play(MngrLvl.sndHit, X, Y);
+                            PerformHurtAnimation();
                         }
 
                         for (int i = 0; i < bullets.Count; i++)
@@ -632,6 +641,18 @@ namespace EnduranceTheMaze
         /// </summary>
         public override void Draw()
         {
+            if (isHurtCountdown > 0)
+            {
+                isHurtCountdown--;
+                BlockSprite.color = (IsEnabled)
+                    ? Color.Lerp(Color.White, Color.Red, (float)isHurtCountdown / isHurtCountdownStart)
+                    : Color.Lerp(Color.Aqua, Color.Red, (float)isHurtCountdown / isHurtCountdownStart);
+            }
+            else
+            {
+                BlockSprite.color = (IsEnabled) ? Color.White : Color.Aqua;
+            }
+
             base.Draw();
 
             //Sets the tooltip to display keys / disabled status on hover.
@@ -662,6 +683,15 @@ namespace EnduranceTheMaze
 
                 game.mngrLvl.tooltip += "| ";
             }
+        }
+
+        /// <summary>
+        /// Blends the actor's sprite color with red, lerping back to white over <see cref="isHurtCountdownStart"/>
+        /// frames.
+        /// </summary>
+        public void PerformHurtAnimation()
+        {
+            isHurtCountdown = isHurtCountdownStart;
         }
     }
 }

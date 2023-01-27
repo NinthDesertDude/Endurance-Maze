@@ -107,7 +107,6 @@ namespace EnduranceTheMaze
             SfxPlaylist.musicVolume = Prefs.VolumeMusic;
             SfxPlaylist.sfxVolume = Prefs.VolumeSfx;
             MediaPlayer.IsMuted = isSoundMuted;
-            SoundEffect.MasterVolume = isSoundMuted ? 0 : 1;
         }
 
         #region Xna methods (init, load content, update, draw)

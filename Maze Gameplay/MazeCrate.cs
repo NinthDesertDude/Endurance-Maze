@@ -39,7 +39,7 @@ namespace EnduranceTheMaze
             BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
             BlockSprite.rectDest.Width = 32;
             BlockSprite.rectDest.Height = 32;
-            BlockSprite.drawBehavior = SpriteDraw.basic;
+            BlockSprite.drawBehavior = SpriteDraw.basicAnimated;
         }
 
         /// <summary>
@@ -86,6 +86,15 @@ namespace EnduranceTheMaze
 
                 //Removes the crate and spawns the contained item, if any.
                 game.mngrLvl.RemoveItem(this);
+
+                FxCrateBroken snap1 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpLeft };
+                FxCrateBroken snap2 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpRight };
+                FxCrateBroken snap3 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.DownLeft };
+                FxCrateBroken snap4 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.DownRight };
+                snap2.BlockSprite.spriteEffects = SpriteEffects.FlipHorizontally;
+                snap3.BlockSprite.spriteEffects = SpriteEffects.FlipVertically;
+                snap4.BlockSprite.spriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;
+                game.mngrLvl.itemsDecor.AddRange(new FxCrateBroken[] { snap1, snap2, snap3, snap4 });
 
                 if (CustInt1 != 0)
                 {

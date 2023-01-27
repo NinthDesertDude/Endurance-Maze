@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using System;
 
 namespace EnduranceTheMaze
 {
@@ -30,6 +31,11 @@ namespace EnduranceTheMaze
     /// </summary>
     public class SpriteAtlas
     {
+        /// <summary>
+        /// Fires when the animation ends, if subscribed to.
+        /// </summary>
+        public event Action OnAnimationEnd;
+
         #region Members
         /// <summary>
         /// The sprite to modify.
@@ -337,6 +343,8 @@ namespace EnduranceTheMaze
                                 frameSpeed = -frameSpeed;
                                 break;
                         }
+
+                        OnAnimationEnd?.Invoke();
                     }
                 }
 

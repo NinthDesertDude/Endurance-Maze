@@ -42,7 +42,7 @@
         Click = 29,
         Rotate = 30,
         Turret = 32,
-        TurretBullet = 33, //Not an editor object.
+        TurretBullet = 33, // Not an editor object.
         Mirror = 34,
         CoinLock = 35,
         LaserActuator = 36

@@ -13,6 +13,44 @@
 
 #---------------------------------- Content ---------------------------------#
 
+#begin Content/Fonts/fntBold.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Content/Fonts/fntBold.spritefont
+
+#begin Content/Fonts/fntDefault.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Content/Fonts/fntDefault.spritefont
+
+#begin Content/Music/sndSong1.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Content/Music/sndSong1.wav
+
+#begin Content/Music/sndSong2.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Content/Music/sndSong2.wav
+
+#begin Content/Music/sndSong3.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Content/Music/sndSong3.wav
+
+#begin Content/Music/sndSong4.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Content/Music/sndSong4.wav
+
 #begin Content/Sounds/sndActivateAuto.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -217,6 +255,18 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprCoin.png
 
+#begin Content/Sprites/Game/sprCoinLock.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprCoinLock.png
+
 #begin Content/Sprites/Game/sprCrate.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -240,6 +290,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprCrateHole.png
+
+#begin Content/Sprites/Game/sprCratePush.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprCratePush.png
 
 #begin Content/Sprites/Game/sprEAuto.png
 /importer:TextureImporter
@@ -337,6 +399,18 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprFreeze.png
 
+#begin Content/Sprites/Game/sprFx.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprFx.png
+
 #begin Content/Sprites/Game/sprGate.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -397,6 +471,18 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprKey.png
 
+#begin Content/Sprites/Game/sprLaserActuator.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprLaserActuator.png
+
 #begin Content/Sprites/Game/sprLife.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -456,6 +542,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprMultiWay.png
+
+#begin Content/Sprites/Game/sprPanel.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprPanel.png
 
 #begin Content/Sprites/Game/sprRotate.png
 /importer:TextureImporter
@@ -769,18 +867,6 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Gui/sprOpSyncDeath.png
 
-#begin Content/Sprites/Game/sprPanel.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Content/Sprites/Game/sprPanel.png
-
 #begin Content/Sprites/Gui/sprPropActionInd1.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -877,64 +963,3 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Gui/sprPropIsEnabled.png
 
-#begin Content/Fonts/fntDefault.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Content/Fonts/fntDefault.spritefont
-
-#begin Content/Fonts/fntBold.spritefont
-/importer:FontDescriptionImporter
-/processor:FontDescriptionProcessor
-/processorParam:PremultiplyAlpha=True
-/processorParam:TextureFormat=Compressed
-/build:Content/Fonts/fntBold.spritefont
-
-#begin Content/Sprites/Game/sprCoinLock.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Content/Sprites/Game/sprCoinLock.png
-
-#begin Content/Music/sndSong1.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Content/Music/sndSong1.wav
-
-#begin Content/Music/sndSong2.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Content/Music/sndSong2.wav
-
-#begin Content/Music/sndSong3.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Content/Music/sndSong3.wav
-
-#begin Content/Music/sndSong4.wav
-/importer:WavImporter
-/processor:SoundEffectProcessor
-/processorParam:Quality=Best
-/build:Content/Music/sndSong4.wav
-
-#begin Content/Sprites/Game/sprLaserActuator.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Content/Sprites/Game/sprLaserActuator.png
