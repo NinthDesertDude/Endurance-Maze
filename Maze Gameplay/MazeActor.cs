@@ -298,6 +298,25 @@ namespace EnduranceTheMaze
                                             game.mngrLvl.RemoveItem(item);
                                             keys.RemoveAt(i);
                                             game.playlist.Play(sndLockOpen, X, Y);
+
+                                            // Animation for when a lock is opened
+                                            FxRing lockBreak;
+                                            int spheres = 10;
+                                            double angleDifference = (2 * Math.PI) / spheres;
+
+                                            for (int j = 0; j < spheres; j++)
+                                            {
+                                                double radianAngle = angleDifference * j;
+                                                double ySpeed = Math.Sin(radianAngle) * 2;
+                                                double xSpeed = Math.Cos(radianAngle) * 2;
+
+                                                lockBreak = new FxRing(game,
+                                                    item.X * 32 + 16, item.Y * 32 + 16,
+                                                    item.Layer, (xSpeed, ySpeed),
+                                                    item.BlockSprite.color, 0.04f);
+
+                                                game.mngrLvl.AddItem(lockBreak);
+                                            }
                                             break;
                                         }
                                     }
@@ -327,6 +346,26 @@ namespace EnduranceTheMaze
                                         isOpened = true;
                                         game.mngrLvl.RemoveItem(item);
                                         game.playlist.Play(sndLockOpen, X, Y);
+
+                                        // Animation for when a coin lock is opened
+                                        FxRing lockBreak;
+                                        int spheres = 10;
+                                        double angleDifference = (2 * Math.PI) / spheres;
+                                        Color color = new Color(255, 255, 0);
+                                        for (int j = 0; j < spheres; j++)
+                                        {
+                                            double radianAngle = angleDifference * j;
+                                            double ySpeed = Math.Sin(radianAngle) * 2;
+                                            double xSpeed = Math.Cos(radianAngle) * 2;
+
+                                            lockBreak = new FxRing(game,
+                                                item.X * 32 + 16, item.Y * 32 + 16,
+                                                item.Layer, (xSpeed, ySpeed),
+                                                color, 0.04f);
+
+                                            game.mngrLvl.AddItem(lockBreak);
+                                        }
+
                                         break;
                                     }
 
@@ -440,9 +479,10 @@ namespace EnduranceTheMaze
                                         game.playlist.Play
                                             (sndMoveCrate, X, Y);
 
+                                        // Animation for crates being pushed
                                         var pushEffect = new FxCratePush(game, X, Y, Layer);
                                         pushEffect.BlockSprite.angle = (float)Utils.DirToRadians(BlockDir);
-                                        game.mngrLvl.AddDecor(pushEffect);
+                                        game.mngrLvl.AddItem(pushEffect);
 
                                         item.BlockDir = BlockDir; //used for ice.
                                         item.X += (int)Utils.DirVector(BlockDir).X;

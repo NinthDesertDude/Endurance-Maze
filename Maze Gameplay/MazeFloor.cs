@@ -22,7 +22,7 @@ namespace EnduranceTheMaze
         /// <param name="y">The row number.</param>
         /// <param name="layer">The layer in the maze.</param>
         public MazeFloor(MainLoop game, int x, int y, int layer)
-            : base(game, x, y, layer)
+            : base(game, x, y, layer, true)
         {
             //Sets default values.
             BlockType = Type.Floor;

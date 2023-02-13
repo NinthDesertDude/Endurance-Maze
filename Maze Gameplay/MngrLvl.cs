@@ -102,9 +102,10 @@ namespace EnduranceTheMaze
 
         //Contains all maze blocks in the level, organized by original, last
         //checkpoint, and current.
-        public List<GameObj> ItemsOrig { get; private set; }
+        private List<GameObj> ItemsOrig { get; set; }
         public List<GameObj> itemsChkpt;
         public List<GameObj> items;
+        private List<GameObj> ItemsDecorOrig { get; set; }
         public List<GameObj> itemsDecor;
 
         public MazeActor actor; //active player.
@@ -183,6 +184,7 @@ namespace EnduranceTheMaze
             ItemsOrig = new List<GameObj>();
             itemsChkpt = new List<GameObj>();
             items = new List<GameObj>();
+            ItemsDecorOrig = new List<GameObj>();
             itemsDecor = new List<GameObj>();
 
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
@@ -268,7 +270,7 @@ namespace EnduranceTheMaze
         /// <summary>
         /// Loads a level from a list of blocks and clears old info.
         /// </summary>
-        public void LevelStart(List<GameObj> blocks)
+        public void LevelStart(List<GameObj> blocks, List<GameObj> decorBlocks)
         {
             //Sets the new item list.
             items.Clear();
@@ -277,10 +279,16 @@ namespace EnduranceTheMaze
                 items.Add(block.Clone());
             }
 
+            itemsDecor.Clear();
+            foreach (GameObj block in decorBlocks)
+            {
+                itemsDecor.Add(block.Clone());
+            }
+
             //Resets the item lists.
             ItemsOrig.Clear();
             itemsChkpt.Clear();
-            itemsDecor.Clear();
+            ItemsDecorOrig.Clear();
             ActorCoins = 0;
             ActorGoals = 0;
             LvlSteps = 0;
@@ -289,20 +297,19 @@ namespace EnduranceTheMaze
             _lvlStepsChkpt = 0;
 
             //Sets the active actor.
-            foreach (GameObj item in items)
-            {
-                //Selects a default actor.
-                if (item.BlockType == Type.Actor)
-                {
-                    actor = (MazeActor)item;
-                }
-            }
+            var firstActor = items.First(o => o.BlockType == Type.Actor);
+            actor = (MazeActor)(firstActor ?? actor);
 
             //Sets up the original and checkpoint lists.
             foreach (GameObj item in items)
             {
                 ItemsOrig.Add(item.Clone());
                 itemsChkpt.Add(item.Clone());
+            }
+
+            foreach (GameObj item in itemsDecor)
+            {
+                ItemsDecorOrig.Add(item.Clone());
             }
 
             //Clears any paused status.
@@ -386,6 +393,7 @@ namespace EnduranceTheMaze
 
             //Creates a temporary item list.
             List<GameObj> itemsTemp = new List<GameObj>();
+            List<GameObj> decorTemp = new List<GameObj>();
 
             for (int i = 0; i < strItems.Count; i++)
             {
@@ -456,13 +464,21 @@ namespace EnduranceTheMaze
                         tempBlock.IsEnabled = tempEnabled;
                         tempBlock.CustStr =
                             strBlock[12].Replace("\t", ",");
-                        itemsTemp.Add(tempBlock);
+
+                        if (tempBlock.IsDecor)
+                        {
+                            decorTemp.Add(tempBlock);
+                        }
+                        else
+                        {
+                            itemsTemp.Add(tempBlock);
+                        }
                     }
                 }
             }
 
             //Preps the level for gameplay.
-            LevelStart(itemsTemp);
+            LevelStart(itemsTemp, decorTemp);
 
             //Closes resources.
             stream.Close();
@@ -494,20 +510,18 @@ namespace EnduranceTheMaze
         /// <param name="item">The item to add.</param>
         public void AddItem(GameObj item)
         {
-            List<GameObj> newItems = new List<GameObj>(items);
-            newItems.Add(item);
-            items = newItems;
-        }
-
-        /// <summary>
-        /// Equivalent of itemsDecor.Add(), but also works in loops.
-        /// </summary>
-        /// <param name="item">The item to add.</param>
-        public void AddDecor(GameObj item)
-        {
-            List<GameObj> newItems = new List<GameObj>(itemsDecor);
-            newItems.Add(item);
-            itemsDecor = newItems;
+            if (item.IsDecor)
+            {
+                List<GameObj> newItems = new List<GameObj>(itemsDecor);
+                newItems.Add(item);
+                itemsDecor = newItems;
+            }
+            else
+            {
+                List<GameObj> newItems = new List<GameObj>(items);
+                newItems.Add(item);
+                items = newItems;
+            }
         }
 
         /// <summary>
@@ -518,38 +532,34 @@ namespace EnduranceTheMaze
         {
             List<GameObj> newItems = new List<GameObj>();
 
-            //Creates a shallow copy of the original list by copying all
-            //objects except for the specified one.
-            foreach (GameObj currentItem in items)
+            if (item.IsDecor)
             {
-                if (item != currentItem)
+                //Creates a shallow copy of the original list by copying all
+                //objects except for the specified one.
+                foreach (GameObj currentItem in itemsDecor)
                 {
-                    newItems.Add(currentItem);
-                }                
-            }
-
-            items = newItems;
-        }
-
-        /// <summary>
-        /// Equivalent of items.Remove(), but also works in loops.
-        /// </summary>
-        /// <param name="item">The item to remove.</param>
-        public void RemoveDecor(GameObj item)
-        {
-            List<GameObj> newItems = new List<GameObj>();
-
-            //Creates a shallow copy of the original list by copying all
-            //objects except for the specified one.
-            foreach (GameObj currentItem in itemsDecor)
-            {
-                if (item != currentItem)
-                {
-                    newItems.Add(currentItem);
+                    if (item != currentItem)
+                    {
+                        newItems.Add(currentItem);
+                    }
                 }
-            }
 
-            itemsDecor = newItems;
+                itemsDecor = newItems;
+            }
+            else
+            {
+                //Creates a shallow copy of the original list by copying all
+                //objects except for the specified one.
+                foreach (GameObj currentItem in items)
+                {
+                    if (item != currentItem)
+                    {
+                        newItems.Add(currentItem);
+                    }
+                }
+
+                items = newItems;
+            }
         }
 
         /// <summary>
@@ -784,9 +794,11 @@ namespace EnduranceTheMaze
                         //If nothing is blocking the belt.
                         if (itemsFront.Count == 0)
                         {
-                            //Moves the items on the belt over.
+                            //Moves the items on the belt over and changes their direction.
                             foreach (GameObj itemTop in itemsTop)
                             {
+                                itemTop.BlockDir = belt.BlockDir;
+
                                 //Adds to queues to update in sync.
                                 queueItems.Add(itemTop);
                                 queuePos.Add(new Vector2(
@@ -1075,7 +1087,7 @@ namespace EnduranceTheMaze
             else if (doRestart)
             {
                 doRestart = false;
-                LevelStart(new List<GameObj>(ItemsOrig));
+                LevelStart(new List<GameObj>(ItemsOrig), new List<GameObj>(ItemsDecorOrig));
             }
 
             //Saves a checkpoint if initiated.
@@ -1112,7 +1124,10 @@ namespace EnduranceTheMaze
         public void Draw()
         {
             //Organizes all items by sprite depth.
-            items = items.OrderByDescending(o => o.BlockSprite.depth).ToList();
+            List<GameObj> combinedItems = new List<GameObj>(items.Count + itemsDecor.Count);
+            combinedItems.AddRange(items);
+            combinedItems.AddRange(itemsDecor);
+            combinedItems = combinedItems.OrderByDescending(o => o.BlockSprite.depth).ToList();
 
             //Draws each item.
             Rectangle scrnBounds = game.GetVisibleBounds(Camera, camZoom);
@@ -1164,34 +1179,35 @@ namespace EnduranceTheMaze
                 return;
             }
 
-            foreach (GameObj item in items)
+            foreach (GameObj item in combinedItems)
             {
-                //Renders above/below layers at 25% alpha.
-                if (item.Layer == actor.Layer + 1 ||
-                    item.Layer == actor.Layer - 1)
+                if (item.IsDecor)
                 {
-                    item.BlockSprite.alpha = 0.25f;
+                    if (item.Layer == actor.Layer)
+                    {
+                        item.Draw();
+                    }
                 }
                 else
                 {
-                    item.BlockSprite.alpha = 1;
-                }
+                    //Renders above/below layers at 25% alpha.
+                    if (item.Layer == actor.Layer + 1 ||
+                        item.Layer == actor.Layer - 1)
+                    {
+                        item.BlockSprite.alpha = 0.25f;
+                    }
+                    else
+                    {
+                        item.BlockSprite.alpha = 1;
+                    }
 
-                //Only draws the current, below, and above layers.
-                if (item.Layer == actor.Layer ||
-                    item.Layer == actor.Layer + 1 ||
-                    item.Layer == actor.Layer - 1)
-                {
-                    item.Draw();
-                }
-            }
-
-            // Draws decor (only for current layer).
-            foreach (GameObj item in itemsDecor)
-            {
-                if (item.Layer == actor.Layer)
-                {
-                    item.Draw();
+                    //Only draws the current, below, and above layers.
+                    if (item.Layer == actor.Layer ||
+                        item.Layer == actor.Layer + 1 ||
+                        item.Layer == actor.Layer - 1)
+                    {
+                        item.Draw();
+                    }
                 }
             }
         }

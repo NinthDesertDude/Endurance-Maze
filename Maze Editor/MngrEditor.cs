@@ -2107,7 +2107,9 @@ namespace EnduranceTheMaze
         public void LoadTest()
         {
             //Loads the level from the editor for testing.
-            List<GameObj> items2 = new List<GameObj>();
+            List<GameObj> instancedBlocks = new List<GameObj>();
+            List<GameObj> instancedDecor = new List<GameObj>();
+
             foreach (ImgBlock item in items)
             {
                 GameObj block = Utils.BlockFromType(game,
@@ -2120,10 +2122,19 @@ namespace EnduranceTheMaze
                 block.CustStr = item.CustStr;
                 block.BlockDir = item.BlockDir;
                 block.IsEnabled = item.IsEnabled;
-                items2.Add(block);
+
+                if (block.IsDecor)
+                {
+                    instancedDecor.Add(block);
+                }
+                else
+                {
+                    instancedBlocks.Add(block);
+                }
+                
             }
 
-            game.mngrLvl.LevelStart(items2);
+            game.mngrLvl.LevelStart(instancedBlocks, instancedDecor);
         }
 
         /// <summary>

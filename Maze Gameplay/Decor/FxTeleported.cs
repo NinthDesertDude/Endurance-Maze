@@ -15,8 +15,8 @@ namespace EnduranceTheMaze
         /// <param name="x">The column number.</param>
         /// <param name="y">The row number.</param>
         /// <param name="layer">The layer in the maze.</param>
-        public FxTeleported(MainLoop game, int x, int y, int layer)
-            : base(game, x, y, layer)
+        public FxTeleported(MainLoop game, int x, int y, int layer, Color color)
+            : base(game, x, y, layer, true)
         {
             //Sets default values.
             isSynchronized = true;
@@ -37,14 +37,14 @@ namespace EnduranceTheMaze
 
             BlockSprite.scaleX = 2;
             BlockSprite.scaleY = 2;
-            BlockSprite.color = new(0, 128, 0);
+            BlockSprite.color = color;
             BlockSprite.alpha = 0.5f;
             spriteAtlas.CenterOrigin();
         }
 
         private void RemoveAfterPlayback()
         {
-            game.mngrLvl.RemoveDecor(this);
+            game.mngrLvl.RemoveItem(this);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace EnduranceTheMaze
         public override GameObj Clone()
         {
             //Sets common variables.
-            FxTeleported newBlock = new FxTeleported(game, X, Y, Layer);
+            FxTeleported newBlock = new FxTeleported(game, X, Y, Layer, BlockSprite.color);
             newBlock.ActionIndex = ActionIndex;
             newBlock.ActionIndex2 = ActionIndex2;
             newBlock.ActionType = ActionType;

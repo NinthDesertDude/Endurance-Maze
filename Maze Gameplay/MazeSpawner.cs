@@ -22,7 +22,7 @@ namespace EnduranceTheMaze
         //Relevant assets.
         public static Texture2D TexSpawner { get; private set; }
 
-        //Sprite information.    
+        //Sprite information.
         private SpriteAtlas spriteAtlas;     
 
         /// <summary>Sets the block location and default values.</summary>
@@ -110,12 +110,24 @@ namespace EnduranceTheMaze
                         //Plays a sound when an object is spawned.
                         game.playlist.Play(sndActivated, X, Y);
 
+                        // Animation for when the spawner creates an object
+                        FxPoof pickup;
+                        for (int i = 0; i < 4; i++)
+                        {
+                            pickup = new FxPoof(
+                                game, X * 32, Y * 32, Layer,
+                                new Microsoft.Xna.Framework.Color(255, 255, 255),
+                                (-1 + 2 * Utils.Rng.NextDouble(), -1 + 2 * Utils.Rng.NextDouble()));
+                            pickup.X += -16;
+                            game.mngrLvl.AddItem(pickup);
+                        }
+
                         //Creates different blocks based on action type.
                         game.mngrLvl.AddItem(Utils.BlockFromType(game,
                             (Type)(ActionType - 5),
                             X + (int)Utils.DirVector(BlockDir).X,
                             Y + (int)Utils.DirVector(BlockDir).Y, Layer));
-                    
+
                     }
                 }
             }

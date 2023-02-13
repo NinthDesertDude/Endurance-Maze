@@ -132,6 +132,18 @@ namespace EnduranceTheMaze
             {
                 game.playlist.Play(sndActivated, X, Y);
 
+                // Animation for laser actuator triggering linked items
+                FxPoof poofEffect;
+                for (int i = 0; i < 4; i++)
+                {
+                    poofEffect = new FxPoof(
+                        game, X * 32, Y * 32, Layer,
+                        new Microsoft.Xna.Framework.Color(255, 255, 255),
+                        (-1 + 2 * Utils.Rng.NextDouble(), -1 + 2 * Utils.Rng.NextDouble()));
+                    poofEffect.X += -16;
+                    game.mngrLvl.AddItem(poofEffect);
+                }
+
                 foreach (GameObj item in items)
                 {
                     item.IsActivated = setActivated(item);

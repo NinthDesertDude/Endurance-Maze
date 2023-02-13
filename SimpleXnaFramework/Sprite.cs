@@ -305,60 +305,6 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns whether or not two sprites are colliding (pixel-perfect).
-        /// Does not calculate rotated sprites.
-        /// </summary>
-        /// <param name="spr1">Bounding rectangle of the first sprite.</param>
-        /// <param name="spr2">Bouding rectangle of the second sprite.</param>
-        public static bool IsIntersectingPixels(Sprite sprA, Sprite sprB, MainLoop game)
-        {
-            //Sets up bounding rectangle data.
-            Rectangle rect1 = sprA.rectDest.ToRect();
-            Rectangle rect2 = sprB.rectDest.ToRect();
-
-            //Adjusts the rectangles based on the origin.
-            
-            //Sets up texture color data.
-            Color[] dataA =
-                new Color[sprA.texture.Width * sprA.texture.Height];
-            Color[] dataB =
-                new Color[sprB.texture.Width * sprB.texture.Height];
-
-            //Gets the texture color data.
-            sprA.texture.GetData<Color>(dataA);
-            sprB.texture.GetData<Color>(dataB);
-
-            // Find the bounds of the rectangle intersection
-            int top = Math.Max(rect1.Top, rect2.Top);
-            int bottom = Math.Min(rect1.Bottom, rect2.Bottom);
-            int left = Math.Max(rect1.Left, rect2.Left);
-            int right = Math.Min(rect1.Right, rect2.Right);
-
-            // Check every point within the intersection bounds
-            for (int y = top; y < bottom; y++)
-            {
-                for (int x = left; x < right; x++)
-                {
-                    // Get the color of both pixels at this point
-                    Color colorA = dataA[(x - rect1.Left) +
-                        (y - rect1.Top) * rect1.Width];
-                    Color colorB = dataB[(x - rect2.Left) +
-                        (y - rect2.Top) * rect2.Width];
-
-                    // If the pixels pass a simple alpha check.
-                    if (colorA.A > 2 && colorB.A > 2)
-                    {
-                        // Intersection found.
-                        return true;
-                    }
-                }
-            }
-
-            // No intersection found.
-            return false;
-        }
-
-        /// <summary>
         /// Draws the sprite with a SpriteBatch.
         /// </summary>
         public void Draw(SpriteBatch spriteBatch)

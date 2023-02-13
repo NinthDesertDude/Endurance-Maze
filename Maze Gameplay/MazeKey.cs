@@ -139,6 +139,17 @@ namespace EnduranceTheMaze
                     (items[0] as MazeActor).keys.Add(BlockSprite.color);
                     game.mngrLvl.RemoveItem(this);
                     game.playlist.Play(sndCollectKey, X, Y);
+
+                    // Animation for picking up the key
+                    FxPickup pickup;
+                    int sparkles = 4 + Utils.Rng.Next(4);
+                    for (int i = 0; i < sparkles; i++)
+                    {
+                        pickup = new FxPickup(game, X * 32, Y * 32, Layer, BlockSprite.color);
+                        pickup.X += -16 + Utils.Rng.Next(32);
+                        pickup.Y -= Utils.Rng.Next(10);
+                        game.mngrLvl.AddItem(pickup);
+                    }
                 }
 
             spriteAtlas.Update(true);

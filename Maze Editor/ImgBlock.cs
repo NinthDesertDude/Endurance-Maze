@@ -203,6 +203,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.208f;
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.35f;
+                    BlockSprite.color = CustInt1 == 1 ? MazeCheckpoint.colorChkptOneUse : MazeCheckpoint.colorChkptMultiUse;
                     break;
                 case Type.Click:
                     //Sets sprite information.

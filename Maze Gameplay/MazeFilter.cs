@@ -115,6 +115,18 @@ namespace EnduranceTheMaze
                 //Removes this block from the level.
                 game.mngrLvl.RemoveItem(this);
 
+                // Animation for when the filter object spawns its hidden object
+                FxPoof pickup;
+                for (int i = 0; i < 8; i++)
+                {
+                    pickup = new FxPoof(
+                        game, X * 32, Y * 32, Layer,
+                        new Microsoft.Xna.Framework.Color(128, 128, 255),
+                        (-1 + 2*Utils.Rng.NextDouble(), -1 + 2*Utils.Rng.NextDouble()));
+                    pickup.X += -16;
+                    game.mngrLvl.AddItem(pickup);
+                }
+
                 //Creates different blocks based on action type.
                 if (ActionType > 4)
                 {

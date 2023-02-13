@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -19,6 +21,8 @@ namespace EnduranceTheMaze
     {
         //Relevant assets.
         public static Texture2D TexCheckpoint { get; private set; }
+        public static readonly Color colorChkptOneUse = new(0, 255, 255);
+        public static readonly Color colorChkptMultiUse = new(0, 255, 0);
 
         //Sprite information.    
         private SpriteAtlas spriteAtlas;
@@ -83,6 +87,10 @@ namespace EnduranceTheMaze
         /// </summary>
         public override void Update()
         {
+            // Sets color based on checkpoint behavior.
+            if (CustInt1 == 1) { BlockSprite.color = colorChkptOneUse; }
+            else { BlockSprite.color = colorChkptMultiUse; }
+
             //Gets a list of all actors in the same position.
             List<GameObj> items = game.mngrLvl.items.Where(o =>
                 o.X == X && o.Y == Y && o.Layer == Layer &&
@@ -97,6 +105,22 @@ namespace EnduranceTheMaze
                     if (CustInt1 == 1)
                     {
                         game.mngrLvl.RemoveItem(this);
+                    }
+
+                    // Animation for activating the checkpoint
+                    FxRing pickup;
+                    int sparkles = 6 + Utils.Rng.Next(4);
+                    double angleDifference = (2 * Math.PI) / sparkles;
+
+                    for (int i = 0; i < sparkles; i++)
+                    {
+                        double radianAngle = angleDifference * i;
+                        double ySpeed = Math.Sin(radianAngle);
+                        double xSpeed = Math.Cos(radianAngle);
+
+                        pickup = new FxRing(game, X * 32 + 16, Y * 32 + 16, Layer, (xSpeed, ySpeed),
+                            CustInt1 == 1 ? colorChkptOneUse : colorChkptMultiUse);
+                        game.mngrLvl.AddItem(pickup);
                     }
                 }
 

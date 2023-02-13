@@ -95,6 +95,17 @@ namespace EnduranceTheMaze
                 game.mngrLvl.ActorGoals++;
                 game.mngrLvl.RemoveItem(this);
                 game.playlist.Play(sndCollectGoal, X, Y);
+
+                // Animation for picking up a goal
+                FxPickup pickup;
+                int sparkles = 4 + Utils.Rng.Next(4);
+                for (int i = 0; i < sparkles; i++)
+                {
+                    pickup = new FxPickup(game, X * 32, Y * 32, Layer, new Microsoft.Xna.Framework.Color(128, 255, 128));
+                    pickup.X += -16 + Utils.Rng.Next(32);
+                    pickup.Y -= Utils.Rng.Next(10);
+                    game.mngrLvl.AddItem(pickup);
+                }
             }
 
             spriteAtlas.Update(true);

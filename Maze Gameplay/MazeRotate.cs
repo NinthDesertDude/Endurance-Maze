@@ -157,6 +157,18 @@ namespace EnduranceTheMaze
                     queueItems[i].X = queueItemsX[i];
                     queueItems[i].Y = queueItemsY[i];
                 }
+
+                // Animation for when the rotation object activates
+                FxPoof pickup;
+                for (int i = 0; i < 4; i++)
+                {
+                    pickup = new FxPoof(
+                        game, X * 32, Y * 32, Layer,
+                        new Microsoft.Xna.Framework.Color(128, 255, 128),
+                        (-1 + 2*Utils.Rng.NextDouble(), -1 + 2*Utils.Rng.NextDouble()));
+                    pickup.X += -16;
+                    game.mngrLvl.AddItem(pickup);
+                }
             }
 
             spriteAtlas.Update(true);

@@ -87,6 +87,7 @@ namespace EnduranceTheMaze
                 //Removes the crate and spawns the contained item, if any.
                 game.mngrLvl.RemoveItem(this);
 
+                // Animation for crate breaking
                 FxCrateBroken snap1 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpLeft };
                 FxCrateBroken snap2 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpRight };
                 FxCrateBroken snap3 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.DownLeft };

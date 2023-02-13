@@ -53,10 +53,26 @@ namespace EnduranceTheMaze
             }
         }
 
-        //Block location.
         private int _x;
         private int _y;
         private int _layer;
+        private Dir _dir = Dir.Right;
+        private bool _isSolid;
+        private bool _isEnabled;
+        private bool _isVisible;
+        private bool _isDecor;
+        private int _actionIndex = -1;
+        private int _actionType = -1;
+        private int _actionIndex2 = -1;
+        private bool _isActivated = false;
+        private int _custInt1 = 0;
+        private int _custInt2 = 0;
+        private string _custStr = "";
+
+        /// <summary>
+        /// The x-location. If <see cref="isSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// the position of the tile.
+        /// </summary>
         public virtual int X
         {
             get
@@ -69,6 +85,11 @@ namespace EnduranceTheMaze
                 _x = value;
             }
         }
+
+        /// <summary>
+        /// The y-location. If <see cref="isSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// the position of the tile.
+        /// </summary>
         public virtual int Y
         {
             get
@@ -81,6 +102,10 @@ namespace EnduranceTheMaze
                 _y = value;
             }
         }
+
+        /// <summary>
+        /// The layer of the maze that the object is on.
+        /// </summary>
         public virtual int Layer
         {
             get
@@ -94,14 +119,20 @@ namespace EnduranceTheMaze
             }
         }
 
-        //If synchronized, it's drawn to the grid.
+        /// <summary>
+        /// When true, the X,Y location provided is multiplied by the universal tile size (to support e.g. O(1) access
+        /// by X,Y position). When false, the X,Y coordinates should be multiplied by the tile size manually.
+        /// </summary>
         public bool isSynchronized;
 
-        //Block identity by type.
+        /// <summary>
+        /// Block identity by type.
+        /// </summary>
         public Type BlockType { get; internal set; }
 
-        //Block's facing direction.
-        private Dir _dir = Dir.Right;
+        /// <summary>
+        /// The direction that the block faces (if applicable).
+        /// </summary>
         public virtual Dir BlockDir
         {
             get
@@ -115,10 +146,9 @@ namespace EnduranceTheMaze
             }
         }
 
-        //Can items pass through, is it enabled/visible?
-        private bool _isSolid;
-        private bool _isEnabled;
-        private bool _isVisible;
+        /// <summary>
+        /// Solid objects generally can't occupy the same space, and are affected by some objects and not others.
+        /// </summary>
         public virtual bool IsSolid
         {
             get
@@ -131,6 +161,10 @@ namespace EnduranceTheMaze
                 _isSolid = value;
             }
         }
+
+        /// <summary>
+        /// Some blocks can be enabled or disabled and change behavior based on that.
+        /// </summary>
         public virtual bool IsEnabled
         {
             get
@@ -143,6 +177,10 @@ namespace EnduranceTheMaze
                 _isEnabled = value;
             }
         }
+
+        /// <summary>
+        /// If invisible, the block will not be drawn. It otherwise functions as normal.
+        /// </summary>
         public virtual bool IsVisible
         {
             get
@@ -156,11 +194,26 @@ namespace EnduranceTheMaze
             }
         }
 
-        //Block activation.
-        private int _actionIndex = -1; //The activation channel.
-        private int _actionType = -1; //The activation behavior.
-        private int _actionIndex2 = -1; //The channel to activate (actuators).
-        private bool _isActivated = false; //If the block is activated.
+        /// <summary>
+        /// If true, all routines that add blocks should add this as a decor item, for performance. Decor items are not
+        /// always drawn and do not call update().
+        /// </summary>
+        public virtual bool IsDecor
+        {
+            get
+            {
+                return _isDecor;
+            }
+
+            internal set
+            {
+                _isDecor = value;
+            }
+        }
+
+        /// <summary>
+        /// The activation channel: this block becomes activated only if an actuator activates on the same channel.
+        /// </summary>
         public virtual int ActionIndex
         {
             get
@@ -173,6 +226,10 @@ namespace EnduranceTheMaze
                 _actionIndex = value;
             }
         }
+
+        /// <summary>
+        /// The activation behavior: this is what happens if the block is activated.
+        /// </summary>
         public virtual int ActionType
         {
             get
@@ -185,6 +242,10 @@ namespace EnduranceTheMaze
                 _actionType = value;
             }
         }
+
+        /// <summary>
+        /// The actuation channel: if this block can activate other blocks, it will activate the ones on this channel.
+        /// </summary>
         public virtual int ActionIndex2
         {
             get
@@ -197,6 +258,10 @@ namespace EnduranceTheMaze
                 _actionIndex2 = value;
             }
         }
+
+        /// <summary>
+        /// If the block is currently activated. Some blocks only activate once and turn off, others stay activated.
+        /// </summary>
         public virtual bool IsActivated
         {
             get
@@ -210,9 +275,9 @@ namespace EnduranceTheMaze
             }
         }
 
-        //Custom properties for blocks. They're virtual for properties.
-        private int _custInt1 = 0, _custInt2 = 0;
-        private string _custStr = "";
+        /// <summary>
+        /// Custom properties are used differently by different block types, usually to determine how they behave.
+        /// </summary>
         public virtual int CustInt1
         {
             get
@@ -225,6 +290,10 @@ namespace EnduranceTheMaze
                 _custInt1 = value;
             }
         }
+
+        /// <summary>
+        /// Custom properties are used differently by different block types, usually to determine how they behave.
+        /// </summary>
         public virtual int CustInt2
         {
             get
@@ -237,6 +306,10 @@ namespace EnduranceTheMaze
                 _custInt2 = value;
             }
         }
+
+        /// <summary>
+        /// A custom string property, used only by certain block types.
+        /// </summary>
         public virtual string CustStr
         {
             get
@@ -256,7 +329,7 @@ namespace EnduranceTheMaze
         /// <param name="x">The column number.</param>
         /// <param name="y">The row number.</param>
         /// <param name="layer">The layer in the maze.</param>
-        public GameObj(MainLoop game, int x, int y, int layer)
+        public GameObj(MainLoop game, int x, int y, int layer, bool isDecor = false)
         {
             this.game = game;
             this.X = x;
@@ -266,6 +339,7 @@ namespace EnduranceTheMaze
             IsEnabled = true;
             IsVisible = true;
             isSynchronized = true;
+            IsDecor = isDecor;
         }
 
         /// <summary>
@@ -320,20 +394,7 @@ namespace EnduranceTheMaze
                     game.mngrLvl.RemoveItem(this);
                     game.playlist.Play(sndActivated, X, Y);
                 }
-            }/*
-            else
-            {
-                if (actionType == 0 && !isVisible)
-                {
-                    isVisible = true;
-                    game.playlist.Play(sndActivated, x, y);
-                }
-                else if (actionType == 1 && !isEnabled)
-                {
-                    isEnabled = true;
-                    game.playlist.Play(sndActivated, x, y);
-                }
-            }*/
+            }
 
             //Synchronizes sprite position to location.
             if (isSynchronized)

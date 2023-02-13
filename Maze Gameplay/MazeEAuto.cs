@@ -127,6 +127,18 @@ namespace EnduranceTheMaze
                     hasActivated = true;
                     game.playlist.Play(sndActivateAuto, X, Y);
 
+                    // Animation for when the EAuto activates
+                    FxPoof pickup;
+                    for (int i = 0; i < 2; i++)
+                    {
+                        pickup = new FxPoof(
+                            game, X * 32, Y * 32, Layer,
+                            new Microsoft.Xna.Framework.Color(255, 255, 255),
+                            (-0.5 + Utils.Rng.NextDouble(), -0.5 + Utils.Rng.NextDouble()));
+                        pickup.X += -16;
+                        game.mngrLvl.AddItem(pickup);
+                    }
+
                     //Gets all items matching the index to affect.
                     List<GameObj> items = game.mngrLvl.items.Where(o =>
                         o.ActionIndex == ActionIndex2).ToList();
