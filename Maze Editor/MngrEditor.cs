@@ -703,6 +703,10 @@ namespace EnduranceTheMaze
                         (game.MsState.ScrollWheelValue >
                         game.MsStateOld.ScrollWheelValue))
                     {
+                        // If the window is fullscreened and OpenFileDialog is used, the game hangs (white screen, unresponsive).
+                        bool abortFullscreen = game.FullscreenHandler.IsFullscreen;
+                        if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
+
                         //Opens a file to determine it exists. If so, uses
                         OpenFileDialog diag = new OpenFileDialog();
 
@@ -718,6 +722,8 @@ namespace EnduranceTheMaze
                         {
                             opLvlLink = diag.FileName;
                         }
+
+                        if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
                     }
 
                     //Right clicking or scrolling down.
@@ -2260,6 +2266,10 @@ namespace EnduranceTheMaze
         /// </summary>
         public bool LoadEdit()
         {
+            // If the window is fullscreened and OpenFileDialog is used, the game hangs (white screen, unresponsive).
+            bool abortFullscreen = game.FullscreenHandler.IsFullscreen;
+            if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
+
             //Creates a dialog to display.
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "Level files (*.lvl)|*.lvl|txt files (*.txt)|*.txt";
@@ -2267,9 +2277,11 @@ namespace EnduranceTheMaze
             //If a result is chosen from the dialog.
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
                 return LoadEdit(dlg.FileName);
             }
 
+            if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
             return false;
         }
 
@@ -2279,6 +2291,10 @@ namespace EnduranceTheMaze
         /// <param name="path">The path and filename.</param>
         public void LevelSave()
         {
+            // If the window is fullscreened and SaveFileDialog is used, the game hangs (white screen, unresponsive).
+            bool abortFullscreen = game.FullscreenHandler.IsFullscreen;
+            if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
+
             //Creates a stream object.
             Stream stream;
 
@@ -2331,6 +2347,8 @@ namespace EnduranceTheMaze
                     stream.Close();
                 }
             }
+
+            if (abortFullscreen) { game.FullscreenHandler.ToggleFullscreen(); }
         }
     }
 }

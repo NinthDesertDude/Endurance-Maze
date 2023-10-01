@@ -840,8 +840,6 @@ namespace EnduranceTheMaze
                     }
                     else
                     {
-                        item.BlockDir = Utils.DirOpp(item.BlockDir);
-
                         //Damages all actors it bounces off of.
                         foreach (GameObj item2 in itemsFront)
                         {
@@ -852,6 +850,39 @@ namespace EnduranceTheMaze
                                 game.playlist.Play(sndHit, item.X, item.Y);
                             }
                         }
+
+                        // Animation for bouncing off.
+                        int xOffset = -4;
+                        int yOffset = -4;
+                        Vector2 itemDirVector = Utils.DirVector(item.BlockDir);
+                        if (itemDirVector.Y < 0) { xOffset += 16; }
+                        else if (itemDirVector.Y > 0) { xOffset += 16; yOffset += 32; }
+                        if (itemDirVector.X < 0) { yOffset += 16; }
+                        else if (itemDirVector.X > 0) { xOffset += 32; yOffset += 16; }
+                        if (!Utils.DirCardinal(item.BlockDir))
+                        {
+                            xOffset -= 16;
+                            yOffset -= 16;
+                        }
+
+                        Vector2 ring1Speed = Utils.DirVector(Utils.DirNext(item.BlockDir));
+
+                        FxRing ring1 = new FxRing(
+                            game,
+                            item.X * 32 + xOffset,
+                            item.Y * 32 + yOffset,
+                            item.Layer, (ring1Speed.X, ring1Speed.Y), Color.Gray, 0.06f);
+                        AddItem(ring1);
+                        Vector2 ring2Speed = Utils.DirVector(Utils.DirPrev(item.BlockDir));
+                        FxRing ring2 = new FxRing(
+                            game,
+                            item.X * 32 + xOffset,
+                            item.Y * 32 + yOffset,
+                            item.Layer, (ring2Speed.X, ring2Speed.Y), Color.Gray, 0.06f);
+                        AddItem(ring2);
+
+                        // Updates enemy direction.
+                        item.BlockDir = Utils.DirOpp(item.BlockDir);
                     }
                 }
                 #endregion

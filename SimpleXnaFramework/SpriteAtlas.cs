@@ -375,6 +375,5 @@ namespace EnduranceTheMaze
                 sprite.rectSrc.Y += frameOffsetV * (sprite.rectSrc.Y / frameHeight);
             }
         }
-
     }
 }
