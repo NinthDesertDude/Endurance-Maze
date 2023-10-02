@@ -1,6 +1,8 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -97,6 +99,25 @@ namespace EnduranceTheMaze
                     foreach (GameObj item in items)
                     {
                         item.IsEnabled = true;
+                    }
+
+                    // Animation for activating/picking up the thaw object
+                    FxRing pickup;
+                    int sparkles = 12 + Utils.Rng.Next(12);
+                    double angleDifference = (2 * Math.PI) / sparkles;
+
+                    for (int i = 0; i < sparkles; i++)
+                    {
+                        double radianAngle = angleDifference * i;
+                        double ySpeed = Math.Sin(radianAngle);
+                        double xSpeed = Math.Cos(radianAngle);
+                        if (i % 2 == 0) { xSpeed *= 2; ySpeed *= 2; }
+
+                        pickup = new FxRing(game, X * 32 + 16, Y * 32 + 16, Layer, (xSpeed, ySpeed),
+                            i % 2 == 0
+                            ? Color.OrangeRed
+                            : Color.Red);
+                        game.mngrLvl.AddItem(pickup);
                     }
 
                     game.mngrLvl.RemoveItem(this);

@@ -42,6 +42,15 @@ namespace EnduranceTheMaze
         private int isHurtCountdownStart = 8;
         private int isHurtCountdown = 0;
 
+        // Each direction has 3 step stages for animation (0,1,0,2) and this tracks it to help simulate a sense of movement.
+        // This value increments from 0 to 3, but when it's 2 it's treated the same as 0.
+
+        // Provides a walking animation for the actor. When they move due to player input, animatedStep increments from
+        // 0-3, which is added to the frame as 0,1,0,2 respectively. On last movement, stoppedMovementTimer is set to a
+        // number and decrements each update tick until it resets the animatedStep at zero.
+        private int animatedStep = 0;
+        private int stoppedMovingTimer = 0;
+
         /// <summary>Sets the block location and default values.</summary>
         /// <param name="x">The column number.</param>
         /// <param name="y">The row number.</param>
@@ -65,7 +74,7 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexActor);
             BlockSprite.depth = 0.1f;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 6, 2, 3);
+            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 18, 2, 9);
 
             //Sets the initial position.
             BlockSprite.rectDest.X = x * 32;
@@ -119,31 +128,38 @@ namespace EnduranceTheMaze
         public override void Update()
         {
             #region Updates the sprite.
+            if (stoppedMovingTimer > 0)
+            {
+                stoppedMovingTimer--;
+                if (stoppedMovingTimer == 0)
+                {
+                    animatedStep = 0;
+                }
+            }
+            int animStepOffset = animatedStep == 2 ? 0 : animatedStep == 3 ? 2 : animatedStep;
+            int frameoffset = (this == game.mngrLvl.actor) ? animStepOffset : animStepOffset + 9; // 9 is the clone sprite.
+
             //Updates the actor sprite by direction.
             //Depends on the texture frames and orientation.
             if (BlockDir == Dir.Right)
             {
-                spriteAtlas.frame = 0;
+                spriteAtlas.frame = frameoffset;
                 BlockSprite.spriteEffects = SpriteEffects.None;
             }
             else if (BlockDir == Dir.Down)
             {
-                spriteAtlas.frame = 1;
+                spriteAtlas.frame = frameoffset + 3;
                 BlockSprite.spriteEffects = SpriteEffects.None;
             }
             else if (BlockDir == Dir.Left)
             {
-                spriteAtlas.frame = 0;
+                spriteAtlas.frame = frameoffset;
                 BlockSprite.spriteEffects = SpriteEffects.FlipHorizontally;
             }
             else
             {
-                spriteAtlas.frame = 2;
+                spriteAtlas.frame = frameoffset + 6;
                 BlockSprite.spriteEffects = SpriteEffects.None;
-            }
-            if (this == game.mngrLvl.actor)
-            {
-                spriteAtlas.frame += 3;
             }
             #endregion
 
@@ -633,6 +649,10 @@ namespace EnduranceTheMaze
                             game.mngrLvl.RemoveItem(bullets[i]);
                         }
                         #endregion
+
+                        animatedStep++;
+                        stoppedMovingTimer = 25;
+                        if (animatedStep > 3) { animatedStep = 0; }
 
                         X += (int)Utils.DirVector(BlockDir).X;
                         Y += (int)Utils.DirVector(BlockDir).Y;

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using static System.Net.Mime.MediaTypeNames;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
 namespace EnduranceTheMaze
@@ -970,6 +969,21 @@ namespace EnduranceTheMaze
                 //Updates all moved blocks in sync.
                 for (int i = 0; i < queueItems.Count; i++)
                 {
+                    // Animation for sliding on ice.
+                    FxRing dust;
+                    var dirVector = Utils.DirVector(Utils.DirOpp(queueItems[i].BlockDir));
+
+                    for (int j = 0; j < 2 + Utils.Rng.Next(2); j++)
+                    {
+                        dust = new FxRing(game,
+                            queueItems[i].X * 32 + 8 + Utils.Rng.Next(16),
+                            queueItems[i].Y * 32 + 8 + Utils.Rng.Next(16),
+                            queueItems[i].Layer, (0, 0), Color.White, 0.06f + Utils.Rng.Next(3)/100f);
+                        dust.BlockSprite.scaleY = 0.05f + Utils.Rng.Next(10)/100f;
+                        dust.BlockSprite.scaleX = 0.05f + Utils.Rng.Next(10)/100f;
+                        game.mngrLvl.AddItem(dust);
+                    }
+
                     queueItems[i].X += (int)queuePos[i].X;
                     queueItems[i].Y += (int)queuePos[i].Y;
                 }
