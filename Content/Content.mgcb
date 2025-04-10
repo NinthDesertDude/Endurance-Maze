@@ -483,18 +483,6 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprLaserActuator.png
 
-#begin Content/Sprites/Game/sprLife.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Content/Sprites/Game/sprLife.png
-
 #begin Content/Sprites/Game/sprLock.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -723,6 +711,42 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Gui/sprCopyright.png
 
+#begin Content/Sprites/Gui/sprInGameLevelEditorBg.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Gui/sprInGameLevelEditorBg.png
+
+#begin Content/Sprites/Gui/sprMenuBackground.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Gui/sprMenuBackground.png
+
+#begin Content/Sprites/Gui/sprMenuEditorBackground.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Gui/sprMenuEditorBackground.png
+
 #begin Content/Sprites/Gui/sprMenuHud.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -771,19 +795,19 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Gui/sprMenuInfo3.png
 
-#begin Content/Sprites/Gui/sprMenuOptions.png
+#begin Content/Sprites/Gui/sprMenuLevelsBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=False
+/processorParam:ColorKeyEnabled=True
 /processorParam:GenerateMipmaps=False
 /processorParam:PremultiplyAlpha=True
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Content/Sprites/Gui/sprMenuOptions.png
+/build:Content/Sprites/Gui/sprMenuLevelsBackground.png
 
-#begin Content/Sprites/Gui/sprMenuTitle.png
+#begin Content/Sprites/Gui/sprMenuMainBackground.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -793,7 +817,19 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Content/Sprites/Gui/sprMenuTitle.png
+/build:Content/Sprites/Gui/sprMenuMainBackground.png
+
+#begin Content/Sprites/Gui/SprOpEmpty.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Gui/SprOpEmpty.png
 
 #begin Content/Sprites/Gui/sprOpGameDelay.png
 /importer:TextureImporter

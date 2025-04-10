@@ -24,12 +24,13 @@ namespace EnduranceTheMaze
         //Relevant assets.
         public static SoundEffect sndHit, sndFinish, sndWin, sndCheckpoint;
 
+        public static Texture2D TexInGameLevelEditorBg { get; private set; }
         public static Texture2D TexPixel { get; private set; }
         public static Texture2D TexMenuHud { get; private set; }
         public static Texture2D TexFx { get; private set; }
 
         //HUD assets (sprites and text).
-        private Sprite sprHudOverlay, sprMenuHud;
+        private Sprite sprInGameLevelEditorBg, sprHudOverlay, sprMenuHud;
         public string tooltip = "";
 
         /* Descriptions:
@@ -155,7 +156,7 @@ namespace EnduranceTheMaze
         /// <param name="game">The game instance to use.</param>
         public MngrLvl(MainLoop game)
         {
-            this.game = game;            
+            this.game = game;
 
             //Sets default level option values.
             opSyncDeath = false;
@@ -191,10 +192,15 @@ namespace EnduranceTheMaze
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
+            var screenOffset = game.FullscreenHandler.GetCurrentOffset();
+            var screenSize = game.GetScreenSize();
+            sprInGameLevelEditorBg.rectDest.X = screenOffset.Item1;
+            sprInGameLevelEditorBg.rectDest.Y = screenOffset.Item2;
+
             sprHudOverlay.rectDest = new SmoothRect
-                (0, game.GetScreenSize().Y - 32, game.GetScreenSize().X, 32);
+                (0, screenSize.Y - 32, screenSize.X, 32);
             sprMenuHud.rectDest = new SmoothRect
-                (0, game.GetScreenSize().Y - 32, 64, 32);
+                (0, screenSize.Y - 32, 64, 32);
         }
 
         ///<summary>
@@ -215,6 +221,9 @@ namespace EnduranceTheMaze
             TexFx = game.Content.Load<Texture2D>("Content/Sprites/Game/sprFx");
 
             //Sets up hud sprites.
+            TexInGameLevelEditorBg = Content.Load<Texture2D>("Content/Sprites/Gui/sprInGameLevelEditorBg");
+            sprInGameLevelEditorBg = new Sprite(true, TexInGameLevelEditorBg);
+
             sprHudOverlay = new Sprite(true, TexPixel);
             sprHudOverlay.color = Color.Gray;
             sprHudOverlay.alpha = 0.5f;
@@ -224,10 +233,10 @@ namespace EnduranceTheMaze
             sprMenuHud = new Sprite(true, TexMenuHud);
             sprMenuHud.rectDest = new SmoothRect
                 (0, game.GetScreenSize().Y - 32, 64, 32);
-            
+
             //Loads all maze block textures.
             GameObj._LoadContent(game.Content); //base class.
-            MazeActor.LoadContent(game.Content);            
+            MazeActor.LoadContent(game.Content);
             MazeBelt.LoadContent(game.Content);
             MazeCoin.LoadContent(game.Content);
             MazeCoinLock.LoadContent(game.Content);
@@ -452,7 +461,7 @@ namespace EnduranceTheMaze
 
                         //Creates and adds the block with the values.
                         tempBlock = Utils.BlockFromType(game, tempType,
-                            tempX, tempY, tempLayer);                                
+                            tempX, tempY, tempLayer);
                         tempBlock.ActionIndex = tempAInd;
                         tempBlock.ActionIndex2 = tempAInd2;
                         tempBlock.ActionType = tempAType;
@@ -492,7 +501,7 @@ namespace EnduranceTheMaze
             return Vector2.Transform
                 (new Vector2(x, y), Matrix.Invert(Camera));
         }
-        
+
         /// <summary>
         /// Returns the mouse coordinates converted from view space to
         /// world space, to work with the camera matrix.
@@ -978,9 +987,9 @@ namespace EnduranceTheMaze
                         dust = new FxRing(game,
                             queueItems[i].X * 32 + 8 + Utils.Rng.Next(16),
                             queueItems[i].Y * 32 + 8 + Utils.Rng.Next(16),
-                            queueItems[i].Layer, (0, 0), Color.White, 0.06f + Utils.Rng.Next(3)/100f);
-                        dust.BlockSprite.scaleY = 0.05f + Utils.Rng.Next(10)/100f;
-                        dust.BlockSprite.scaleX = 0.05f + Utils.Rng.Next(10)/100f;
+                            queueItems[i].Layer, (0, 0), Color.White, 0.06f + Utils.Rng.Next(3) / 100f);
+                        dust.BlockSprite.scaleY = 0.05f + Utils.Rng.Next(10) / 100f;
+                        dust.BlockSprite.scaleX = 0.05f + Utils.Rng.Next(10) / 100f;
                         game.mngrLvl.AddItem(dust);
                     }
 
@@ -1114,7 +1123,7 @@ namespace EnduranceTheMaze
                 }
                 else //otherwise, reverts to last checkpoint.
                 {
-                     doRevert = true;
+                    doRevert = true;
                 }
             }
             #endregion
@@ -1161,6 +1170,13 @@ namespace EnduranceTheMaze
                 Matrix.CreateTranslation(
                 new Vector3(game.GetScreenSize().X * 0.5f,
                             game.GetScreenSize().Y * 0.5f, 0));
+        }
+        /// <summary>
+        /// Draws any sprites that underlay the rest.
+        /// </summary>
+        public void DrawHudStart()
+        {
+            sprInGameLevelEditorBg.Draw(game.GameSpriteBatch);
         }
 
         /// <summary>

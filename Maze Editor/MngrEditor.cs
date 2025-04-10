@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,7 +21,8 @@ namespace EnduranceTheMaze
         private MainLoop game;
 
         //The bottom toolbar, left sidebar, and block selector.
-        private Sprite sprToolbar, sprSidebar;
+        public static Texture2D TexInGameLevelEditorBg { get; private set; }
+        private Sprite sprInGameLevelEditorBg, sprToolbar, sprSidebar;
         public int sidebarScroll = 0; //Amount of vertical sidebar scrolling.
 
         //Toolbar objects.
@@ -81,7 +83,7 @@ namespace EnduranceTheMaze
             camX = 0;
             camY = 0;
             camLayer = 0;
-            camZoom = 1;
+            camZoom = 1.5f;
 
             //Updates the camera position.
             Camera = Matrix.CreateTranslation(new Vector3(-camX, -camY, 0)) *
@@ -112,26 +114,32 @@ namespace EnduranceTheMaze
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            float yPos = game.GetScreenSize().Y;
-            sprToolbar.rectDest.Width = game.GetScreenSize().X;
-            sprToolbar.rectDest.Y = yPos - 32;
+            var screenOffset = game.FullscreenHandler.GetCurrentOffset();
+            var screenSize = game.GetScreenSize();
+            float yPos = screenSize.Y;
 
-            bttnGameDelay.Pos = new Vector2(bttnGameDelay.Pos.X, yPos - 32);
-            bttnLvlLink.Pos = new Vector2(bttnLvlLink.Pos.X, yPos - 32);
-            bttnMaxSteps.Pos = new Vector2(bttnMaxSteps.Pos.X, yPos - 32);
-            bttnMinGoals.Pos = new Vector2(bttnMinGoals.Pos.X, yPos - 32);
-            bttnSyncActors.Pos = new Vector2(bttnSyncActors.Pos.X, yPos - 32);
-            bttnSyncDeath.Pos = new Vector2(bttnSyncDeath.Pos.X, yPos - 32);
+            sprInGameLevelEditorBg.rectDest.X = screenOffset.Item1;
+            sprInGameLevelEditorBg.rectDest.Y = screenOffset.Item2;
 
-            bttnActionIndex1.Pos = new Vector2(bttnActionIndex1.Pos.X, yPos - 32);
-            bttnActionIndex2.Pos = new Vector2(bttnActionIndex2.Pos.X, yPos - 32);
-            bttnActionType.Pos = new Vector2(bttnActionType.Pos.X, yPos - 32);
-            bttnVal1.Pos = new Vector2(bttnVal1.Pos.X, yPos - 32);
-            bttnVal2.Pos = new Vector2(bttnVal2.Pos.X, yPos - 32);
-            bttnText.Pos = new Vector2(bttnText.Pos.X, yPos - 32);
-            bttnIsEnabled.Pos = new Vector2(bttnIsEnabled.Pos.X, yPos - 32);
-            bttnDir.Pos = new Vector2(bttnDir.Pos.X, yPos - 32);
-            sprSidebar.rectDest.Height = yPos - 32;
+            sprToolbar.rectDest.Width = screenSize.X;
+            sprToolbar.rectDest.Y = yPos - 64;
+
+            bttnGameDelay.Pos = new Vector2(bttnGameDelay.Pos.X, yPos - 64);
+            bttnLvlLink.Pos = new Vector2(bttnLvlLink.Pos.X, yPos - 64);
+            bttnMaxSteps.Pos = new Vector2(bttnMaxSteps.Pos.X, yPos - 64);
+            bttnMinGoals.Pos = new Vector2(bttnMinGoals.Pos.X, yPos - 64);
+            bttnSyncActors.Pos = new Vector2(bttnSyncActors.Pos.X, yPos - 64);
+            bttnSyncDeath.Pos = new Vector2(bttnSyncDeath.Pos.X, yPos - 64);
+
+            bttnActionIndex1.Pos = new Vector2(bttnActionIndex1.Pos.X, yPos - 64);
+            bttnActionIndex2.Pos = new Vector2(bttnActionIndex2.Pos.X, yPos - 64);
+            bttnActionType.Pos = new Vector2(bttnActionType.Pos.X, yPos - 64);
+            bttnVal1.Pos = new Vector2(bttnVal1.Pos.X, yPos - 64);
+            bttnVal2.Pos = new Vector2(bttnVal2.Pos.X, yPos - 64);
+            bttnText.Pos = new Vector2(bttnText.Pos.X, yPos - 64);
+            bttnIsEnabled.Pos = new Vector2(bttnIsEnabled.Pos.X, yPos - 64);
+            bttnDir.Pos = new Vector2(bttnDir.Pos.X, yPos - 64);
+            sprSidebar.rectDest.Height = yPos - 64;
         }
 
         /// <summary>
@@ -183,105 +191,110 @@ namespace EnduranceTheMaze
             //Loads sidebar assets.
             PropButton.LoadContent(game.Content);
 
+            TexInGameLevelEditorBg = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprInGameLevelEditorBg");
+            sprInGameLevelEditorBg = new Sprite(true, TexInGameLevelEditorBg);
+
             //Sets up the bottom toolbar.
             sprToolbar = new Sprite(true, MngrLvl.TexPixel);
             sprToolbar.color = Color.Gray;
             sprToolbar.alpha = 0.5f;
             sprToolbar.rectDest = new SmoothRect(new Vector2(
-                0, game.GetScreenSize().Y - 32),
-                game.GetScreenSize().X, 32);
+                32, game.GetScreenSize().Y - 64),
+                game.GetScreenSize().X, 64);
 
             //Sets up toolbar buttons.
             //Level settings.
             bttnGameDelay = new PropButton(game,
                 new Sprite(true, PropButton.TexOpGameDelay),
-                new Vector2(32, game.GetScreenSize().Y - 32));
+                new Vector2(32, game.GetScreenSize().Y - 64));
             bttnLvlLink = new PropButton(game,
                 new Sprite(true, PropButton.TexOpLvlLink),
-                new Vector2(66, game.GetScreenSize().Y - 32));
+                new Vector2(98, game.GetScreenSize().Y - 64));
             bttnMaxSteps = new PropButton(game,
                 new Sprite(true, PropButton.TexOpMaxSteps),
-                new Vector2(100, game.GetScreenSize().Y - 32));
+                new Vector2(164, game.GetScreenSize().Y - 64));
             bttnMinGoals = new PropButton(game,
                 new Sprite(true, PropButton.TexOpMinGoals),
-                new Vector2(134, game.GetScreenSize().Y - 32));
+                new Vector2(230, game.GetScreenSize().Y - 64));
             bttnSyncActors = new PropButton(game,
                 new Sprite(true, PropButton.TexOpSyncActors),
-                new Vector2(168, game.GetScreenSize().Y - 32));
+                new Vector2(296, game.GetScreenSize().Y - 64));
             bttnSyncDeath = new PropButton(game,
                 new Sprite(true, PropButton.TexOpSyncDeath),
-                new Vector2(202, game.GetScreenSize().Y - 32));
+                new Vector2(362, game.GetScreenSize().Y - 64));
 
             //Active item properties.
             bttnActionIndex1 = new PropButton(game,
                 new Sprite(true, PropButton.TexPropActionInd1),
-                new Vector2(32, game.GetScreenSize().Y - 32));
+                new Vector2(32, game.GetScreenSize().Y - 64));
             bttnActionIndex2 = new PropButton(game,
                 new Sprite(true, PropButton.TexPropActionInd2),
-                new Vector2(66, game.GetScreenSize().Y - 32));
+                new Vector2(98, game.GetScreenSize().Y - 64));
             bttnActionType = new PropButton(game,
                 new Sprite(true, PropButton.TexPropActionType),
-                new Vector2(100, game.GetScreenSize().Y - 32));
+                new Vector2(164, game.GetScreenSize().Y - 64));
             bttnVal1 = new PropButton(game,
                 new Sprite(true, PropButton.TexPropCustInt1),
-                new Vector2(134, game.GetScreenSize().Y - 32));
+                new Vector2(230, game.GetScreenSize().Y - 64));
             bttnVal2 = new PropButton(game,
                 new Sprite(true, PropButton.TexPropCustInt2),
-                new Vector2(168, game.GetScreenSize().Y - 32));
+                new Vector2(296, game.GetScreenSize().Y - 64));
             bttnText = new PropButton(game,
                 new Sprite(true, PropButton.TexPropCustStr),
-                new Vector2(202, game.GetScreenSize().Y - 32));
+                new Vector2(362, game.GetScreenSize().Y - 64));
             bttnIsEnabled = new PropButton(game,
                 new Sprite(true, PropButton.TexPropIsEnabled),
-                new Vector2(236, game.GetScreenSize().Y - 32));
+                new Vector2(428, game.GetScreenSize().Y - 64));
             bttnDir = new PropButton(game,
                 new Sprite(true, PropButton.TexPropDir),
-                new Vector2(268, game.GetScreenSize().Y - 32));
+                new Vector2(492, game.GetScreenSize().Y - 64));
 
             //Sets up the sidebar.
             sprSidebar = new Sprite(true, MngrLvl.TexPixel);
             sprSidebar.color = Color.Gray;
             sprSidebar.alpha = 0.5f;
             sprSidebar.rectDest = new SmoothRect
-                (Vector2.Zero, 32, game.GetScreenSize().Y - 32);
+                (Vector2.Zero, 32, game.GetScreenSize().Y);
 
             //Sets up the selectable blocks.
-            itemTypes = new List<ImgType>();
-            itemTypes.Add(new ImgType(game, Type.Actor));
-            itemTypes.Add(new ImgType(game, Type.Belt));
-            itemTypes.Add(new ImgType(game, Type.Checkpoint));
-            itemTypes.Add(new ImgType(game, Type.Click));
-            itemTypes.Add(new ImgType(game, Type.Coin));
-            itemTypes.Add(new ImgType(game, Type.CoinLock));
-            itemTypes.Add(new ImgType(game, Type.Crate));
-            itemTypes.Add(new ImgType(game, Type.CrateHole));
-            itemTypes.Add(new ImgType(game, Type.EAuto));
-            itemTypes.Add(new ImgType(game, Type.ELight));
-            itemTypes.Add(new ImgType(game, Type.Enemy));
-            itemTypes.Add(new ImgType(game, Type.EPusher));
-            itemTypes.Add(new ImgType(game, Type.Filter));
-            itemTypes.Add(new ImgType(game, Type.Finish));
-            itemTypes.Add(new ImgType(game, Type.Floor));
-            itemTypes.Add(new ImgType(game, Type.Freeze));
-            itemTypes.Add(new ImgType(game, Type.Gate));
-            itemTypes.Add(new ImgType(game, Type.Goal));
-            itemTypes.Add(new ImgType(game, Type.Health));
-            itemTypes.Add(new ImgType(game, Type.Ice));
-            itemTypes.Add(new ImgType(game, Type.Key));
-            itemTypes.Add(new ImgType(game, Type.LaserActuator));
-            itemTypes.Add(new ImgType(game, Type.Lock));
-            itemTypes.Add(new ImgType(game, Type.Message));
-            itemTypes.Add(new ImgType(game, Type.Mirror));
-            itemTypes.Add(new ImgType(game, Type.MultiWay));
-            itemTypes.Add(new ImgType(game, Type.Panel));
-            itemTypes.Add(new ImgType(game, Type.Rotate));
-            itemTypes.Add(new ImgType(game, Type.Spawner));
-            itemTypes.Add(new ImgType(game, Type.Spike));
-            itemTypes.Add(new ImgType(game, Type.Stairs));
-            itemTypes.Add(new ImgType(game, Type.Teleporter));
-            itemTypes.Add(new ImgType(game, Type.Thaw));
-            itemTypes.Add(new ImgType(game, Type.Turret));
-            itemTypes.Add(new ImgType(game, Type.Wall));
+            itemTypes = new List<ImgType>
+            {
+                new(game, Type.Actor),
+                new(game, Type.Wall),
+                new(game, Type.Finish),
+                new(game, Type.Checkpoint),
+                new(game, Type.Floor),
+                new(game, Type.Spike),
+                new(game, Type.Enemy),
+                new(game, Type.Turret),
+                new(game, Type.Belt),
+                new(game, Type.Click),
+                new(game, Type.Coin),
+                new(game, Type.CoinLock),
+                new(game, Type.Crate),
+                new(game, Type.CrateHole),
+                new(game, Type.EAuto),
+                new(game, Type.ELight),
+                new(game, Type.EPusher),
+                new(game, Type.Filter),
+                new(game, Type.Freeze),
+                new(game, Type.Gate),
+                new(game, Type.Goal),
+                new(game, Type.Health),
+                new(game, Type.Ice),
+                new(game, Type.Key),
+                new(game, Type.LaserActuator),
+                new(game, Type.Lock),
+                new(game, Type.Message),
+                new(game, Type.Mirror),
+                new(game, Type.MultiWay),
+                new(game, Type.Panel),
+                new(game, Type.Rotate),
+                new(game, Type.Spawner),
+                new(game, Type.Stairs),
+                new(game, Type.Teleporter),
+                new(game, Type.Thaw)
+            };
         }
 
         /// <summary>
@@ -346,7 +359,7 @@ namespace EnduranceTheMaze
 
                 //If the mouse isn't over the toolbar or sidebar.
                 if (game.MsState.X > 32 && game.MsState.Y <
-                    game.GetScreenSize().Y - 32)
+                    game.GetScreenSize().Y - 64)
                 {
                     //When the mouse is no longer held, resets holding list.
                     if (game.MsState.LeftButton == ButtonState.Released &&
@@ -597,7 +610,7 @@ namespace EnduranceTheMaze
             {
                 //Enables basic zooming.
                 if (game.MsState.X > 32 && game.MsState.Y <
-                    game.GetScreenSize().Y - 32)
+                    game.GetScreenSize().Y - 64)
                 {
                     if (game.MsState.ScrollWheelValue >
                         game.MsStateOld.ScrollWheelValue)
@@ -1404,7 +1417,7 @@ namespace EnduranceTheMaze
 
             //Draws the selector.
             if (game.MsState.X > 32 &&
-                game.MsState.Y < game.GetScreenSize().Y - 32)
+                game.MsState.Y < game.GetScreenSize().Y - 64)
             {
                 int selX = (int)(Math.Round((int)GetCoordsMouse().X / 32f));
                 int selY = (int)(Math.Round((int)GetCoordsMouse().Y / 32f));
@@ -1414,14 +1427,16 @@ namespace EnduranceTheMaze
                 if (game.KbState.IsKeyDown(Keys.LeftControl) ||
                     game.KbState.IsKeyDown(Keys.RightControl))
                 {
-                    blk = new ImgBlock(game, copyType, selX, selY, 0);
-                    blk.ActionIndex = copyActIndex1;
-                    blk.ActionIndex2 = copyActIndex2;
-                    blk.ActionType = copyActType;
-                    blk.CustInt1 = copyCustInt1;
-                    blk.CustInt2 = copyCustInt2;
-                    blk.BlockDir = copyDir;
-                    blk.IsEnabled = copyIsEnabled;
+                    blk = new ImgBlock(game, copyType, selX, selY, 0)
+                    {
+                        ActionIndex = copyActIndex1,
+                        ActionIndex2 = copyActIndex2,
+                        ActionType = copyActType,
+                        CustInt1 = copyCustInt1,
+                        CustInt2 = copyCustInt2,
+                        BlockDir = copyDir,
+                        IsEnabled = copyIsEnabled
+                    };
                 }
                 else
                 {
@@ -1440,6 +1455,14 @@ namespace EnduranceTheMaze
 
                 blk.Draw();
             }
+        }
+
+        /// <summary>
+        /// Draws all sprites below the game that do not shift with the camera.
+        /// </summary>
+        public void DrawHudStart()
+        {
+            sprInGameLevelEditorBg.Draw(game.GameSpriteBatch);
         }
 
         /// <summary>
@@ -1470,23 +1493,23 @@ namespace EnduranceTheMaze
                 bttnGameDelay.Draw(); //Delay in game timer.
                 tempText.text = opGameDelay.ToString();
                 tempText.position = new Vector2(
-                    bttnGameDelay.Pos.X + 16,
-                    bttnGameDelay.Pos.Y + 16);
+                    bttnGameDelay.Pos.X + 32,
+                    bttnGameDelay.Pos.Y + 32);
                 tempText.CenterOrigin();
                 tempText.Draw(game.GameSpriteBatch);
                 bttnLvlLink.Draw(); //Next level to play when completed.
                 bttnMaxSteps.Draw(); //Maximum steps allowed.
                 tempText.text = opMaxSteps.ToString();
                 tempText.position = new Vector2(
-                    bttnMaxSteps.Pos.X + 16,
-                    bttnMaxSteps.Pos.Y + 16);
+                    bttnMaxSteps.Pos.X + 32,
+                    bttnMaxSteps.Pos.Y + 32);
                 tempText.CenterOrigin();
                 tempText.Draw(game.GameSpriteBatch);
                 bttnMinGoals.Draw(); //Minimum goals required.
                 tempText.text = opMinGoals.ToString();
                 tempText.position = new Vector2(
-                    bttnMinGoals.Pos.X + 16,
-                    bttnMinGoals.Pos.Y + 16);
+                    bttnMinGoals.Pos.X + 32,
+                    bttnMinGoals.Pos.Y + 32);
                 tempText.CenterOrigin();
                 tempText.Draw(game.GameSpriteBatch);
                 bttnSyncActors.Draw(); //If all actors copy active movements.
@@ -1499,8 +1522,8 @@ namespace EnduranceTheMaze
                     tempText.text = "off";
                 }
                 tempText.position = new Vector2(
-                    bttnSyncActors.Pos.X + 16,
-                    bttnSyncActors.Pos.Y + 16);
+                    bttnSyncActors.Pos.X + 32,
+                    bttnSyncActors.Pos.Y + 32);
                 tempText.CenterOrigin();
                 tempText.Draw(game.GameSpriteBatch);
                 bttnSyncDeath.Draw(); //If any actor death reverts to chkpt.
@@ -1513,8 +1536,8 @@ namespace EnduranceTheMaze
                     tempText.text = "off";
                 }
                 tempText.position = new Vector2(
-                    bttnSyncDeath.Pos.X + 16,
-                    bttnSyncDeath.Pos.Y + 16);
+                    bttnSyncDeath.Pos.X + 32,
+                    bttnSyncDeath.Pos.Y + 32);
                 tempText.CenterOrigin();
                 tempText.Draw(game.GameSpriteBatch);
                 #endregion
@@ -1557,8 +1580,8 @@ namespace EnduranceTheMaze
                 }
 
                 //Draws the tooltip in the toolbar.
-                game.GameSpriteBatch.DrawString(game.fntDefault, tooltip,
-                    new Vector2(236, (int)game.GetScreenSize().Y - 27),
+                game.GameSpriteBatch.DrawString(game.fntBold, tooltip,
+                    new Vector2(429, (int)game.GetScreenSize().Y - 59),
                     Color.Black);
                 #endregion
             }
@@ -1567,57 +1590,57 @@ namespace EnduranceTheMaze
                 #region Draws active item properties + text.
 
                 //Draws all toolbar buttons with text.
+                bttnActionIndex1.Draw();
+                bttnActionIndex2.Draw();
+                bttnDir.Draw();
+                bttnActionType.Draw();
+                bttnVal1.Draw();
+                bttnVal2.Draw();
+                bttnIsEnabled.Draw();
+                bttnText.Draw();
+
                 if (bttnActionIndex1.IsVisible)
                 {
-                    bttnActionIndex1.Draw();
                     tempText.text = activeItem.ActionIndex.ToString();
                     tempText.position = new Vector2(
-                        bttnActionIndex1.Pos.X + 16,
-                        bttnActionIndex1.Pos.Y + 16);
+                        bttnActionIndex1.Pos.X + 32,
+                        bttnActionIndex1.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
                 }
                 if (bttnActionIndex2.IsVisible)
                 {
-                    bttnActionIndex2.Draw();
                     tempText.text = activeItem.ActionIndex2.ToString();
                     tempText.position = new Vector2(
-                        bttnActionIndex2.Pos.X + 16,
-                        bttnActionIndex2.Pos.Y + 16);
+                        bttnActionIndex2.Pos.X + 32,
+                        bttnActionIndex2.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
                 }
-                if (bttnDir.IsVisible)
-                {
-                    bttnDir.Draw();
-                }
                 if (bttnActionType.IsVisible)
                 {
-                    bttnActionType.Draw();
                     tempText.text = activeItem.ActionType.ToString();
                     tempText.position = new Vector2(
-                        bttnActionType.Pos.X + 16,
-                        bttnActionType.Pos.Y + 16);
+                        bttnActionType.Pos.X + 32,
+                        bttnActionType.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
                 }
                 if (bttnVal1.IsVisible)
                 {
-                    bttnVal1.Draw();
                     tempText.text = activeItem.CustInt1.ToString();
                     tempText.position = new Vector2(
-                        bttnVal1.Pos.X + 16,
-                        bttnVal1.Pos.Y + 16);
+                        bttnVal1.Pos.X + 32,
+                        bttnVal1.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
                 }
                 if (bttnVal2.IsVisible)
                 {
-                    bttnVal2.Draw();
                     tempText.text = activeItem.CustInt2.ToString();
                     tempText.position = new Vector2(
-                        bttnVal2.Pos.X + 16,
-                        bttnVal2.Pos.Y + 16);
+                        bttnVal2.Pos.X + 32,
+                        bttnVal2.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
                 }
@@ -1632,16 +1655,11 @@ namespace EnduranceTheMaze
                         tempText.text = "off";
                     }
 
-                    bttnIsEnabled.Draw();
                     tempText.position = new Vector2(
-                        bttnIsEnabled.Pos.X + 16,
-                        bttnIsEnabled.Pos.Y + 16);
+                        bttnIsEnabled.Pos.X + 32,
+                        bttnIsEnabled.Pos.Y + 32);
                     tempText.CenterOrigin();
                     tempText.Draw(game.GameSpriteBatch);
-                }
-                if (bttnText.IsVisible)
-                {
-                    bttnText.Draw();
                 }
                 #endregion
                 #region Draws active block properties based on values.
@@ -2100,8 +2118,8 @@ namespace EnduranceTheMaze
                 #endregion
 
                 //Draws the tooltip in the toolbar after buttons.
-                game.GameSpriteBatch.DrawString(game.fntDefault, tooltip,
-                    new Vector2(302, (int)game.GetScreenSize().Y - 27),
+                game.GameSpriteBatch.DrawString(game.fntBold, tooltip,
+                    new Vector2(561, (int)game.GetScreenSize().Y - 59),
                     Color.Black);
             }
         }

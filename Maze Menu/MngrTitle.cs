@@ -1,7 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
@@ -22,17 +20,20 @@ namespace EnduranceTheMaze
 
         //Relevant assets.
         private static Texture2D TexCopyright;
+        public static Texture2D TexMenuBackground { get; private set; }
+        public static Texture2D TexBgMenuMain { get; private set; }
+        public static Texture2D TexBgMenuLevelEditor { get; private set; }
+        public static Texture2D TexBgMenuLevels { get; private set; }
         public static Texture2D TexBttnMain { get; private set; }
         public static Texture2D TexBttnEdit { get; private set; }
         public static Texture2D TexBttnCmpgn { get; private set; }
-        public static Texture2D TexMenuTitle { get; private set; }
         public static Texture2D TexMenuOptions { get; private set; }
         public static Texture2D TexMenuInfo1 { get; private set; }
         public static Texture2D TexMenuInfo2 { get; private set; }
         public static Texture2D TexMenuInfo3 { get; private set; }
 
-        //The title, options section, and how to play.
-        private Sprite sprCopyright, sprTitle, sprMenuOptions, sprMenuInfo;
+        private Sprite sprCopyright, sprMenuInfo;
+        private Sprite sprMenuBackground, sprMenuEditorBgDecor, sprMenuMainBgDecor, sprMenuLevelsBgDecor;
 
         //The menu buttons.
         private TitleItemMain bttnCampaign, bttnLevelEditor, bttnHowToPlay,
@@ -52,7 +53,6 @@ namespace EnduranceTheMaze
         /// <summary>
         /// Refreshes whether test, save, and clear are enabled or not based on level validity.
         /// </summary>
-        /// <param name="isValid"></param>
         public void RefreshButtonState(bool isValid)
         {
             // Disables buttons when returning to the editor, depending on the level state.
@@ -83,6 +83,12 @@ namespace EnduranceTheMaze
         {
             var screenOffset = game.FullscreenHandler.GetCurrentOffset();
 
+            sprMenuBackground.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuBackground.rectDest.Height / 2);
+            sprMenuBackground.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuBackground.rectDest.Width / 2);
+
+            sprMenuMainBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuMainBgDecor.rectDest.Height / 2);
+            sprMenuMainBgDecor.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuMainBgDecor.rectDest.Width / 2) - 10;
+
             bttnCampaign.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
             bttnLevelEditor.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
             bttnHowToPlay.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
@@ -101,6 +107,9 @@ namespace EnduranceTheMaze
             bttnQuit.BttnSprite.rectDest.Y = screenOffset.Item2 + 418;
             bttnBack.BttnSprite.rectDest.Y = screenOffset.Item2;
 
+            sprMenuEditorBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuEditorBgDecor.rectDest.Height / 2);
+            sprMenuEditorBgDecor.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuEditorBgDecor.rectDest.Width / 2);
+
             bttnEdit.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
             bttnTest.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
             bttnSave.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
@@ -112,6 +121,9 @@ namespace EnduranceTheMaze
             bttnSave.BttnSprite.rectDest.Y = screenOffset.Item2 + 188;
             bttnLoad.BttnSprite.rectDest.Y = screenOffset.Item2 + 234;
             bttnClear.BttnSprite.rectDest.Y = screenOffset.Item2 + 280;
+
+            sprMenuLevelsBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuLevelsBgDecor.rectDest.Height / 2);
+            sprMenuLevelsBgDecor.rectDest.X = screenOffset.Item1;
 
             bttnCmpgnEasy.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
             bttnCmpgnNormal.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
@@ -126,10 +138,6 @@ namespace EnduranceTheMaze
             sprCopyright.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight - 16;
             sprCopyright.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprCopyright.rectDest.Width / 2);
 
-            sprTitle.rectDest.X = screenOffset.Item1 + 194;
-            sprTitle.rectDest.Y = screenOffset.Item2 + 8;
-            sprMenuOptions.rectDest.X = screenOffset.Item1 + 203;
-            sprMenuOptions.rectDest.Y = screenOffset.Item2 + 248;
             sprMenuInfo.rectDest.X = screenOffset.Item1;
             sprMenuInfo.rectDest.Y = screenOffset.Item2 + 28;
         }
@@ -148,11 +156,13 @@ namespace EnduranceTheMaze
 
             //Sets up relevant textures.
             TexCopyright = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprCopyright");
-            TexMenuTitle = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuTitle");
-            TexMenuOptions = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuOptions");
             TexMenuInfo1 = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuInfo1");
             TexMenuInfo2 = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuInfo2");
             TexMenuInfo3 = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuInfo3");
+            TexMenuBackground = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuBackground");
+            TexBgMenuLevelEditor = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuEditorBackground");
+            TexBgMenuMain = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuMainBackground");
+            TexBgMenuLevels = game.Content.Load<Texture2D>("Content/Sprites/Gui/sprMenuLevelsBackground");
 
             //Creates buttons after the textures have loaded.
             bttnCampaign = new TitleItemMain(game, TexBttnMain, 0);
@@ -176,8 +186,10 @@ namespace EnduranceTheMaze
             bttnCmpgnDoom = new TitleItemCmpgn(game, TexBttnCmpgn, 360, 332, 3);
 
             sprCopyright = new Sprite(true, TexCopyright);
-            sprTitle = new Sprite(true, TexMenuTitle);            
-            sprMenuOptions = new Sprite(true, TexMenuOptions);
+            sprMenuBackground = new Sprite(true, TexMenuBackground);
+            sprMenuEditorBgDecor = new Sprite(true, TexBgMenuLevelEditor) { alpha = 0.2f };
+            sprMenuMainBgDecor = new Sprite(true, TexBgMenuMain);
+            sprMenuLevelsBgDecor = new Sprite(true, TexBgMenuLevels) { alpha = 0.5f };
             sprMenuInfo = new Sprite(true, TexMenuInfo1);
 
             Window_ClientSizeChanged(null, null);
@@ -473,6 +485,7 @@ namespace EnduranceTheMaze
             {
                 //If the main screen is active.
                 case GameState.stateMenu:
+                    sprMenuMainBgDecor.Draw(game.GameSpriteBatch);
                     bttnCampaign.Draw();
                     bttnHowToPlay.Draw();
                     bttnLevelEditor.Draw();
@@ -480,9 +493,7 @@ namespace EnduranceTheMaze
                     bttnSfxVolume.Draw();
                     bttnToggleFullscreen.Draw();
                     bttnQuit.Draw();
-                    sprMenuOptions.Draw(game.GameSpriteBatch);
                     sprCopyright.Draw(game.GameSpriteBatch);
-                    sprTitle.Draw(game.GameSpriteBatch);
 
                     game.GameSpriteBatch.DrawString(game.fntBold,
                         $"{(int)(game.Prefs.VolumeMusic * 100)}%",
@@ -511,12 +522,17 @@ namespace EnduranceTheMaze
                     break;
                 //If the how to play screen is active.
                 case GameState.stateHowtoPlay:
+                    sprMenuBackground.alpha = 0.3f;
+                    sprMenuBackground.Draw(game.GameSpriteBatch);
+                    sprMenuBackground.alpha = 1;
                     bttnBack.Draw();
                     sprMenuInfo.Draw(game.GameSpriteBatch);
                     sprCopyright.Draw(game.GameSpriteBatch);
                     break;
                 //If the edit screen is active.
                 case GameState.stateMenuEditor:
+                    sprMenuBackground.Draw(game.GameSpriteBatch);
+                    sprMenuEditorBgDecor.Draw(game.GameSpriteBatch);
                     bttnBack.Draw();
                     bttnEdit.Draw();
                     bttnTest.Draw();
@@ -527,6 +543,8 @@ namespace EnduranceTheMaze
                     break;
                 //If the campaign mode screen is active.
                 case GameState.stateCampaignModes:
+                    sprMenuBackground.Draw(game.GameSpriteBatch);
+                    sprMenuLevelsBgDecor.Draw(game.GameSpriteBatch);
                     bttnBack.Draw();
                     bttnCmpgnEasy.Draw();
                     bttnCmpgnNormal.Draw();
@@ -554,7 +572,7 @@ namespace EnduranceTheMaze
                                 bttnCmpgnEasy.BttnSprite.rectDest.Width + 4,
                                 bttnCmpgnEasy.BttnSprite.rectDest.Y +
                                 (bttnCmpgnEasy.BttnSprite.rectDest.Height / 2)),
-                            Color.Green);
+                            Color.Blue);
                     }
 
                     if (game.LvlSeriesNormal.LevelExists())
@@ -577,7 +595,7 @@ namespace EnduranceTheMaze
                                 bttnCmpgnNormal.BttnSprite.rectDest.Width + 4,
                                 bttnCmpgnNormal.BttnSprite.rectDest.Y +
                                 (bttnCmpgnNormal.BttnSprite.rectDest.Height / 2)),
-                            Color.Green);
+                            Color.Blue);
                     }
 
                     if (game.LvlSeriesHard.LevelExists())
@@ -600,7 +618,7 @@ namespace EnduranceTheMaze
                                 bttnCmpgnHard.BttnSprite.rectDest.Width + 4,
                                 bttnCmpgnHard.BttnSprite.rectDest.Y +
                                 (bttnCmpgnHard.BttnSprite.rectDest.Height / 2)),
-                            Color.Green);
+                            Color.Blue);
                     }
 
                     if (game.LvlSeriesDoom.LevelExists())
@@ -623,7 +641,7 @@ namespace EnduranceTheMaze
                                 bttnCmpgnDoom.BttnSprite.rectDest.Width + 4,
                                 bttnCmpgnDoom.BttnSprite.rectDest.Y +
                                 (bttnCmpgnDoom.BttnSprite.rectDest.Height / 2)),
-                            Color.Green);
+                            Color.Blue);
                     }
 
                     sprCopyright.Draw(game.GameSpriteBatch);

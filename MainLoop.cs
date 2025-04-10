@@ -153,6 +153,14 @@ namespace EnduranceTheMaze
         /// <param name="gameTime">The internal game time.</param>
         protected override void Update(GameTime gameTime)
         {
+            playlist.Update();
+
+            // Avoids performing any logic when the game is inactive.
+            if (!IsActive)
+            {
+                return;
+            }
+
             base.Update(gameTime); //underlying xna component call.
 
             //Updates the input.
@@ -219,9 +227,6 @@ namespace EnduranceTheMaze
                     mngrCampaign.Update();
                     break;
             }
-
-            //Switches music when songs end.
-            playlist.Update();
         }
 
         /// <summary>
@@ -230,18 +235,43 @@ namespace EnduranceTheMaze
         /// <param name="gameTime">The internal game time.</param>
         protected override void Draw(GameTime gameTime)
         {
+            // Avoids performing any logic when the game is inactive.
+            if (!IsActive)
+            {
+                return;
+            }
+
             //Ensures drawing over consecutive frames is clean.
-            GraphicsDevice.Clear(Microsoft.Xna.Framework.Color.White);
+            switch (GmState)
+            {
+                case GameState.stateMenu:
+                case GameState.stateCampaignModes:
+                case GameState.stateHowtoPlay:
+                case GameState.stateMenuEditor:
+                    GraphicsDevice.Clear(Color.Beige);
+                    break;
+                default:
+                    GraphicsDevice.Clear(Color.White);
+                    break;
+            }
 
             //Draws with screen translation if the state is gameplay.
             if (GmState == GameState.stateGameplay ||
                 GmState == GameState.stateGameplayEditor)
             {
+                GameSpriteBatch.Begin();
+                mngrLvl.DrawHudStart();
+                GameSpriteBatch.End();
+
                 GameSpriteBatch.Begin(SpriteSortMode.Deferred, null, null,
                     null, null, null, mngrLvl.Camera);
             }
             else if (GmState == GameState.stateEditor)
             {
+                GameSpriteBatch.Begin();
+                mngrEditor.DrawHudStart();
+                GameSpriteBatch.End();
+
                 GameSpriteBatch.Begin(SpriteSortMode.Deferred, null, null,
                     null, null, null, mngrEditor.Camera);
             }

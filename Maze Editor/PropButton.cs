@@ -25,12 +25,23 @@ namespace EnduranceTheMaze
         public static Texture2D TexOpMinGoals { get; private set; }
         public static Texture2D TexOpSyncActors { get; private set; }
         public static Texture2D TexOpSyncDeath { get; private set; }
+        public static Texture2D TexOpEmpty { get; private set; }
+
+        // Used as a placeholder for buttons being hidden.
+        private static Sprite bttnSpriteEmpty;
+        private static Sprite BttnSpriteEmpty {
+            get
+            {
+                bttnSpriteEmpty ??= new Sprite(true, TexOpEmpty);
+                return bttnSpriteEmpty;
+            }
+        }
 
         //Refers to the game instance.
         protected MainLoop game;
 
         //Contains a sprite and atlas.
-        public Sprite BttnSprite { get; protected set; }
+        private readonly Sprite BttnSprite;
 
         //Object location in pixels.
         private Vector2 pos;
@@ -66,8 +77,10 @@ namespace EnduranceTheMaze
 
             //Sets default values.
             this.BttnSprite = sprite;
-            this.Pos = pos;            
+
+            this.Pos = pos;
             IsHovered = false;
+            IsVisible = true;
         }
 
         ///<summary>
@@ -89,6 +102,7 @@ namespace EnduranceTheMaze
             TexOpMinGoals = Content.Load<Texture2D>("Content/Sprites/Gui/sprOpMinGoals");
             TexOpSyncActors = Content.Load<Texture2D>("Content/Sprites/Gui/sprOpSyncActors");
             TexOpSyncDeath = Content.Load<Texture2D>("Content/Sprites/Gui/sprOpSyncDeath");
+            TexOpEmpty = Content.Load<Texture2D>("Content/Sprites/Gui/sprOpEmpty");
         }
 
         /// <summary>
@@ -97,8 +111,8 @@ namespace EnduranceTheMaze
         public virtual void Update()
         {
             //If hovered, sets hovered to true. Else, sets it to false.
-            if (game.MsState.X >= pos.X && game.MsState.X <= pos.X + 32 &&
-                game.MsState.Y >= pos.Y && game.MsState.Y <= pos.Y + 32)
+            if (game.MsState.X >= pos.X && game.MsState.X <= pos.X + 64 &&
+                game.MsState.Y >= pos.Y && game.MsState.Y <= pos.Y + 64)
             {
                 IsHovered = true;
             }
@@ -122,7 +136,16 @@ namespace EnduranceTheMaze
                 BttnSprite.color = Color.White;
             }
 
-            BttnSprite.Draw(game.GameSpriteBatch);
+            if (IsVisible)
+            {
+                BttnSprite.Draw(game.GameSpriteBatch);
+            }
+            else
+            {
+                // Draws a placeholder
+                BttnSpriteEmpty.rectDest = BttnSprite.rectDest;
+                BttnSpriteEmpty.Draw(game.GameSpriteBatch);
+            }
         }
     }
 }
