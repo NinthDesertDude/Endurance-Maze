@@ -74,11 +74,11 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexActor);
             BlockSprite.depth = 0.1f;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 18, 2, 9);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 18, 2, 9);
 
             //Sets the initial position.
-            BlockSprite.rectDest.X = x * 32;
-            BlockSprite.rectDest.Y = y * 32;
+            BlockSprite.rectDest.X = x * MainLoop.TileSize;
+            BlockSprite.rectDest.Y = y * MainLoop.TileSize;
         }
 
         /// <summary>
@@ -327,7 +327,7 @@ namespace EnduranceTheMaze
                                                 double xSpeed = Math.Cos(radianAngle) * 2;
 
                                                 lockBreak = new FxRing(game,
-                                                    item.X * 32 + 16, item.Y * 32 + 16,
+                                                    item.X * MainLoop.TileSize + MainLoop.TileSizeHalf, item.Y * MainLoop.TileSize + MainLoop.TileSizeHalf,
                                                     item.Layer, (xSpeed, ySpeed),
                                                     item.BlockSprite.color, 0.04f);
 
@@ -375,7 +375,7 @@ namespace EnduranceTheMaze
                                             double xSpeed = Math.Cos(radianAngle) * 2;
 
                                             lockBreak = new FxRing(game,
-                                                item.X * 32 + 16, item.Y * 32 + 16,
+                                                item.X * MainLoop.TileSize + MainLoop.TileSizeHalf, item.Y * MainLoop.TileSize + MainLoop.TileSizeHalf,
                                                 item.Layer, (xSpeed, ySpeed),
                                                 color, 0.04f);
 
@@ -472,12 +472,12 @@ namespace EnduranceTheMaze
                                         itemsTop.Count == 0)
                                     {
                                         #region Interaction: MazeTurretBullet.cs
-                                        //Finds all bullets skipped over by moving 32px at a time.
-                                        //The +32 at the end accounts for sprite width and height.
-                                        float xMin = Math.Min(item.X * 32, (item.X + Utils.DirVector(item.BlockDir).X) * 32);
-                                        float xMax = Math.Max(item.X * 32, (item.X + Utils.DirVector(item.BlockDir).X) * 32) + 32;
-                                        float yMin = Math.Min(item.Y * 32, (item.Y + Utils.DirVector(item.BlockDir).Y) * 32);
-                                        float yMax = Math.Max(item.Y * 32, (item.Y + Utils.DirVector(item.BlockDir).Y) * 32) + 32;
+                                        //Finds all bullets skipped over by moving {tilesize} at a time.
+                                        //The +{tilesize} at the end accounts for sprite width and height.
+                                        float xMin = Math.Min(item.X * MainLoop.TileSize, (item.X + Utils.DirVector(item.BlockDir).X) * MainLoop.TileSize);
+                                        float xMax = Math.Max(item.X * MainLoop.TileSize, (item.X + Utils.DirVector(item.BlockDir).X) * MainLoop.TileSize) + MainLoop.TileSize;
+                                        float yMin = Math.Min(item.Y * MainLoop.TileSize, (item.Y + Utils.DirVector(item.BlockDir).Y) * MainLoop.TileSize);
+                                        float yMax = Math.Max(item.Y * MainLoop.TileSize, (item.Y + Utils.DirVector(item.BlockDir).Y) * MainLoop.TileSize) + MainLoop.TileSize;
                                         List<GameObj> bullets = game.mngrLvl.items.Where(o =>
                                             o.BlockType == Type.TurretBullet &&
                                             o.Layer == item.Layer &&
@@ -619,12 +619,12 @@ namespace EnduranceTheMaze
                         #endregion
 
                         #region Interaction: MazeTurretBullet.cs
-                        //Finds all bullets skipped over by moving 32px at a time.
-                        // The +8 and +24 effectively shrinks collision box by 8px around.
-                        float xMin = Math.Min(X * 32, (X + Utils.DirVector(BlockDir).X) * 32) + 8;
-                        float xMax = Math.Max(X * 32, (X + Utils.DirVector(BlockDir).X) * 32) + 24;
-                        float yMin = Math.Min(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32) + 8;
-                        float yMax = Math.Max(Y * 32, (Y + Utils.DirVector(BlockDir).Y) * 32) + 24;
+                        //Finds all bullets skipped over by moving 64px at a time.
+                        // The +16 and +48 effectively shrinks collision box by 16px around.
+                        float xMin = Math.Min(X * MainLoop.TileSize, (X + Utils.DirVector(BlockDir).X) * MainLoop.TileSize) + 16;
+                        float xMax = Math.Max(X * MainLoop.TileSize, (X + Utils.DirVector(BlockDir).X) * MainLoop.TileSize) + 48;
+                        float yMin = Math.Min(Y * MainLoop.TileSize, (Y + Utils.DirVector(BlockDir).Y) * MainLoop.TileSize) + 16;
+                        float yMax = Math.Max(Y * MainLoop.TileSize, (Y + Utils.DirVector(BlockDir).Y) * MainLoop.TileSize) + 48;
                         List<GameObj> bullets = game.mngrLvl.items.Where(o =>
                             o.BlockType == Type.TurretBullet &&
                             o.Layer == Layer &&
@@ -731,8 +731,11 @@ namespace EnduranceTheMaze
                     for (int i = 0; i < keys.Count; i++)
                     {
                         game.GameSpriteBatch.Draw(MazeKey.TexKey,
-                            new Rectangle(X*32 + i*16, Y*32 - 16, 16, 16),
-                            new Rectangle(0, 0, 32, 32), keys[i]);
+                            new Rectangle(
+                                X*MainLoop.TileSize + i*MainLoop.TileSizeHalf,
+                                Y*MainLoop.TileSize - MainLoop.TileSizeHalf,
+                                MainLoop.TileSizeHalf, MainLoop.TileSizeHalf),
+                            new Rectangle(0, 0, MainLoop.TileSize, MainLoop.TileSize), keys[i]);
                     }
                     #endregion
                 }

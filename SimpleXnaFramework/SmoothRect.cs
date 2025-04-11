@@ -33,6 +33,10 @@ namespace EnduranceTheMaze
             {
                 return Y + Height;
             }
+            set
+            {
+                Height = value - Y;
+            }
         }
 
         /// <summary>
@@ -55,6 +59,10 @@ namespace EnduranceTheMaze
             {
                 return X + Width;
             }
+            set
+            {
+                Width = value - X;
+            }
         }
 
         /// <summary>
@@ -65,6 +73,11 @@ namespace EnduranceTheMaze
             get
             {
                 return new Vector2(X, Y);
+            }
+            set
+            {
+                X = value.X;
+                Y = value.Y;
             }
         }
         #endregion
@@ -181,15 +194,10 @@ namespace EnduranceTheMaze
 
             //Guarantees that the corners of the rectangles are aligned such
             //that there is always one intersection.
-            if (rect1.X < rect2.X + rect2.Width &&
+            return rect1.X < rect2.X + rect2.Width &&
                 rect2.X < rect1.X + rect1.Width &&
                 rect1.Y < rect2.Y + rect2.Height &&
-                rect2.Y < rect1.Y + rect1.Height)
-            {
-                return true;
-            }
-
-            return false;
+                rect2.Y < rect1.Y + rect1.Height;
         }
         #endregion
     }

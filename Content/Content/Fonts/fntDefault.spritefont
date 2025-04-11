@@ -25,10 +25,7 @@ with.
     -->
     <Spacing>0</Spacing>
 
-    <!--
-    UseKerning controls the layout of the font. If this value is true, kerning information
-    will be used when placing characters.
-    -->
+    <!-- Kerning is broken depending on what version of MonoGame you compile. -->
     <UseKerning>true</UseKerning>
 
     <!--

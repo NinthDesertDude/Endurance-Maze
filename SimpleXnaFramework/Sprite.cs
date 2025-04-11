@@ -244,43 +244,7 @@ namespace EnduranceTheMaze
         /// </summary>
         public void CenterOrigin()
         {
-            origin = new Vector2(texture.Width / 2, texture.Height / 2);
-        }
-
-        /// <summary>
-        /// Centers the origin horizontally.
-        /// </summary>
-        public void CenterOriginHor()
-        {
-            origin = new Vector2(texture.Width / 2, origin.Y);
-        }
-
-        /// <summary>
-        /// Centers the origin vertically.
-        /// </summary>
-        public void CenterOriginVert()
-        {
-            origin = new Vector2(origin.X, texture.Height / 2);
-        }
-
-        /// <summary>
-        /// Checks for a bounding box intersection of two sprites. Takes
-        /// scaling and origin into account. Ignores rotation.
-        /// </summary>
-        public static bool IsIntersecting(Sprite spr1, Sprite spr2)
-        {
-            //Creates smooth rects from the sprite destinations, which
-            //already take scaling into account.
-            SmoothRect tempRect1 = new SmoothRect(spr1.rectDest);
-            SmoothRect tempRect2 = new SmoothRect(spr2.rectDest);
-
-            //Adjusts the rectangles based on the origin.
-            tempRect1.X -= spr1.origin.X;
-            tempRect1.Y -= spr1.origin.Y;
-            tempRect2.X -= spr2.origin.X;
-            tempRect2.Y -= spr2.origin.Y;
-
-            return SmoothRect.IsIntersecting(tempRect1, tempRect2);
+            origin = new Vector2(rectSrc.Width / 2, rectSrc.Height / 2);
         }
 
         /// <summary>
@@ -292,7 +256,6 @@ namespace EnduranceTheMaze
             //Creates smooth rects from the sprite and another rectangle,
             //which already take scaling into account.
             SmoothRect tempRect1 = new SmoothRect(spr1.rectDest);
-            SmoothRect tempRect2 = new SmoothRect(rect2);
 
             //Adjusts the rectangles based on the origin.
             if (!spr1.doDrawOffset)
@@ -301,7 +264,7 @@ namespace EnduranceTheMaze
                 tempRect1.Y -= spr1.origin.Y;
             }
 
-            return SmoothRect.IsIntersecting(tempRect1, tempRect2);
+            return SmoothRect.IsIntersecting(tempRect1, rect2);
         }
 
         /// <summary>

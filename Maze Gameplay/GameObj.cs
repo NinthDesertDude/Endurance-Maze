@@ -42,8 +42,8 @@ namespace EnduranceTheMaze
                 //Sets the initial position.
                 if (isSynchronized)
                 {
-                    _sprite.rectDest.X = X * 32;
-                    _sprite.rectDest.Y = Y * 32;
+                    _sprite.rectDest.X = X * MainLoop.TileSize;
+                    _sprite.rectDest.Y = Y * MainLoop.TileSize;
                 }
                 else
                 {
@@ -399,8 +399,8 @@ namespace EnduranceTheMaze
             //Synchronizes sprite position to location.
             if (isSynchronized)
             {
-                BlockSprite.rectDest.X = X * 32;
-                BlockSprite.rectDest.Y = Y * 32;
+                BlockSprite.rectDest.X = X * MainLoop.TileSize;
+                BlockSprite.rectDest.Y = Y * MainLoop.TileSize;
             }
             else
             {

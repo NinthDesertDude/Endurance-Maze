@@ -27,11 +27,10 @@ namespace EnduranceTheMaze
         public override void Update()
         {
             //Sets this block's type as the active type if clicked.
-            //Depends on texture dimensions.
             if (game.MsState.LeftButton == ButtonState.Pressed &&
-                game.MsState.X >= 0 && game.MsState.X <= 32 &&
+                game.MsState.X >= 0 && game.MsState.X <= MainLoop.TileSize &&
                 game.MsState.Y >= BlockSprite.rectDest.Y &&
-                game.MsState.Y <= BlockSprite.rectDest.Y + 32)
+                game.MsState.Y <= BlockSprite.rectDest.Y + MainLoop.TileSize)
             {
                 game.mngrEditor.activeType = BlockType;
             }
@@ -40,7 +39,7 @@ namespace EnduranceTheMaze
 
             //Synchronizes sprite position to location. (Req MngrEditor.cs).
             BlockSprite.rectDest.X = 0;
-            BlockSprite.rectDest.Y = Y * 32 + game.mngrEditor.sidebarScroll;
+            BlockSprite.rectDest.Y = Y * MainLoop.TileSize + game.mngrEditor.sidebarScroll;
         }
 
         public override void Draw()
@@ -51,7 +50,7 @@ namespace EnduranceTheMaze
             if (BlockType == game.mngrEditor.activeType)
             {
                 game.GameSpriteBatch.Draw(MngrLvl.TexPixel, new Rectangle(
-                    0, (int)BlockSprite.rectDest.Y, 32, 32), Color.Yellow * 0.5f);
+                    0, (int)BlockSprite.rectDest.Y, MainLoop.TileSize, MainLoop.TileSize), Color.Yellow * 0.5f);
             }
         }
     }

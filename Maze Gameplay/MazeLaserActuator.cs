@@ -48,7 +48,7 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexLaserActuator);
             BlockSprite.depth = 0.421f;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 5, 1, 5);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 5, 1, 5);
         }
 
         /// <summary>
@@ -137,10 +137,10 @@ namespace EnduranceTheMaze
                 for (int i = 0; i < 4; i++)
                 {
                     poofEffect = new FxPoof(
-                        game, X * 32, Y * 32, Layer,
+                        game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer,
                         new Microsoft.Xna.Framework.Color(255, 255, 255),
                         (-1 + 2 * Utils.Rng.NextDouble(), -1 + 2 * Utils.Rng.NextDouble()));
-                    poofEffect.X += -16;
+                    poofEffect.X += -MainLoop.TileSizeHalf;
                     game.mngrLvl.AddItem(poofEffect);
                 }
 

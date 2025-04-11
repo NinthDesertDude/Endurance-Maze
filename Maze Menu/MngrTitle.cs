@@ -74,6 +74,19 @@ namespace EnduranceTheMaze
             _infoPage = 0; //Sets the current information page.
 
             game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            game.OnGameStateChange += OnGameStateChanged;
+        }
+
+        private void OnGameStateChanged()
+        {
+            var screenSize = game.GetScreenSize();
+
+            bttnBack.BttnSprite.rectDest.X = game.GmState == GameState.stateCampaignModes
+                ? screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2 : game.GmState == GameState.stateMenuEditor
+                ? screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2
+                : screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2;
+
+            bttnBack.BttnSprite.rectDest.Y = screenSize.Y / 2 - 262;
         }
 
         /// <summary>
@@ -82,64 +95,45 @@ namespace EnduranceTheMaze
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
             var screenOffset = game.FullscreenHandler.GetCurrentOffset();
+            var screenSize = game.GetScreenSize();
 
-            sprMenuBackground.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuBackground.rectDest.Height / 2);
-            sprMenuBackground.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuBackground.rectDest.Width / 2);
+            // Main menu
+            sprMenuMainBgDecor.rectDest.X = screenSize.X / 2 - sprMenuMainBgDecor.texture.Width / 2;
+            sprMenuMainBgDecor.rectDest.Y = screenSize.Y / 2 - sprMenuMainBgDecor.texture.Height / 2;
 
-            sprMenuMainBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuMainBgDecor.rectDest.Height / 2);
-            sprMenuMainBgDecor.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuMainBgDecor.rectDest.Width / 2) - 10;
+            bttnCampaign.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnCampaign.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 160); // 44px offsets
+            bttnLevelEditor.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnLevelEditor.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 116);
+            bttnHowToPlay.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnHowToPlay.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 72);
+            bttnMusicVolume.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnMusicVolume.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 32); // 60px gap + 44px
+            bttnSfxVolume.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnSfxVolume.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 76);
+            bttnToggleFullscreen.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnToggleFullscreen.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 120);
+            bttnQuit.BttnSprite.rectDest.Position = new(screenSize.X/2 - bttnQuit.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 164);
 
-            bttnCampaign.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnLevelEditor.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnHowToPlay.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnMusicVolume.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnSfxVolume.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnToggleFullscreen.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnQuit.BttnSprite.rectDest.X = screenOffset.Item1 + 334;
-            bttnBack.BttnSprite.rectDest.X = screenOffset.Item1 + 339;
+            // Level Editor
+            sprMenuEditorBgDecor.rectDest.X = screenSize.X / 2 - sprMenuEditorBgDecor.texture.Width / 2;
+            sprMenuEditorBgDecor.rectDest.Y = screenSize.Y / 2 - sprMenuEditorBgDecor.texture.Height / 2;
 
-            bttnCampaign.BttnSprite.rectDest.Y = screenOffset.Item2 + 96;
-            bttnLevelEditor.BttnSprite.rectDest.Y = screenOffset.Item2 + 142;
-            bttnHowToPlay.BttnSprite.rectDest.Y = screenOffset.Item2 + 188;
-            bttnMusicVolume.BttnSprite.rectDest.Y = screenOffset.Item2 + 280;
-            bttnSfxVolume.BttnSprite.rectDest.Y = screenOffset.Item2 + 326;
-            bttnToggleFullscreen.BttnSprite.rectDest.Y = screenOffset.Item2 + 372;
-            bttnQuit.BttnSprite.rectDest.Y = screenOffset.Item2 + 418;
-            bttnBack.BttnSprite.rectDest.Y = screenOffset.Item2;
+            bttnEdit.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnEdit.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 160); // 44px offsets
+            bttnTest.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnTest.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 116);
+            bttnSave.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnSave.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 72);
+            bttnLoad.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnLoad.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 28);
+            bttnClear.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnClear.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 16);
 
-            sprMenuEditorBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuEditorBgDecor.rectDest.Height / 2);
-            sprMenuEditorBgDecor.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprMenuEditorBgDecor.rectDest.Width / 2);
+            // Campaign
+            sprMenuLevelsBgDecor.rectDest.X = screenSize.X / 2 - sprMenuLevelsBgDecor.texture.Width / 2 - 250;
+            sprMenuLevelsBgDecor.rectDest.Y = screenSize.Y / 2 - sprMenuLevelsBgDecor.texture.Height / 2;
 
-            bttnEdit.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
-            bttnTest.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
-            bttnSave.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
-            bttnLoad.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
-            bttnClear.BttnSprite.rectDest.X = screenOffset.Item1 + 378;
+            bttnCmpgnEasy.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnCmpgnEasy.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 210); // 104px offsets
+            bttnCmpgnNormal.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnCmpgnNormal.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 106);
+            bttnCmpgnHard.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnCmpgnHard.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) - 2);
+            bttnCmpgnDoom.BttnSprite.rectDest.Position = new(screenSize.X / 2 - bttnCmpgnDoom.BttnSprite.rectDest.Width/2, (screenSize.Y / 2) + 102);
 
-            bttnEdit.BttnSprite.rectDest.Y = screenOffset.Item2 + 96;
-            bttnTest.BttnSprite.rectDest.Y = screenOffset.Item2 + 142;
-            bttnSave.BttnSprite.rectDest.Y = screenOffset.Item2 + 188;
-            bttnLoad.BttnSprite.rectDest.Y = screenOffset.Item2 + 234;
-            bttnClear.BttnSprite.rectDest.Y = screenOffset.Item2 + 280;
+            // Shared
+            sprMenuBackground.rectDest.Position = new(screenSize.X / 2 - sprMenuBackground.texture.Width/2, screenSize.Y / 2 - sprMenuBackground.texture.Height/2);
+            sprCopyright.rectDest.Position = new(screenSize.X / 2 - (sprCopyright.rectDest.Width / 2), screenSize.Y / 2 + 240);
+            sprMenuInfo.rectDest.Position = new(screenSize.X / 2 - (sprMenuInfo.rectDest.Width / 2), screenSize.Y / 2 - 200);
 
-            sprMenuLevelsBgDecor.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight / 2 - (sprMenuLevelsBgDecor.rectDest.Height / 2);
-            sprMenuLevelsBgDecor.rectDest.X = screenOffset.Item1;
-
-            bttnCmpgnEasy.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
-            bttnCmpgnNormal.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
-            bttnCmpgnHard.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
-            bttnCmpgnDoom.BttnSprite.rectDest.X = screenOffset.Item1 + 360;
-
-            bttnCmpgnEasy.BttnSprite.rectDest.Y = screenOffset.Item2 + 32;
-            bttnCmpgnNormal.BttnSprite.rectDest.Y = screenOffset.Item2 + 132;
-            bttnCmpgnHard.BttnSprite.rectDest.Y = screenOffset.Item2 + 232;
-            bttnCmpgnDoom.BttnSprite.rectDest.Y = screenOffset.Item2 + 332;
-
-            sprCopyright.rectDest.Y = screenOffset.Item2 + ScreenResizeUtils.DefaultHeight - 16;
-            sprCopyright.rectDest.X = screenOffset.Item1 + ScreenResizeUtils.DefaultWidth / 2 - (sprCopyright.rectDest.Width / 2);
-
-            sprMenuInfo.rectDest.X = screenOffset.Item1;
-            sprMenuInfo.rectDest.Y = screenOffset.Item2 + 28;
+            OnGameStateChanged();
         }
 
         /// <summary>
@@ -499,7 +493,7 @@ namespace EnduranceTheMaze
                         $"{(int)(game.Prefs.VolumeMusic * 100)}%",
                         new Vector2(
                             bttnMusicVolume.BttnSprite.rectDest.X +
-                            bttnMusicVolume.BttnSprite.rectDest.Width,
+                            bttnMusicVolume.BttnSprite.rectDest.Width + 10,
                             bttnMusicVolume.BttnSprite.rectDest.Y + 4),
                         Color.Black);
 
@@ -507,7 +501,7 @@ namespace EnduranceTheMaze
                         $"{(int)(game.Prefs.VolumeSfx * 100)}%",
                         new Vector2(
                             bttnSfxVolume.BttnSprite.rectDest.X +
-                            bttnSfxVolume.BttnSprite.rectDest.Width,
+                            bttnSfxVolume.BttnSprite.rectDest.Width + 10,
                             bttnSfxVolume.BttnSprite.rectDest.Y + 4),
                         Color.Black);
 
@@ -515,7 +509,7 @@ namespace EnduranceTheMaze
                         game.Prefs.Fullscreen ? "Fullscreen" : "Windowed",
                         new Vector2(
                             bttnToggleFullscreen.BttnSprite.rectDest.X +
-                            bttnToggleFullscreen.BttnSprite.rectDest.Width,
+                            bttnToggleFullscreen.BttnSprite.rectDest.Width + 10,
                             bttnToggleFullscreen.BttnSprite.rectDest.Y + 4),
                         Color.Black);
 

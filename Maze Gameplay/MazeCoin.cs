@@ -37,7 +37,7 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexCoin);
             BlockSprite.depth = 0.205f;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
             spriteAtlas.frameSpeed = 0.2f;
         }
 
@@ -97,8 +97,8 @@ namespace EnduranceTheMaze
                 int sparkles = 4 + Utils.Rng.Next(4);
                 for (int i = 0; i < sparkles; i++)
                 {
-                    pickup = new FxPickup(game, X * 32, Y * 32, Layer, new Microsoft.Xna.Framework.Color(255, 255, 0));
-                    pickup.X += -16 + Utils.Rng.Next(32);
+                    pickup = new FxPickup(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer, new Microsoft.Xna.Framework.Color(255, 255, 0));
+                    pickup.X += -MainLoop.TileSizeHalf + Utils.Rng.Next(MainLoop.TileSize);
                     pickup.Y -= Utils.Rng.Next(10);
                     game.mngrLvl.AddItem(pickup);
                 }

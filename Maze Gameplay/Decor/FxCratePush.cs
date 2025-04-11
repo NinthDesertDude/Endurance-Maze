@@ -23,11 +23,11 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexCratePush);
             BlockSprite.depth = 0.001f;
-            BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
-            BlockSprite.rectDest.Width = 32;
-            BlockSprite.rectDest.Height = 32;
+            BlockSprite.rectSrc = new SmoothRect(0, 0, MainLoop.TileSize, MainLoop.TileSize);
+            BlockSprite.rectDest.Width = MainLoop.TileSize;
+            BlockSprite.rectDest.Height = MainLoop.TileSize;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
             spriteAtlas.CenterOrigin();
             spriteAtlas.frame = 1;
             spriteAtlas.frameSpeed = 0.5f;

@@ -137,7 +137,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeActor.TexActor);
                     BlockSprite.depth = 0.1f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 6, 2, 3);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 6, 2, 3);
                     #region Chooses sprite by direction.
                     if (BlockDir == Dir.Right)
                     {
@@ -166,7 +166,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.401f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 9, 1, 9);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 9, 1, 9);
                     BlockSpriteAtlas.CenterOrigin();
                     #region Chooses sprite by direction and isEnabled.
                     if (BlockDir == Dir.Right)
@@ -201,7 +201,7 @@ namespace EnduranceTheMaze
                     //Sets sprite information.
                     BlockSprite = new Sprite(true, MazeCheckpoint.TexCheckpoint);
                     BlockSprite.depth = 0.208f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.35f;
                     BlockSprite.color = CustInt1 == 1 ? MazeCheckpoint.colorChkptOneUse : MazeCheckpoint.colorChkptMultiUse;
                     break;
@@ -210,7 +210,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeClick.TexClick);
                     BlockSprite.depth = 0.201f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     #region Adjusts sprite and handles growing/shrinking animation.
                     if (IsEnabled)
                     {
@@ -225,7 +225,7 @@ namespace EnduranceTheMaze
                 case Type.Coin:
                     BlockSprite = new Sprite(true, MazeCoin.TexCoin);
                     BlockSprite.depth = 0.205f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     break;
                 case Type.CoinLock:
@@ -235,21 +235,21 @@ namespace EnduranceTheMaze
                 case Type.Crate:
                     BlockSprite = new Sprite(true, MazeCrate.TexCrate);
                     BlockSprite.depth = 0.3f;
-                    BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
-                    BlockSprite.rectDest.Width = 32;
-                    BlockSprite.rectDest.Height = 32;
+                    BlockSprite.rectSrc = new SmoothRect(0, 0, MainLoop.TileSize, MainLoop.TileSize);
+                    BlockSprite.rectDest.Width = MainLoop.TileSize;
+                    BlockSprite.rectDest.Height = MainLoop.TileSize;
                     BlockSprite.drawBehavior = SpriteDraw.basicAnimated;
                     break;
                 case Type.CrateHole:
                     BlockSprite = new Sprite(true, MazeCrateHole.TexCrateHole);
                     BlockSprite.depth = 0.403f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     break;
                 case Type.EAuto:
                     //Sets sprite information.
                     BlockSprite = new Sprite(true, MazeEAuto.TexEAuto);
                     BlockSprite.depth = 0.417f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 3, 2, 3);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 3, 2, 3);
                     #region Adjusts sprite.
                     if (IsEnabled)
                     {
@@ -264,14 +264,14 @@ namespace EnduranceTheMaze
                 case Type.ELight:
                     BlockSprite = new Sprite(true, MazeELight.TexELight);
                     BlockSprite.depth = 0.416f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     BlockSpriteAtlas.frame = 1;
                     break;
                 case Type.Enemy:
                     BlockSprite = new Sprite(true, MazeEnemy.TexEnemy);
                     BlockSprite.depth = 0.4f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     #region Chooses sprite by direction and isEnabled.
                     if (Utils.DirCardinal(BlockDir))
                     {
@@ -301,10 +301,10 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeEPusher.TexEPusher);
                     BlockSprite.depth = 0.415f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 64, 32, 3, 1, 3);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize * 2, MainLoop.TileSize, 3, 1, 3);
                     BlockSprite.doDrawOffset = true;
-                    BlockSprite.origin.X = 16;
-                    BlockSprite.origin.Y = 16;
+                    BlockSprite.origin.X = MainLoop.TileSizeHalf;
+                    BlockSprite.origin.Y = MainLoop.TileSizeHalf;
                     #region Adjusts sprite.
                     if (BlockDir == Dir.Right)
                     {
@@ -337,7 +337,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.405f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.CenterOrigin();
                     #region Chooses frame speed by isEnabled.
                     if (IsEnabled)
@@ -364,14 +364,14 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.203f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 10, 1, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 10, 1, 10);
                     BlockSpriteAtlas.frameSpeed = 0.4f;
                     BlockSpriteAtlas.CenterOrigin();
                     break;
                 case Type.Gate:
                     BlockSprite = new Sprite(true, MazeGate.TexGate);
                     BlockSprite.depth = 0.102f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     if (CustInt2 == 1)
                     {
                         BlockSpriteAtlas.frame = 1;
@@ -382,14 +382,14 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.202f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 9, 1, 9);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 9, 1, 9);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     BlockSpriteAtlas.CenterOrigin();
                     break;
                 case Type.Health:
                     BlockSprite = new Sprite(true, MazeHealth.TexHealth);
                     BlockSprite.depth = 0.206f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     break;
                 case Type.Ice:
@@ -400,7 +400,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeKey.TexKey);
                     BlockSprite.depth = 0.207f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     #region Chooses key color by custInt1.
                     switch (CustInt1)
@@ -441,7 +441,7 @@ namespace EnduranceTheMaze
                 case Type.LaserActuator:
                     BlockSprite = new Sprite(true, MazeLaserActuator.TexLaserActuator);
                     BlockSprite.depth = 0.421f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 5, 1, 5);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 5, 1, 5);
                     #region Adjusts sprite.
                     if (IsEnabled)
                     {
@@ -497,7 +497,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeMirror.TexMirror);
                     BlockSprite.drawBehavior = SpriteDraw.all;
                     BlockSprite.depth = 0.420f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     if (BlockDir == Dir.Right)
                     {
                         BlockSpriteAtlas.frame = 0;
@@ -520,7 +520,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.408f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     BlockSpriteAtlas.CenterOrigin();
                     #region Chooses sprite by direction and frame.
                     //Updates the sprite by direction.
@@ -560,14 +560,14 @@ namespace EnduranceTheMaze
                 case Type.Panel:
                     BlockSprite = new Sprite(true, MazePanel.TexPanel);
                     BlockSprite.depth = 0.414f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     break;
                 case Type.Rotate:
                     BlockSprite = new Sprite(true, MazeRotate.TexRotate);
                     BlockSprite.depth = 0.418f;
                     BlockSprite.doDrawOffset = true;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     BlockSpriteAtlas.CenterOrigin();
                     #region Adjusts sprite.
                     if (IsEnabled)
@@ -584,7 +584,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeSpawner.TexSpawner);
                     BlockSprite.depth = 0.402f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 8, 2, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 8, 2, 4);
                     #region Chooses sprite by direction and isEnabled.
                     if (BlockDir == Dir.Right)
                     {
@@ -613,14 +613,14 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.409f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
                     BlockSprite.doDrawOffset = true;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     BlockSpriteAtlas.CenterOrigin();
                     break;
                 case Type.Stairs:
                     BlockSprite = new Sprite(true, MazeStairs.TexStairs);
                     BlockSprite.depth = 0.406f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     #region Chooses frame by custInt1.
                     //Adjusts the sprite frame.
                     if (CustInt1 == 0)
@@ -636,7 +636,7 @@ namespace EnduranceTheMaze
                 case Type.Teleporter:
                     BlockSprite = new Sprite(true, MazeTeleporter.TexTeleporter);
                     BlockSprite.depth = 0.412f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     #region Chooses sprite by frame and isEnabled.
                     //Adjusts the sprite frame.
                     if (CustInt1 == 0)
@@ -657,14 +657,14 @@ namespace EnduranceTheMaze
                 case Type.Thaw:
                     BlockSprite = new Sprite(true, MazeThaw.TexThaw);
                     BlockSprite.depth = 0.204f;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 13, 1, 13);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 13, 1, 13);
                     BlockSpriteAtlas.frameSpeed = 0.25f;
                     break;
                 case Type.Turret:
                     BlockSprite = new Sprite(true, MazeTurret.TexTurret);
                     BlockSprite.depth = 0.419f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
-                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 8, 2, 4);
+                    BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 8, 2, 4);
                     #region Chooses sprite by direction and isEnabled.
                     if (BlockDir == Dir.Right)
                     {
@@ -695,8 +695,8 @@ namespace EnduranceTheMaze
             }
 
             //Synchronizes sprite position to location.
-            BlockSprite.rectDest.X = X * 32 - 16; //-16 for camera offset.
-            BlockSprite.rectDest.Y = Y * 32 - 16; //-16 for camera offset.
+            BlockSprite.rectDest.X = X * MainLoop.TileSize - MainLoop.TileSizeHalf; //-half for camera offset.
+            BlockSprite.rectDest.Y = Y * MainLoop.TileSize - MainLoop.TileSizeHalf; //-half for camera offset.
             if (BlockSpriteAtlas != null)
             {
                 BlockSpriteAtlas.Update(true);

@@ -24,12 +24,12 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, MazeTeleporter.TexTeleporter);
             BlockSprite.depth = 0.001f;
-            BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
-            BlockSprite.rectDest.Width = 32;
-            BlockSprite.rectDest.Height = 32;
+            BlockSprite.rectSrc = new SmoothRect(0, 0, MainLoop.TileSize, MainLoop.TileSize);
+            BlockSprite.rectDest.Width = MainLoop.TileSize;
+            BlockSprite.rectDest.Height = MainLoop.TileSize;
             BlockSprite.drawBehavior = SpriteDraw.all;
 
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 7, 1, 7);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 7, 1, 7);
             spriteAtlas.frame = 4;
             spriteAtlas.frameSpeed = 0.5f;
             spriteAtlas.frameEndBehavior = FrameEnd.End;

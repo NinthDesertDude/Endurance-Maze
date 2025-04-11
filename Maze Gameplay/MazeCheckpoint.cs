@@ -43,7 +43,7 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexCheckpoint);
             BlockSprite.depth = 0.208f;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
             spriteAtlas.frameSpeed = 0.35f;
         }
 
@@ -118,8 +118,12 @@ namespace EnduranceTheMaze
                         double ySpeed = Math.Sin(radianAngle);
                         double xSpeed = Math.Cos(radianAngle);
 
-                        pickup = new FxRing(game, X * 32 + 16, Y * 32 + 16, Layer, (xSpeed, ySpeed),
+                        pickup = new FxRing(game,
+                            X * MainLoop.TileSize + MainLoop.TileSizeHalf,
+                            Y * MainLoop.TileSize + MainLoop.TileSizeHalf,
+                            Layer, (xSpeed, ySpeed),
                             CustInt1 == 1 ? colorChkptOneUse : colorChkptMultiUse);
+
                         game.mngrLvl.AddItem(pickup);
                     }
                 }

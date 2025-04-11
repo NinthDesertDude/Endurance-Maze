@@ -50,7 +50,7 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexEAuto);
             BlockSprite.depth = 0.417f;
             //Note that there are actually 6 frames.
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 3, 2, 3);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 3, 2, 3);
 
             //Sets custom variables.
             timer = CustInt1; //Sets the timer to the max value.
@@ -132,10 +132,10 @@ namespace EnduranceTheMaze
                     for (int i = 0; i < 2; i++)
                     {
                         pickup = new FxPoof(
-                            game, X * 32, Y * 32, Layer,
+                            game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer,
                             new Microsoft.Xna.Framework.Color(255, 255, 255),
                             (-0.5 + Utils.Rng.NextDouble(), -0.5 + Utils.Rng.NextDouble()));
-                        pickup.X += -16;
+                        pickup.X -= MainLoop.TileSizeHalf;
                         game.mngrLvl.AddItem(pickup);
                     }
 

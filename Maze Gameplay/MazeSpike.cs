@@ -39,7 +39,7 @@ namespace EnduranceTheMaze
             BlockSprite.depth = 0.409f;
             BlockSprite.drawBehavior = SpriteDraw.all;
             BlockSprite.doDrawOffset = true;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
             spriteAtlas.frameSpeed = 0.2f;
             spriteAtlas.CenterOrigin();
         }

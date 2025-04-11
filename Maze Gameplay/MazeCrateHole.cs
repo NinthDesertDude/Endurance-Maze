@@ -38,7 +38,7 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexCrateHole);
             BlockSprite.depth = 0.403f;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
         }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace EnduranceTheMaze
             BttnSprite = new Sprite(true, tex);
             BttnSprite.drawBehavior = SpriteDraw.all;
 
-            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 133, 28, 16, 4, 4);
+            BttnSpriteAtlas = new SpriteAtlas(BttnSprite, 112, 28, 16, 4, 4);
             BttnSpriteAtlas.frame = frame;
         }
 

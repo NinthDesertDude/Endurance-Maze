@@ -38,7 +38,7 @@ namespace EnduranceTheMaze
             BlockSprite.drawBehavior = SpriteDraw.all;
 
             //Custom variables.
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 9, 1, 9);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 9, 1, 9);
             spriteAtlas.CenterOrigin();
         }
 

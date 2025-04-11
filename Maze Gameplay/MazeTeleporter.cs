@@ -41,7 +41,7 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexTeleporter);
             BlockSprite.depth = 0.412f;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 4, 1, 4);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
         }
 
         /// <summary>
@@ -117,8 +117,8 @@ namespace EnduranceTheMaze
                 #region Interaction: MazeTurretBullet
                 itemsTop.AddRange(game.mngrLvl.items.Where(o =>
                     o.BlockType == Type.TurretBullet &&
-                    Math.Abs(X * 32 + 16 - o.X) < 16 &&
-                    Math.Abs(Y * 32 + 16 - o.Y) < 16 &&
+                    Math.Abs(X * MainLoop.TileSize + MainLoop.TileSizeHalf - o.X) < MainLoop.TileSizeHalf &&
+                    Math.Abs(Y * MainLoop.TileSize + MainLoop.TileSizeHalf - o.Y) < MainLoop.TileSizeHalf &&
                     o.Layer == Layer));
                 #endregion
 
@@ -206,10 +206,10 @@ namespace EnduranceTheMaze
                         #region Interaction: MazeTurretBullet
                         if (item.BlockType == Type.TurretBullet)
                         {
-                            item.X = (int)Math.IEEERemainder(item.X, 32);
-                            item.Y = (int)Math.IEEERemainder(item.Y, 32);
-                            item.X += receiver.X * 32;
-                            item.Y += receiver.Y * 32;
+                            item.X = (int)Math.IEEERemainder(item.X, MainLoop.TileSize);
+                            item.Y = (int)Math.IEEERemainder(item.Y, MainLoop.TileSize);
+                            item.X += receiver.X * MainLoop.TileSize;
+                            item.Y += receiver.Y * MainLoop.TileSize;
                         }
                         else
                         {

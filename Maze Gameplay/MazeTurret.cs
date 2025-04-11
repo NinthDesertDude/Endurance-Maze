@@ -25,6 +25,12 @@ namespace EnduranceTheMaze
         private SpriteAtlas spriteAtlas;
         public int msDelay;
 
+        /// <summary>
+        /// Changing the tile size broke turret collisions once. This now keeps speed proportional, and levels retain
+        /// the same gameplay experience.
+        /// </summary>
+        public static readonly double bulletSpeedTileSizeMult = MainLoop.TileSize / 32.0;
+
         /// <summary>Sets the block location and default values.</summary>
         /// <param name="x">The column number.</param>
         /// <param name="y">The row number.</param>
@@ -41,7 +47,7 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexTurret);
             BlockSprite.depth = 0.419f;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 8, 2, 4);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 8, 2, 4);
         }
 
         /// <summary>
@@ -116,17 +122,19 @@ namespace EnduranceTheMaze
                     msDelay = CustInt1;
 
                     MazeTurretBullet bullet = new MazeTurretBullet(game,
-                            X * 32 + 16, Y * 32 + 16, Layer);
+                            X * MainLoop.TileSize + MainLoop.TileSizeHalf, Y * MainLoop.TileSize + MainLoop.TileSizeHalf, Layer);
 
                     //Updates the bullet position after adjusting it.                    
-                    bullet.X += (int)((Utils.DirVector(BlockDir)).X * 16 - 4);
-                    bullet.Y += (int)((Utils.DirVector(BlockDir)).Y * 16 - 4);
+                    bullet.X += (int)(Utils.DirVector(BlockDir).X * MainLoop.TileSizeHalf - 8);
+                    bullet.Y += (int)(Utils.DirVector(BlockDir).Y * MainLoop.TileSizeHalf - 8);
 
                     bullet.BlockSprite.rectDest.X = bullet.X;
                     bullet.BlockSprite.rectDest.Y = bullet.Y;
 
                     bullet.BlockDir = BlockDir;
-                    bullet.CustInt2 = CustInt2; //Provides the bullet speed.
+
+                    // Provides the bullet speed.
+                    bullet.CustInt2 = CustInt2 * (int)bulletSpeedTileSizeMult;
                     game.mngrLvl.AddItem(bullet);
                 }
 
@@ -136,11 +144,13 @@ namespace EnduranceTheMaze
                     IsActivated = false;
 
                     MazeTurretBullet bullet = new MazeTurretBullet(game,
-                            X * 32 + 16, Y * 32 + 16, Layer);
+                        X * MainLoop.TileSize + MainLoop.TileSizeHalf,
+                        Y * MainLoop.TileSize + MainLoop.TileSizeHalf,
+                        Layer);
 
                     //Updates the bullet position after adjusting it.                    
-                    bullet.X += (int)((Utils.DirVector(BlockDir)).X * 16 - 4);
-                    bullet.Y += (int)((Utils.DirVector(BlockDir)).Y * 16 - 4);
+                    bullet.X += (int)(Utils.DirVector(BlockDir).X * MainLoop.TileSizeHalf - 8);
+                    bullet.Y += (int)(Utils.DirVector(BlockDir).Y * MainLoop.TileSizeHalf - 8);
 
                     bullet.BlockSprite.rectDest.X = bullet.X;
                     bullet.BlockSprite.rectDest.Y = bullet.Y;

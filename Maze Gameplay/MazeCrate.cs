@@ -36,9 +36,9 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexCrate);
             BlockSprite.depth = 0.3f;
-            BlockSprite.rectSrc = new SmoothRect(0, 0, 32, 32);
-            BlockSprite.rectDest.Width = 32;
-            BlockSprite.rectDest.Height = 32;
+            BlockSprite.rectSrc = new SmoothRect(0, 0, MainLoop.TileSize, MainLoop.TileSize);
+            BlockSprite.rectDest.Width = MainLoop.TileSize;
+            BlockSprite.rectDest.Height = MainLoop.TileSize;
             BlockSprite.drawBehavior = SpriteDraw.basicAnimated;
         }
 
@@ -88,10 +88,10 @@ namespace EnduranceTheMaze
                 game.mngrLvl.RemoveItem(this);
 
                 // Animation for crate breaking
-                FxCrateBroken snap1 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpLeft };
-                FxCrateBroken snap2 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.UpRight };
-                FxCrateBroken snap3 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.DownLeft };
-                FxCrateBroken snap4 = new FxCrateBroken(game, X * 32, Y * 32, Layer) { BlockDir = Dir.DownRight };
+                FxCrateBroken snap1 = new FxCrateBroken(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer) { BlockDir = Dir.UpLeft };
+                FxCrateBroken snap2 = new FxCrateBroken(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer) { BlockDir = Dir.UpRight };
+                FxCrateBroken snap3 = new FxCrateBroken(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer) { BlockDir = Dir.DownLeft };
+                FxCrateBroken snap4 = new FxCrateBroken(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer) { BlockDir = Dir.DownRight };
                 snap2.BlockSprite.spriteEffects = SpriteEffects.FlipHorizontally;
                 snap3.BlockSprite.spriteEffects = SpriteEffects.FlipVertically;
                 snap4.BlockSprite.spriteEffects = SpriteEffects.FlipHorizontally | SpriteEffects.FlipVertically;

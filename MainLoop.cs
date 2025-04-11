@@ -14,6 +14,9 @@ namespace EnduranceTheMaze
     /// </summary>
     public class MainLoop : Game
     {
+        public static readonly int TileSize = 64;
+        public static readonly int TileSizeHalf = 32;
+
         //Handles graphic display and sprite drawing; respectively.
         public GraphicsDeviceManager Graphics { get; private set; }
         public SpriteBatch GameSpriteBatch { get; private set; }
@@ -25,7 +28,13 @@ namespace EnduranceTheMaze
         public Preferences Prefs { get; private set; }
 
         //Contains the current game state.
-        public GameState GmState { get; set; }
+        private GameState gmState = GameState.stateMenu;
+        public GameState GmState { get { return gmState; } set { gmState = value; OnGameStateChange?.Invoke(); } }
+
+        /// <summary>
+        /// This is fired whenever the game state changes, after it does.
+        /// </summary>
+        public event Action OnGameStateChange;
 
         //Contains all keyboard and mouse input.
         //Mouse is set by MngrEditor to avoid block placement.
@@ -35,7 +44,7 @@ namespace EnduranceTheMaze
         public KeyboardState KbStateOld { get; private set; }
 
         //Sets up objects to control all aspects of the game.
-        public SpriteFont fntDefault, fntBold;
+        public SpriteFont fntDefault, fntBold, fntBoldBig;
         public MngrTitle mngrTitle;
         public MngrLvl mngrLvl;
         public MngrEditor mngrEditor;
@@ -56,8 +65,8 @@ namespace EnduranceTheMaze
         {
             //Sets up xna components.
             Graphics = new GraphicsDeviceManager(this);
-            Graphics.PreferredBackBufferHeight = 510;
-            Graphics.PreferredBackBufferWidth = 800;
+            Graphics.PreferredBackBufferHeight = 640;
+            Graphics.PreferredBackBufferWidth = 1280;
             Content.RootDirectory = "Content";
 
             GmState = GameState.stateMenu; //set to main menu.
@@ -129,6 +138,7 @@ namespace EnduranceTheMaze
             //Loads all content into the pipeline.
             fntDefault = Content.Load<SpriteFont>("Content/Fonts/fntDefault");
             fntBold = Content.Load<SpriteFont>("Content/Fonts/fntBold");
+            fntBoldBig = Content.Load<SpriteFont>("Content/Fonts/fntBoldBig");
             mngrTitle.LoadContent();
             mngrLvl.LoadContent(Content);
             mngrEditor.LoadContent();

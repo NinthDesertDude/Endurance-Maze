@@ -21,9 +21,9 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, MngrLvl.TexFx);
             BlockSprite.depth = 0.001f;
-            BlockSprite.rectSrc = new SmoothRect(32, 0, 32, 32);
-            BlockSprite.rectDest.Width = 32;
-            BlockSprite.rectDest.Height = 32;
+            BlockSprite.rectSrc = new SmoothRect(MainLoop.TileSize, 0, MainLoop.TileSize, MainLoop.TileSize);
+            BlockSprite.rectDest.Width = MainLoop.TileSize;
+            BlockSprite.rectDest.Height = MainLoop.TileSize;
             BlockSprite.drawBehavior = SpriteDraw.all;
 
             float randomSize = Utils.Rng.Next(0, 2) / 10f;

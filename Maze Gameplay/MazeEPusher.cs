@@ -46,10 +46,10 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexEPusher);
             BlockSprite.depth = 0.415f;
             BlockSprite.drawBehavior = SpriteDraw.all;            
-            spriteAtlas = new SpriteAtlas(BlockSprite, 64, 32, 3, 1, 3);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize * 2, MainLoop.TileSize, 3, 1, 3);
             BlockSprite.doDrawOffset = true;
-            BlockSprite.origin.X = 16;
-            BlockSprite.origin.Y = 16;
+            BlockSprite.origin.X = MainLoop.TileSizeHalf;
+            BlockSprite.origin.Y = MainLoop.TileSizeHalf;
 
             //Sets timer information.
             pressTimer = pressTimerMax = 5;

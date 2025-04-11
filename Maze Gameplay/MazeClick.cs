@@ -46,7 +46,7 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexClick);
             BlockSprite.depth = 0.201f;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 2, 1, 2);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
         }
 
         /// <summary>

@@ -102,7 +102,7 @@ namespace EnduranceTheMaze
 
                 game.GameSpriteBatch.DrawString(game.fntBold,
                     CustInt1.ToString(),
-                    new Vector2(X * 32 + 16 - position.X, Y * 32 + 16 - position.Y),
+                    new Vector2(X * MainLoop.TileSize + MainLoop.TileSizeHalf - position.X, Y * MainLoop.TileSize + MainLoop.TileSizeHalf - position.Y),
                     Color.Lime);
             }
             else
@@ -111,7 +111,7 @@ namespace EnduranceTheMaze
 
                 game.GameSpriteBatch.DrawString(game.fntBold,
                     CustInt1.ToString(),
-                    new Vector2(X * 32 + 16 - position.X, Y * 32 + 16 - position.Y),
+                    new Vector2(X * MainLoop.TileSize + MainLoop.TileSizeHalf - position.X, Y * MainLoop.TileSize + MainLoop.TileSizeHalf - position.Y),
                     Color.Red);
             }
         }

@@ -192,15 +192,15 @@ namespace EnduranceTheMaze
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
         {
-            var screenOffset = game.FullscreenHandler.GetCurrentOffset();
             var screenSize = game.GetScreenSize();
-            sprInGameLevelEditorBg.rectDest.X = screenOffset.Item1;
-            sprInGameLevelEditorBg.rectDest.Y = screenOffset.Item2;
+
+            sprInGameLevelEditorBg.rectDest.X = screenSize.X / 2 - sprInGameLevelEditorBg.texture.Width / 2;
+            sprInGameLevelEditorBg.rectDest.Y = screenSize.Y / 2 - sprInGameLevelEditorBg.texture.Height / 2;
 
             sprHudOverlay.rectDest = new SmoothRect
-                (0, screenSize.Y - 32, screenSize.X, 32);
+                (0, screenSize.Y - MainLoop.TileSize, screenSize.X, MainLoop.TileSize);
             sprMenuHud.rectDest = new SmoothRect
-                (0, screenSize.Y - 32, 64, 32);
+                (0, screenSize.Y - MainLoop.TileSize, MainLoop.TileSize * 2, MainLoop.TileSize);
         }
 
         ///<summary>
@@ -224,15 +224,8 @@ namespace EnduranceTheMaze
             TexInGameLevelEditorBg = Content.Load<Texture2D>("Content/Sprites/Gui/sprInGameLevelEditorBg");
             sprInGameLevelEditorBg = new Sprite(true, TexInGameLevelEditorBg);
 
-            sprHudOverlay = new Sprite(true, TexPixel);
-            sprHudOverlay.color = Color.Gray;
-            sprHudOverlay.alpha = 0.5f;
-            sprHudOverlay.rectDest = new SmoothRect
-                (0, game.GetScreenSize().Y - 32, game.GetScreenSize().X, 32);
-
+            sprHudOverlay = new Sprite(true, TexPixel) { color = Color.Gray, alpha = 0.5f };
             sprMenuHud = new Sprite(true, TexMenuHud);
-            sprMenuHud.rectDest = new SmoothRect
-                (0, game.GetScreenSize().Y - 32, 64, 32);
 
             //Loads all maze block textures.
             GameObj._LoadContent(game.Content); //base class.
@@ -273,6 +266,8 @@ namespace EnduranceTheMaze
             MazeTurret.LoadContent(game.Content);
             MazeTurretBullet.LoadContent(game.Content);
             MazeMirror.LoadContent(game.Content);
+
+            Window_ClientSizeChanged(null, null);
         }
 
         /// <summary>
@@ -673,21 +668,19 @@ namespace EnduranceTheMaze
             }
 
             #region Handles MazeTurretBullet triggering
-            //Gets a list of all bullets.
-            List<GameObj> itemsTemp0 = items
-                .Where(o => o.BlockType == Type.TurretBullet)
-                .ToList();
-
-            foreach (GameObj item in itemsTemp0)
+            //Handles all bullets.
+            items.ForEach(item =>
             {
+                if (item.BlockType != Type.TurretBullet) { return; }
+
                 //Moves the bullet.
                 item.X += ((int)Utils.DirVector(item.BlockDir).X * item.CustInt2);
                 item.Y += ((int)Utils.DirVector(item.BlockDir).Y * item.CustInt2);
 
                 //Gets a list of all solids in front of the bullet.
                 List<GameObj> itemsFront = items.Where(obj =>
-                    Math.Abs((obj.X * 32 + 16) - ((item.X + item.CustInt2))) < 7 && //TODO: 4 or custInt2?
-                    Math.Abs((obj.Y * 32 + 16) - ((item.Y + item.CustInt2))) < 7 &&
+                    Math.Abs(obj.X * MainLoop.TileSize + MainLoop.TileSizeHalf - item.X + item.CustInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
+                    Math.Abs(obj.Y * MainLoop.TileSize + MainLoop.TileSizeHalf - item.Y + item.CustInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
                     obj.Layer == item.Layer && obj.IsSolid).ToList();
 
                 foreach (GameObj item2 in itemsFront)
@@ -697,7 +690,7 @@ namespace EnduranceTheMaze
                     {
                         (item2 as MazeActor).hp -= 25;
                         (item2 as MazeActor).PerformHurtAnimation();
-                        game.playlist.Play(sndHit, item.X / 32, item.Y / 32);
+                        game.playlist.Play(sndHit, item.X / MainLoop.TileSize, item.Y / MainLoop.TileSize);
                     }
 
                     #region Interaction: MazeMultiWay
@@ -755,7 +748,7 @@ namespace EnduranceTheMaze
 
                     RemoveItem(item);
                 }
-            }
+            });
             #endregion
 
             //Handles the behavior of blocks when the timer is zero.
@@ -863,29 +856,29 @@ namespace EnduranceTheMaze
                         int xOffset = -4;
                         int yOffset = -4;
                         Vector2 itemDirVector = Utils.DirVector(item.BlockDir);
-                        if (itemDirVector.Y < 0) { xOffset += 16; }
-                        else if (itemDirVector.Y > 0) { xOffset += 16; yOffset += 32; }
-                        if (itemDirVector.X < 0) { yOffset += 16; }
-                        else if (itemDirVector.X > 0) { xOffset += 32; yOffset += 16; }
+                        if (itemDirVector.Y < 0) { xOffset += MainLoop.TileSizeHalf; }
+                        else if (itemDirVector.Y > 0) { xOffset += MainLoop.TileSizeHalf; yOffset += MainLoop.TileSize; }
+                        if (itemDirVector.X < 0) { yOffset += MainLoop.TileSizeHalf; }
+                        else if (itemDirVector.X > 0) { xOffset += MainLoop.TileSize; yOffset += MainLoop.TileSizeHalf; }
                         if (!Utils.DirCardinal(item.BlockDir))
                         {
-                            xOffset -= 16;
-                            yOffset -= 16;
+                            xOffset -= MainLoop.TileSizeHalf;
+                            yOffset -= MainLoop.TileSizeHalf;
                         }
 
                         Vector2 ring1Speed = Utils.DirVector(Utils.DirNext(item.BlockDir));
 
                         FxRing ring1 = new FxRing(
                             game,
-                            item.X * 32 + xOffset,
-                            item.Y * 32 + yOffset,
+                            item.X * MainLoop.TileSize + xOffset,
+                            item.Y * MainLoop.TileSize + yOffset,
                             item.Layer, (ring1Speed.X, ring1Speed.Y), Color.Gray, 0.06f);
                         AddItem(ring1);
                         Vector2 ring2Speed = Utils.DirVector(Utils.DirPrev(item.BlockDir));
                         FxRing ring2 = new FxRing(
                             game,
-                            item.X * 32 + xOffset,
-                            item.Y * 32 + yOffset,
+                            item.X * MainLoop.TileSize + xOffset,
+                            item.Y * MainLoop.TileSize + yOffset,
                             item.Layer, (ring2Speed.X, ring2Speed.Y), Color.Gray, 0.06f);
                         AddItem(ring2);
 
@@ -985,8 +978,8 @@ namespace EnduranceTheMaze
                     for (int j = 0; j < 2 + Utils.Rng.Next(2); j++)
                     {
                         dust = new FxRing(game,
-                            queueItems[i].X * 32 + 8 + Utils.Rng.Next(16),
-                            queueItems[i].Y * 32 + 8 + Utils.Rng.Next(16),
+                            queueItems[i].X * MainLoop.TileSize + Utils.Rng.Next(MainLoop.TileSizeHalf),
+                            queueItems[i].Y * MainLoop.TileSize + MainLoop.TileSizeHalf + Utils.Rng.Next(MainLoop.TileSizeHalf),
                             queueItems[i].Layer, (0, 0), Color.White, 0.06f + Utils.Rng.Next(3) / 100f);
                         dust.BlockSprite.scaleY = 0.05f + Utils.Rng.Next(10) / 100f;
                         dust.BlockSprite.scaleX = 0.05f + Utils.Rng.Next(10) / 100f;
@@ -1222,17 +1215,17 @@ namespace EnduranceTheMaze
                 scrnBounds.X + scrnBounds.Width / 2f,
                 scrnBounds.Y + scrnBounds.Height / 2f);
 
-                game.GameSpriteBatch.DrawString(game.fntBold,
+                game.GameSpriteBatch.DrawString(game.fntBoldBig,
                     message, scrnCenter, Color.Black, 0,
-                    game.fntBold.MeasureString(message) / 2,
+                    game.fntBoldBig.MeasureString(message) / 2,
                     1, SpriteEffects.None, 0);
 
                 Vector2 scrnCenterShifted = new Vector2(
                 scrnBounds.X + scrnBounds.Width / 2f,
-                scrnBounds.Y + 16 + scrnBounds.Height / 2f);
+                scrnBounds.Y + MainLoop.TileSizeHalf + scrnBounds.Height / 2f);
 
                 string pauseText = "Press P to continue.";
-                game.GameSpriteBatch.DrawString(game.fntDefault,
+                game.GameSpriteBatch.DrawString(game.fntBoldBig,
                     pauseText, scrnCenter + new Vector2(0, 24),
                     Color.Black, 0, game.fntDefault.MeasureString(pauseText) / 2,
                     1, SpriteEffects.None, 0);
@@ -1280,20 +1273,20 @@ namespace EnduranceTheMaze
         {
             //Sets up health and coins text.
             SpriteText hudHp =
-                new SpriteText(game.fntDefault, actor.hp.ToString());
+                new SpriteText(game.fntBoldBig, actor.hp.ToString());
             hudHp.CenterOriginHor();
             hudHp.color = Color.Black;
             hudHp.drawBehavior = SpriteDraw.all;
-            hudHp.position = new Vector2(16,
-                5 + (int)game.GetScreenSize().Y - 32);
+            hudHp.position = new Vector2(MainLoop.TileSizeHalf,
+                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18);
 
             SpriteText hudCoins =
-                new SpriteText(game.fntDefault, ActorCoins.ToString());
+                new SpriteText(game.fntBoldBig, ActorCoins.ToString());
             hudCoins.CenterOriginHor();
             hudCoins.color = Color.Black;
             hudCoins.drawBehavior = SpriteDraw.all;
-            hudCoins.position = new Vector2(48,
-                5 + (int)game.GetScreenSize().Y - 32);
+            hudCoins.position = new Vector2(MainLoop.TileSize + MainLoop.TileSizeHalf,
+                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18);
 
             //Draws the bottom info bar with health and coins.
             sprHudOverlay.Draw(game.GameSpriteBatch);
@@ -1308,8 +1301,8 @@ namespace EnduranceTheMaze
             }
 
             //Draws the tooltip.
-            game.GameSpriteBatch.DrawString(game.fntDefault, tooltip,
-                new Vector2(68, 5 + (int)game.GetScreenSize().Y - 32),
+            game.GameSpriteBatch.DrawString(game.fntBoldBig, tooltip,
+                new Vector2(MainLoop.TileSize * 2 + 4, (int)game.GetScreenSize().Y - MainLoop.TileSize + 16),
                 Color.Black);
         }
     }

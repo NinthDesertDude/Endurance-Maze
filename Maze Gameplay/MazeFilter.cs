@@ -42,7 +42,7 @@ namespace EnduranceTheMaze
             BlockSprite.depth = 0.405f;
             BlockSprite.doDrawOffset = true;
             BlockSprite.drawBehavior = SpriteDraw.all;
-            spriteAtlas = new SpriteAtlas(BlockSprite, 32, 32, 19, 2, 10);
+            spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
             spriteAtlas.CenterOrigin();
         }
 
@@ -120,10 +120,10 @@ namespace EnduranceTheMaze
                 for (int i = 0; i < 8; i++)
                 {
                     pickup = new FxPoof(
-                        game, X * 32, Y * 32, Layer,
+                        game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer,
                         new Microsoft.Xna.Framework.Color(128, 128, 255),
                         (-1 + 2*Utils.Rng.NextDouble(), -1 + 2*Utils.Rng.NextDouble()));
-                    pickup.X += -16;
+                    pickup.X -= MainLoop.TileSizeHalf;
                     game.mngrLvl.AddItem(pickup);
                 }
 

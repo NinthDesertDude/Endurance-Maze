@@ -20,6 +20,13 @@
 /processorParam:TextureFormat=Compressed
 /build:Content/Fonts/fntBold.spritefont
 
+#begin Content/Fonts/fntBoldBig.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Content/Fonts/fntBoldBig.spritefont
+
 #begin Content/Fonts/fntDefault.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
