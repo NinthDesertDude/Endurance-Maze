@@ -79,6 +79,15 @@ namespace EnduranceTheMaze
             //Sets the initial position.
             BlockSprite.rectDest.X = x * MainLoop.TileSize;
             BlockSprite.rectDest.Y = y * MainLoop.TileSize;
+
+            // Actors have an associated point light.
+            Lighting = new(
+                new Penumbra.PointLight
+                {
+                    Scale = new Vector2(MainLoop.TileSize * 10),
+                    ShadowType = Penumbra.ShadowType.Solid,
+                    CastsShadows = true
+                }, null);
         }
 
         /// <summary>
@@ -93,25 +102,15 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeActor newBlock = new MazeActor(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeActor newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets specific variables.
+            newBlock.BlockSprite = BlockSprite;
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
             newBlock.countdown = countdown;
             newBlock.countdownStart = countdownStart;
@@ -632,8 +631,7 @@ namespace EnduranceTheMaze
                             o.Y >= yMin && o.Y <= yMax)
                             .ToList();
 
-                        List<GameObj> thisActor = new List<GameObj>();
-                        thisActor.Add(this);
+                        List<GameObj> thisActor = new() { this };
 
                         // Bullets are deleted if the player moves into them here, and also in MngrLvl
                         // if the bullet moves into the player. In both cases, subtracts health.
@@ -724,7 +722,7 @@ namespace EnduranceTheMaze
 
                 if (keys.Count > 0)
                 {
-                    game.mngrLvl.tooltip += "(Has " + keys.Count + " keys) ";
+                    game.mngrLvl.tooltip += $"(Has {keys.Count} keys) ";
 
                     #region Interaction: MazeKey.cs
                     //Draws a key for each collected key.

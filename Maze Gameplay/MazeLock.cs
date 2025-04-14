@@ -55,22 +55,12 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeLock newBlock = new MazeLock(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
+            MazeLock newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets specific variables.
             newBlock.BlockSprite = BlockSprite;

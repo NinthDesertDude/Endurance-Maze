@@ -55,25 +55,15 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeGoal newBlock = new MazeGoal(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeGoal newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Custom variables.
+            newBlock.BlockSprite = BlockSprite;
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
 
             return newBlock;
@@ -84,13 +74,8 @@ namespace EnduranceTheMaze
         /// </summary>
         public override void Update()
         {
-            //Gets a list of all actors on the goal object.
-            List<GameObj> items = game.mngrLvl.items.Where(o =>
-                o.X == X && o.Y == Y && o.Layer == Layer &&
-                o.BlockType == Type.Actor).ToList();
-
             //If there is at least one actor touching the goal.
-            if (items.Count != 0)
+            if (game.mngrLvl.itemsJustActors.Any(o => o.X == X && o.Y == Y && o.Layer == Layer))
             {
                 game.mngrLvl.ActorGoals++;
                 game.mngrLvl.RemoveItem(this);

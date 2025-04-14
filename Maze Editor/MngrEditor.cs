@@ -18,7 +18,7 @@ namespace EnduranceTheMaze
     public class MngrEditor
     {
         //Refers to the game instance.
-        private MainLoop game;
+        private readonly MainLoop game;
 
         //The bottom toolbar, left sidebar, and block selector.
         public static Texture2D TexInGameLevelEditorBg { get; private set; }
@@ -93,8 +93,6 @@ namespace EnduranceTheMaze
                 Matrix.CreateTranslation(
                 new Vector3(game.GetScreenSize().X * 0.5f,
                             game.GetScreenSize().Y * 0.5f, 0));
-
-            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
 
             //Sets the default level settings.
             opGameDelay = 8;
@@ -281,6 +279,9 @@ namespace EnduranceTheMaze
                 new(game, Type.Rotate),
                 new(game, Type.Message),
             };
+
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            Window_ClientSizeChanged(null, null);
         }
 
         /// <summary>
@@ -1367,6 +1368,9 @@ namespace EnduranceTheMaze
         /// </summary>
         public void Draw()
         {
+            sprInGameLevelEditorBg.rectDest = game.GetVisibleBounds(Camera, camZoom);
+            sprInGameLevelEditorBg.Draw(game.GameSpriteBatch);
+
             //Organizes all items by sprite depth.
             items = items.OrderByDescending(o => o.BlockSprite.depth).ToList();
 
@@ -1441,14 +1445,6 @@ namespace EnduranceTheMaze
 
                 blk.Draw();
             }
-        }
-
-        /// <summary>
-        /// Draws all sprites below the game that do not shift with the camera.
-        /// </summary>
-        public void DrawHudStart()
-        {
-            sprInGameLevelEditorBg.Draw(game.GameSpriteBatch);
         }
 
         /// <summary>

@@ -55,22 +55,12 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeStairs newBlock = new MazeStairs(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
+            MazeStairs newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets specific variables.
             newBlock.BlockSprite = BlockSprite;
@@ -93,7 +83,7 @@ namespace EnduranceTheMaze
                 spriteAtlas.frame = 1; //down.
             }
 
-            //Gets a list of all actors on the stairs object.
+            //Gets a list of all actors, enemies and crates on the stairs object.
             List<GameObj> items = game.mngrLvl.items.Where(o =>
                 o.X == X && o.Y == Y && o.Layer == Layer &&
                 (o.BlockType == Type.Actor || o.BlockType == Type.Enemy ||

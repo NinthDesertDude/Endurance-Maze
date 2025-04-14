@@ -80,6 +80,17 @@ namespace EnduranceTheMaze
                 Y = value.Y;
             }
         }
+
+        /// <summary>
+        /// Generates and returns the centered coordinate.
+        /// </summary>
+        public Vector2 Center
+        {
+            get
+            {
+                return new Vector2(X + Width / 2f, Y + Height / 2f);
+            }
+        }
         #endregion
 
         #region Constructors

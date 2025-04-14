@@ -45,6 +45,7 @@
         TurretBullet = 33, // Not an editor object.
         Mirror = 34,
         CoinLock = 35,
-        LaserActuator = 36
+        LaserActuator = 36,
+        FX = 37
     }
 }

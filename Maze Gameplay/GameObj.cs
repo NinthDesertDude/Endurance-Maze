@@ -1,5 +1,7 @@
-﻿using Microsoft.Xna.Framework.Audio;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
+using Penumbra;
 
 namespace EnduranceTheMaze
 {
@@ -40,7 +42,7 @@ namespace EnduranceTheMaze
                 _sprite = value;
 
                 //Sets the initial position.
-                if (isSynchronized)
+                if (IsSynchronized)
                 {
                     _sprite.rectDest.X = X * MainLoop.TileSize;
                     _sprite.rectDest.Y = Y * MainLoop.TileSize;
@@ -56,11 +58,12 @@ namespace EnduranceTheMaze
         private int _x;
         private int _y;
         private int _layer;
+        private bool _isSynchronized = true;
         private Dir _dir = Dir.Right;
-        private bool _isSolid;
-        private bool _isEnabled;
-        private bool _isVisible;
-        private bool _isDecor;
+        private bool _isSolid = false;
+        private bool _isEnabled = true;
+        private bool _isVisible = true;
+        private bool _isDecor = false;
         private int _actionIndex = -1;
         private int _actionType = -1;
         private int _actionIndex2 = -1;
@@ -70,7 +73,7 @@ namespace EnduranceTheMaze
         private string _custStr = "";
 
         /// <summary>
-        /// The x-location. If <see cref="isSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// The x-location. If <see cref="IsSynchronized"/> is true, this is multiplied by the tile size and acts as
         /// the position of the tile.
         /// </summary>
         public virtual int X
@@ -87,7 +90,7 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// The y-location. If <see cref="isSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// The y-location. If <see cref="IsSynchronized"/> is true, this is multiplied by the tile size and acts as
         /// the position of the tile.
         /// </summary>
         public virtual int Y
@@ -123,7 +126,17 @@ namespace EnduranceTheMaze
         /// When true, the X,Y location provided is multiplied by the universal tile size (to support e.g. O(1) access
         /// by X,Y position). When false, the X,Y coordinates should be multiplied by the tile size manually.
         /// </summary>
-        public bool isSynchronized;
+        public bool IsSynchronized
+        {
+            get
+            {
+                return _isSynchronized;
+            }
+            set
+            {
+                _isSynchronized = value;
+            }
+        }
 
         /// <summary>
         /// Block identity by type.
@@ -324,6 +337,29 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
+        /// These are the lighting elements associated with this game object. Registrations with the lighting engine
+        /// will be lazily updated as needed.
+        /// </summary>
+        public (Light light, Hull shadow) Lighting { get; protected set; }
+
+        /// <summary>
+        /// This keeps track of when this item has its lighting elements actively registered to the
+        /// lighting engine. Read only.
+        /// </summary>
+        public (bool light, bool shadow) LightingRegistered { get; private set; }
+
+        /// <summary>
+        /// The lighting hull used for shadowed tiles, conveniently sized to a tile.
+        /// </summary>
+        public static readonly Vector2[] TileHull = new[]
+        {
+            Vector2.Zero,
+            new(MainLoop.TileSize, 0),
+            new(MainLoop.TileSize, MainLoop.TileSize),
+            new(0, MainLoop.TileSize)
+        };
+
+        /// <summary>
         /// Sets the block's location.
         /// </summary>
         /// <param name="x">The column number.</param>
@@ -332,14 +368,12 @@ namespace EnduranceTheMaze
         public GameObj(MainLoop game, int x, int y, int layer, bool isDecor = false)
         {
             this.game = game;
-            this.X = x;
-            this.Y = y;
-            this.Layer = layer;
-            IsSolid = false;
-            IsEnabled = true;
-            IsVisible = true;
-            isSynchronized = true;
+            X = x;
+            Y = y;
+            Layer = layer;
             IsDecor = isDecor;
+
+            if (IsDecor) { BlockType = Type.FX; }
         }
 
         /// <summary>
@@ -347,7 +381,7 @@ namespace EnduranceTheMaze
         /// used to distinguish from deriving blocks' LoadContent() methods.)
         /// </summary>
         /// <param name="Content">A game content loader.</param>
-        public static void _LoadContent(ContentManager Content)
+        public static void LoadContent(ContentManager Content)
         {
             sndActivated = Content.Load<SoundEffect>("Content/Sounds/sndActivated");
         }
@@ -357,6 +391,25 @@ namespace EnduranceTheMaze
         /// Must be implemented in all derivatives.
         /// </summary>
         public abstract GameObj Clone();
+
+        /// <summary>
+        /// Copies all values from the given object; should include all properties expected to be copied from this
+        /// class for a deep copy. Called by derived implementations of Clone method.
+        /// </summary>
+        public void CopyFrom(GameObj newBlock)
+        {
+            ActionIndex = newBlock.ActionIndex;
+            ActionIndex2 = newBlock.ActionIndex2;
+            ActionType = newBlock.ActionType;
+            BlockDir = newBlock.BlockDir;
+            CustInt1 = newBlock.CustInt1;
+            CustInt2 = newBlock.CustInt2;
+            CustStr = newBlock.CustStr;
+            IsActivated = newBlock.IsActivated;
+            IsEnabled = newBlock.IsEnabled;
+            IsVisible = newBlock.IsVisible;
+            IsDecor = newBlock.IsDecor;
+        }
 
         /// <summary>
         /// Performs basic updates. Override to add functionality. Call last.
@@ -397,7 +450,7 @@ namespace EnduranceTheMaze
             }
 
             //Synchronizes sprite position to location.
-            if (isSynchronized)
+            if (IsSynchronized)
             {
                 BlockSprite.rectDest.X = X * MainLoop.TileSize;
                 BlockSprite.rectDest.Y = Y * MainLoop.TileSize;
@@ -406,6 +459,62 @@ namespace EnduranceTheMaze
             {
                 BlockSprite.rectDest.X = X;
                 BlockSprite.rectDest.Y = Y;
+            }
+
+            //Updates lighting.
+            if (IsVisible)
+            {
+                if (Lighting.light != null) { Lighting.light.Position = BlockSprite.rectDest.Center; }
+                if (Lighting.shadow != null) { Lighting.shadow.Position = BlockSprite.rectDest.Position; }
+            }
+
+            UpdateLighting();
+        }
+
+        /// <summary>
+        /// Shows or hides lighting of this game object based on its state. When visible is false, it always hides.
+        /// </summary>
+        public virtual void UpdateLighting(bool lightDefaultVis = true, bool shadowDefaultVis = true)
+        {
+            bool lightVisible = lightDefaultVis;
+            bool shadowVisible = shadowDefaultVis;
+
+            if (!IsVisible || Layer != game.mngrLvl.actor.Layer) { lightVisible = false; shadowVisible = false; }
+            if (Lighting.light == null) { lightVisible = false; }
+            if (Lighting.shadow == null) { shadowVisible = false; }
+
+            if (Lighting.light != null)
+            {
+                if (lightVisible && !LightingRegistered.light)
+                {
+                    LightingRegistered = new(true, LightingRegistered.shadow);
+                    if (!MngrLvl.LightingEngine.Lights.Contains(Lighting.light))
+                    {
+                        MngrLvl.LightingEngine.Lights.Add(Lighting.light);
+                    }
+                }
+                if (!lightVisible)
+                {
+                    LightingRegistered = new(false, LightingRegistered.shadow);
+                    MngrLvl.LightingEngine.Lights.Remove(Lighting.light);
+                }
+            }
+
+            if (Lighting.shadow != null)
+            {
+                if (shadowVisible && !LightingRegistered.shadow)
+                {
+                    LightingRegistered = new(LightingRegistered.light, true);
+                    if (!MngrLvl.LightingEngine.Hulls.Contains(Lighting.shadow))
+                    {
+                        MngrLvl.LightingEngine.Hulls.Add(Lighting.shadow);
+                    }
+                }
+                if (!shadowVisible)
+                {
+                    LightingRegistered = new(LightingRegistered.light, false);
+                    MngrLvl.LightingEngine.Hulls.Remove(Lighting.shadow);
+                }
             }
         }
 

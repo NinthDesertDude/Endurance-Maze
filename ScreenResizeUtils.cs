@@ -9,8 +9,8 @@ namespace EnduranceTheMaze
     /// </summary>
     public class ScreenResizeUtils
     {
-        public static readonly int DefaultWidth = 800;
-        public static readonly int DefaultHeight = 510;
+        public static readonly int DefaultWidth = 1280;
+        public static readonly int DefaultHeight = 640;
 
         public bool IsFullscreen { get; private set; } = false;
 
@@ -21,8 +21,8 @@ namespace EnduranceTheMaze
         public ScreenResizeUtils(GraphicsDeviceManager gDevice)
         {
             IsFullscreen = false;
-            prevWidth = 800;
-            prevHeight = 510;
+            prevWidth = DefaultWidth;
+            prevHeight = DefaultHeight;
             this.gDevice = gDevice;
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace EnduranceTheMaze
@@ -36,6 +37,16 @@ namespace EnduranceTheMaze
             BlockSprite = new Sprite(true, TexELight);
             BlockSprite.depth = 0.416f;
             spriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
+
+            // ELights cast their own light source.
+            Lighting = new(
+                new Penumbra.PointLight
+                {
+                    Radius = MainLoop.TileSize,
+                    Scale = new Vector2(MainLoop.TileSize * 8),
+                    ShadowType = Penumbra.ShadowType.Illuminated,
+                    Color = new Color(253, 255, 170)
+                }, null);
         }
 
         /// <summary>
@@ -48,25 +59,15 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeELight newBlock = new MazeELight(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeELight newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets custom variables.
+            newBlock.BlockSprite = BlockSprite;
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
             return newBlock;
         }

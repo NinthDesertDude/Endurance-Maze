@@ -50,10 +50,10 @@ namespace EnduranceTheMaze
         public ImgBlock(MainLoop game, Type type, int x, int y, int layer)
         {
             this.game = game;
-            this.BlockType = type;
-            this.X = x;
-            this.Y = y;
-            this.Layer = layer;
+            BlockType = type;
+            X = x;
+            Y = y;
+            Layer = layer;
 
             //Sets default values.
             ActionIndex = 0;

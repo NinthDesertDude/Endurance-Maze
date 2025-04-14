@@ -59,25 +59,15 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeGate newBlock = new MazeGate(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeGate newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets custom variables.
+            newBlock.BlockSprite = BlockSprite;
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
             return newBlock;
         }
@@ -142,20 +132,17 @@ namespace EnduranceTheMaze
                 {
                     //All solids at the gate position, except itself.
                     List<GameObj> trappedActors = new List<GameObj>();
-                    List<GameObj> items = game.mngrLvl.items.Where(o =>
-                        o.X == X && o.Y == Y && o.Layer == Layer && o.IsSolid)
-                        .ToList();
-                    items.Remove(this);
+                    var items = game.mngrLvl.items
+                        .Where(o => o.X == X && o.Y == Y && o.Layer == Layer && o.IsSolid && o != this);
 
                     //Solids prevent gate closure, so if it can close on actors,
                     //the actors must be removed from the list.
                     if (CustInt1 == 1)
                     {
-                        trappedActors = items.Where(o =>
-                            o.BlockType == Type.Actor).ToList();
+                        trappedActors = items.Where(o => o.BlockType == Type.Actor).ToList();
                     }
                     //The gate becomes open if it can't close on solids.
-                    if (items.Count - trappedActors.Count != 0)
+                    if (items.Count() - trappedActors.Count != 0)
                     {
                         IsSolid = false;
                     }
@@ -171,7 +158,7 @@ namespace EnduranceTheMaze
                 }
 
                 //Determines the sprite via solidity.
-                spriteAtlas.frame = (IsSolid) ? 1 : 0;
+                spriteAtlas.frame = IsSolid ? 1 : 0;
             }
 
             spriteAtlas.Update(true);

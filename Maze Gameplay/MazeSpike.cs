@@ -54,26 +54,15 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeSpike newBlock =
-                new MazeSpike(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeSpike newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets specific variables.
+            newBlock.BlockSprite = BlockSprite;
             newBlock.spriteAtlas = new SpriteAtlas(spriteAtlas, false);
             return newBlock;
         }
@@ -86,15 +75,11 @@ namespace EnduranceTheMaze
             //Slowly rotates the sprite.
             BlockSprite.angle += 0.02f;
 
-            //Gets a list of all actor blocks on the spike.
-            List<GameObj> items = game.mngrLvl.items.Where(o =>
-                o.X == X && o.Y == Y && o.Layer == Layer &&
-                o.BlockType == Type.Actor).ToList();
-
             //Destroys all actors touching the spike.
-            foreach (GameObj item in items)
+            var items = game.mngrLvl.itemsJustActors.Where(o => o.X == X && o.Y == Y && o.Layer == Layer);
+            foreach (MazeActor item in items)
             {
-                (item as MazeActor).hp = 0;
+                item.hp = 0;
                 game.playlist.Play(MngrLvl.sndHit, X, Y); //Depends: MngrLvl.
             }
 
@@ -103,7 +88,7 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Draws the enemy. When hovered, draws enabledness/info.
+        /// Draws the spike. When hovered, draws enabledness/info.
         /// </summary>
         public override void Draw()
         {

@@ -57,23 +57,12 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeCheckpoint newBlock = new MazeCheckpoint(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
-            newBlock.BlockSprite = BlockSprite;
+            MazeCheckpoint newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Custom variables.
             newBlock.BlockSprite = BlockSprite;
@@ -91,12 +80,8 @@ namespace EnduranceTheMaze
             if (CustInt1 == 1) { BlockSprite.color = colorChkptOneUse; }
             else { BlockSprite.color = colorChkptMultiUse; }
 
-            //Gets a list of all actors in the same position.
-            List<GameObj> items = game.mngrLvl.items.Where(o =>
-                o.X == X && o.Y == Y && o.Layer == Layer &&
-                o.BlockType == Type.Actor).ToList();
-
-            if (items.Count > 0) //Attempts to save.
+            //Attempts to save if at least one actor is touching the checkpoint.
+            if (game.mngrLvl.itemsJustActors.Any(o => o.X == X && o.Y == Y && o.Layer == Layer))
             {
                 if (!hasActivated)
                 {

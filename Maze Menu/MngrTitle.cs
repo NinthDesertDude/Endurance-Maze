@@ -56,8 +56,7 @@ namespace EnduranceTheMaze
         public void RefreshButtonState(bool isValid)
         {
             // Disables buttons when returning to the editor, depending on the level state.
-            bool isValidWithActors = isValid && !(game.mngrEditor.items.Count == 0 ||
-                !game.mngrEditor.items.Any(o => o.BlockType == Type.Actor));
+            bool isValidWithActors = isValid && game.mngrEditor.items.Any(o => o.BlockType == Type.Actor);
 
             bttnTest.isDisabled = !isValidWithActors;
             bttnSave.isDisabled = !isValid;
@@ -73,7 +72,6 @@ namespace EnduranceTheMaze
             this.game = game;
             _infoPage = 0; //Sets the current information page.
 
-            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             game.OnGameStateChange += OnGameStateChanged;
         }
 
@@ -81,11 +79,7 @@ namespace EnduranceTheMaze
         {
             var screenSize = game.GetScreenSize();
 
-            bttnBack.BttnSprite.rectDest.X = game.GmState == GameState.stateCampaignModes
-                ? screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2 : game.GmState == GameState.stateMenuEditor
-                ? screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2
-                : screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2;
-
+            bttnBack.BttnSprite.rectDest.X = screenSize.X / 2 - bttnBack.BttnSprite.rectDest.Width/2;
             bttnBack.BttnSprite.rectDest.Y = screenSize.Y / 2 - 262;
         }
 
@@ -186,6 +180,7 @@ namespace EnduranceTheMaze
             sprMenuLevelsBgDecor = new Sprite(true, TexBgMenuLevels) { alpha = 0.5f };
             sprMenuInfo = new Sprite(true, TexMenuInfo1);
 
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             Window_ClientSizeChanged(null, null);
         }
 
@@ -347,9 +342,7 @@ namespace EnduranceTheMaze
                         bttnTest.isClicked = false;
 
                         //If there is at least one actor block.
-                        if (game.mngrEditor.items.Count > 0 &&
-                        game.mngrEditor.items.Any(o =>
-                        o.BlockType == Type.Actor))
+                        if (game.mngrEditor.items.Any(o => o.BlockType == Type.Actor))
                         {
                             //Loads the level.
                             game.mngrEditor.LoadTest();

@@ -19,7 +19,7 @@ namespace EnduranceTheMaze
             : base(game, x, y, layer, true)
         {
             //Sets default values.
-            isSynchronized = true;
+            IsSynchronized = true;
 
             //Sets sprite information.
             BlockSprite = new Sprite(true, MngrLvl.TexFx);
@@ -38,22 +38,12 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            FxReceived newBlock = new FxReceived(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
+            FxReceived newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
             return newBlock;
         }
 

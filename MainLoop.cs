@@ -65,8 +65,8 @@ namespace EnduranceTheMaze
         {
             //Sets up xna components.
             Graphics = new GraphicsDeviceManager(this);
-            Graphics.PreferredBackBufferHeight = 640;
-            Graphics.PreferredBackBufferWidth = 1280;
+            Graphics.PreferredBackBufferWidth = ScreenResizeUtils.DefaultWidth;
+            Graphics.PreferredBackBufferHeight = ScreenResizeUtils.DefaultHeight;
             Content.RootDirectory = "Content";
 
             GmState = GameState.stateMenu; //set to main menu.
@@ -74,8 +74,10 @@ namespace EnduranceTheMaze
             IsMouseVisible = true; //Makes the mouse visible.
 
             //Centers the window, sets up fullscreen-remembering logic.
+            Graphics.ApplyChanges();
+
             FullscreenHandler = new ScreenResizeUtils(Graphics);
-            Window.Position = new Microsoft.Xna.Framework.Point(
+            Window.Position = new Point(
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width / 2) -
                 (Graphics.PreferredBackBufferWidth / 2),
                 (GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height / 2) -
@@ -125,6 +127,7 @@ namespace EnduranceTheMaze
         protected override void Initialize()
         {
             base.Initialize();
+            MngrLvl.LightingEngine?.Initialize();
         }
 
         /// <summary>
@@ -269,19 +272,13 @@ namespace EnduranceTheMaze
             if (GmState == GameState.stateGameplay ||
                 GmState == GameState.stateGameplayEditor)
             {
-                GameSpriteBatch.Begin();
-                mngrLvl.DrawHudStart();
-                GameSpriteBatch.End();
+                MngrLvl.LightingEngine?.BeginDraw();
 
                 GameSpriteBatch.Begin(SpriteSortMode.Deferred, null, null,
                     null, null, null, mngrLvl.Camera);
             }
             else if (GmState == GameState.stateEditor)
             {
-                GameSpriteBatch.Begin();
-                mngrEditor.DrawHudStart();
-                GameSpriteBatch.End();
-
                 GameSpriteBatch.Begin(SpriteSortMode.Deferred, null, null,
                     null, null, null, mngrEditor.Camera);
             }
@@ -312,8 +309,11 @@ namespace EnduranceTheMaze
                 case GameState.stateGameplayEditor:
                     mngrLvl.Draw();
 
-                    //Draws static sprites afterwards.
                     GameSpriteBatch.End();
+                    MngrLvl.LightingEngine.Transform = mngrLvl.Camera;
+                    MngrLvl.LightingEngine?.Draw(gameTime);
+
+                    //Draws static sprites afterwards.
                     GameSpriteBatch.Begin();
                     mngrLvl.DrawHud();
                     break;
@@ -333,21 +333,20 @@ namespace EnduranceTheMaze
         /// </summary>
         public Vector2 GetScreenSize()
         {
-            return new Vector2(Graphics.PreferredBackBufferWidth,
-                Graphics.PreferredBackBufferHeight);
+            return new Vector2(Graphics.PreferredBackBufferWidth, Graphics.PreferredBackBufferHeight);
         }
 
         /// <summary>
         /// Returns the visible bounds of the screen in world space as
         /// a rectangle.
         /// </summary>
-        public Microsoft.Xna.Framework.Rectangle GetVisibleBounds(Matrix camera, float zoom)
+        public SmoothRect GetVisibleBounds(Matrix camera, float zoom)
         {
             int xPos = (int)Vector2.Transform(Vector2.Zero, Matrix.Invert(camera)).X;
             int yPos = (int)Vector2.Transform(Vector2.Zero, Matrix.Invert(camera)).Y;
             int width = (int)Math.Ceiling(GetScreenSize().X * (1 / zoom));
             int height = (int)Math.Ceiling(GetScreenSize().Y * (1 / zoom));
-            return new Microsoft.Xna.Framework.Rectangle(xPos, yPos, width, height);
+            return new SmoothRect(xPos, yPos, width, height);
         }
 
         /// <summary>

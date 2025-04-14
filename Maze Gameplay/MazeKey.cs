@@ -65,22 +65,12 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeKey newBlock = new MazeKey(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
+            MazeKey newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
 
             //Sets specific variables.
             newBlock.BlockSprite = BlockSprite;
@@ -128,29 +118,25 @@ namespace EnduranceTheMaze
                     break;
             }
 
-            //Gets a list of all actors on the key object.
-            List<GameObj> items = game.mngrLvl.items.Where(o =>
-                o.X == X && o.Y == Y && o.Layer == Layer &&
-                o.BlockType == Type.Actor).ToList();
+            // Adds to the list of keys the first actor to touch it has.
+            var firstActor = game.mngrLvl.itemsJustActors.FirstOrDefault(o => o.X == X && o.Y == Y && o.Layer == Layer);
+            if (firstActor != null)
+            {
+                firstActor.keys.Add(BlockSprite.color);
+                game.mngrLvl.RemoveItem(this);
+                game.playlist.Play(sndCollectKey, X, Y);
 
-                //Adds the key to the index of the first actor to touch it.
-                if (items.Count != 0)
+                // Animation for picking up the key
+                FxPickup pickup;
+                int sparkles = 4 + Utils.Rng.Next(4);
+                for (int i = 0; i < sparkles; i++)
                 {
-                    (items[0] as MazeActor).keys.Add(BlockSprite.color);
-                    game.mngrLvl.RemoveItem(this);
-                    game.playlist.Play(sndCollectKey, X, Y);
-
-                    // Animation for picking up the key
-                    FxPickup pickup;
-                    int sparkles = 4 + Utils.Rng.Next(4);
-                    for (int i = 0; i < sparkles; i++)
-                    {
-                        pickup = new FxPickup(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer, BlockSprite.color);
-                        pickup.X += -MainLoop.TileSizeHalf + Utils.Rng.Next(MainLoop.TileSize);
-                        pickup.Y -= Utils.Rng.Next(20);
-                        game.mngrLvl.AddItem(pickup);
-                    }
+                    pickup = new FxPickup(game, X * MainLoop.TileSize, Y * MainLoop.TileSize, Layer, BlockSprite.color);
+                    pickup.X += -MainLoop.TileSizeHalf + Utils.Rng.Next(MainLoop.TileSize);
+                    pickup.Y -= Utils.Rng.Next(20);
+                    game.mngrLvl.AddItem(pickup);
                 }
+            }
 
             spriteAtlas.Update(true);
             base.Update();

@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Penumbra;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -28,6 +29,8 @@ namespace EnduranceTheMaze
         public static Texture2D TexPixel { get; private set; }
         public static Texture2D TexMenuHud { get; private set; }
         public static Texture2D TexFx { get; private set; }
+
+        public static PenumbraComponent LightingEngine { get; private set; }
 
         //HUD assets (sprites and text).
         private Sprite sprInGameLevelEditorBg, sprHudOverlay, sprMenuHud;
@@ -97,20 +100,41 @@ namespace EnduranceTheMaze
         public bool isMessageShown = false;
         private bool isPaused = false;
 
-        //The message to display.
+        //When shown, this message will cover the screen until dismissed.
         public string message = "";
 
         //Contains all maze blocks in the level, organized by original, last
         //checkpoint, and current.
         private List<GameObj> ItemsOrig { get; set; }
-        public List<GameObj> itemsChkpt;
-        public List<GameObj> items;
         private List<GameObj> ItemsDecorOrig { get; set; }
+
+        /// <summary>
+        /// A replica list of the items as they were at last checkpoint.
+        /// </summary>
+        public List<GameObj> itemsChkpt;
+
+        /// <summary>
+        /// A list of all non-decor items, unorganized.
+        /// </summary>
+        public List<GameObj> items;
+
+        /// <summary>
+        /// A list of only the actor objects from the non-decor items list, for performance.
+        /// </summary>
+        public List<MazeActor> itemsJustActors;
+
+        /// <summary>
+        /// A list of all decor-only items, unorganized. These are only drawn on the same layer, with no update.
+        /// </summary>
         public List<GameObj> itemsDecor;
 
         public MazeActor actor; //active player.
         private int _actorCoins, _actorGoals; //total coins and goals.
         private int actorCoinsChkpt, actorGoalsChkpt;
+
+        /// <summary>
+        /// The current count of coins collectively picked up by any actors.
+        /// </summary>
         public int ActorCoins
         {
             set
@@ -126,6 +150,10 @@ namespace EnduranceTheMaze
                 return _actorCoins;
             }
         }
+
+        /// <summary>
+        /// The current count of goals collectively picked up by any actors.
+        /// </summary>
         public int ActorGoals
         {
             set
@@ -181,13 +209,19 @@ namespace EnduranceTheMaze
             camZoom = 1;
 
             //Initializes the item lists.
-            ItemsOrig = new List<GameObj>();
-            itemsChkpt = new List<GameObj>();
-            items = new List<GameObj>();
-            ItemsDecorOrig = new List<GameObj>();
-            itemsDecor = new List<GameObj>();
+            ItemsOrig = new();
+            itemsChkpt = new();
+            items = new();
+            itemsJustActors = new();
+            ItemsDecorOrig = new();
+            itemsDecor = new();
 
-            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
+            //Miscellaneous.
+            LightingEngine?.Dispose();
+            LightingEngine = new(game)
+            {
+                AmbientColor = new Color(20, 20, 40)
+            };
         }
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
@@ -228,7 +262,7 @@ namespace EnduranceTheMaze
             sprMenuHud = new Sprite(true, TexMenuHud);
 
             //Loads all maze block textures.
-            GameObj._LoadContent(game.Content); //base class.
+            GameObj.LoadContent(game.Content); //base class.
             MazeActor.LoadContent(game.Content);
             MazeBelt.LoadContent(game.Content);
             MazeCoin.LoadContent(game.Content);
@@ -267,6 +301,7 @@ namespace EnduranceTheMaze
             MazeTurretBullet.LoadContent(game.Content);
             MazeMirror.LoadContent(game.Content);
 
+            game.Window.ClientSizeChanged += Window_ClientSizeChanged;
             Window_ClientSizeChanged(null, null);
         }
 
@@ -277,9 +312,18 @@ namespace EnduranceTheMaze
         {
             //Sets the new item list.
             items.Clear();
+            itemsJustActors.Clear();
+
+            //Reset lighting engine.
+            LightingEngine.Lights.Clear();
+            LightingEngine.Hulls.Clear();
+
             foreach (GameObj block in blocks)
             {
                 items.Add(block.Clone());
+
+                if (block.BlockType == Type.Actor)
+                    { itemsJustActors.Add(items[^1] as MazeActor); }
             }
 
             itemsDecor.Clear();
@@ -300,8 +344,7 @@ namespace EnduranceTheMaze
             _lvlStepsChkpt = 0;
 
             //Sets the active actor.
-            var firstActor = items.First(o => o.BlockType == Type.Actor);
-            actor = (MazeActor)(firstActor ?? actor);
+            actor = itemsJustActors.FirstOrDefault() ?? actor;
 
             //Sets up the original and checkpoint lists.
             foreach (GameObj item in items)
@@ -326,9 +369,16 @@ namespace EnduranceTheMaze
         {
             //Duplicates each item.
             items.Clear();
+            itemsJustActors.Clear();
+
+            //Reset lighting engine.
+            LightingEngine.Lights.Clear();
+            LightingEngine.Hulls.Clear();
+
             foreach (GameObj block in itemsChkpt)
             {
                 items.Add(block.Clone());
+                if (block.BlockType == Type.Actor) { itemsJustActors.Add(items[^1] as MazeActor); }
             }
 
             //Resets coins/goals/steps.
@@ -337,14 +387,7 @@ namespace EnduranceTheMaze
             LvlSteps = _lvlStepsChkpt;
 
             //Sets the active actor.
-            foreach (GameObj item in items)
-            {
-                //Selects a default actor.
-                if (item.BlockType == Type.Actor)
-                {
-                    actor = (MazeActor)item;
-                }
-            }
+            actor = itemsJustActors.LastOrDefault();
         }
 
         /// <summary>
@@ -515,16 +558,16 @@ namespace EnduranceTheMaze
         {
             if (item.IsDecor)
             {
-                List<GameObj> newItems = new List<GameObj>(itemsDecor);
-                newItems.Add(item);
+                List<GameObj> newItems = new(itemsDecor) { item };
                 itemsDecor = newItems;
             }
             else
             {
-                List<GameObj> newItems = new List<GameObj>(items);
-                newItems.Add(item);
+                List<GameObj> newItems = new(items) { item };
                 items = newItems;
             }
+
+            if (item.BlockType == Type.Actor) { itemsJustActors.Add(item as MazeActor); }
         }
 
         /// <summary>
@@ -562,7 +605,14 @@ namespace EnduranceTheMaze
                 }
 
                 items = newItems;
+
+                if (item.BlockType == Type.Actor)
+                {
+                    itemsJustActors.Remove(item as MazeActor);
+                }
             }
+
+            item.UpdateLighting(false, false);
         }
 
         /// <summary>
@@ -609,7 +659,7 @@ namespace EnduranceTheMaze
                 }
             }
 
-            //Resets the drawn tooltip.            
+            //Resets the drawn tooltip.
             if (OpMaxSteps == 0)
             {
                 tooltip = "";
@@ -642,17 +692,10 @@ namespace EnduranceTheMaze
             //Tabs through the active actors.
             if (game.KbState.IsKeyDown(Keys.Tab) &&
                 game.KbStateOld.IsKeyUp(Keys.Tab) &&
-                !opSyncActors)
+                !opSyncActors &&
+                itemsJustActors.Count != 0)
             {
-                var actors = items.Where(o => o.BlockType == Type.Actor).ToList();
-                if (actors.IndexOf(actor) < actors.Count - 1)
-                {
-                    actor = (MazeActor)actors[actors.IndexOf(actor) + 1];
-                }
-                else if (actors.Count > 0)
-                {
-                    actor = (MazeActor)actors.First();
-                }
+                actor = itemsJustActors[(itemsJustActors.IndexOf(actor) + 1) % itemsJustActors.Count];
             }
 
             //Updates the timer.
@@ -674,8 +717,8 @@ namespace EnduranceTheMaze
                 if (item.BlockType != Type.TurretBullet) { return; }
 
                 //Moves the bullet.
-                item.X += ((int)Utils.DirVector(item.BlockDir).X * item.CustInt2);
-                item.Y += ((int)Utils.DirVector(item.BlockDir).Y * item.CustInt2);
+                item.X += (int)Utils.DirVector(item.BlockDir).X * item.CustInt2;
+                item.Y += (int)Utils.DirVector(item.BlockDir).Y * item.CustInt2;
 
                 //Gets a list of all solids in front of the bullet.
                 List<GameObj> itemsFront = items.Where(obj =>
@@ -757,26 +800,24 @@ namespace EnduranceTheMaze
                 #region Handles MazeBelt triggering
                 List<GameObj> itemsTemp, itemsTop, itemsFront;
                 //Gets a list of all belt blocks.
-                itemsTemp = items.Where(o =>
-                    o.BlockType == Type.Belt && o.IsEnabled).ToList();
+                itemsTemp = items.Where(o => o.BlockType == Type.Belt && o.IsEnabled).ToList();
 
                 //Tracks blocks that get moved and direction.
                 //Moves all blocks in sync to avoid getting moved
                 //multiple times in one update.
-                List<GameObj> queueItems = new List<GameObj>();
-                List<Vector2> queuePos = new List<Vector2>();
+                List<GameObj> queueItems = new();
+                List<Vector2> queuePos = new();
 
                 foreach (GameObj belt in itemsTemp)
                 {
                     //Gets a list of all objects on the belt.
                     itemsTop = items.Where(o =>
-                        o.X == belt.X && o.Y == belt.Y &&
-                        o.Layer == belt.Layer &&
-                        o.BlockSprite.depth < belt.BlockSprite.depth).ToList();
-                    itemsTop.Remove(belt); //Removes belt from list.
+                        o.X == belt.X && o.Y == belt.Y && o.Layer == belt.Layer &&
+                        o.BlockSprite.depth < belt.BlockSprite.depth &&
+                        o != belt).ToList();
 
                     //If there are blocks on the belt.
-                    if (itemsTop.Count != 0)
+                    if (itemsTop.Any())
                     {
                         //Gets a list of all solids in front of the belt.
                         itemsFront = items.Where(o =>
@@ -813,8 +854,7 @@ namespace EnduranceTheMaze
                 #endregion
                 #region Handles MazeEnemy triggering
                 //Gets a list of all enabled enemies.
-                itemsTemp = items.Where(o => o.IsEnabled &&
-                    o.BlockType == Type.Enemy).ToList();
+                itemsTemp = items.Where(o => o.IsEnabled && o.BlockType == Type.Enemy).ToList();
 
                 foreach (GameObj item in itemsTemp)
                 {
@@ -1016,10 +1056,13 @@ namespace EnduranceTheMaze
                 }
             }
 
-            // Updates decor.
-            foreach (GameObj item in itemsDecor)
+            // Updates decor (if you didn't just win).
+            if (!doWin)
             {
-                item.Update();
+                foreach (GameObj item in itemsDecor)
+                {
+                    item.Update();
+                }
             }
 
             //Handles winning.
@@ -1081,17 +1124,16 @@ namespace EnduranceTheMaze
                 // Checks to see if any actors satisfy win condition for finish line, because we don't want to fail
                 // them if they reach in the exact no. steps. This also tracks how many goals are collected in the same
                 // step to see if it meets the required count.
-                List<GameObj> actors = game.mngrLvl.items.Where(o => o.BlockType == Type.Actor).ToList();
                 bool onFinish = false;
                 int goalsAdded = 0;
 
-                for (int i = 0; i < actors.Count; i++)
+                foreach (var actor in itemsJustActors)
                 {
                     onFinish = onFinish || game.mngrLvl.items.Any(o => o.BlockType == Type.Finish &&
-                    o.X == actors[i].X && o.Y == actors[i].Y && o.Layer == actors[i].Layer);
+                        o.X == actor.X && o.Y == actor.Y && o.Layer == actor.Layer);
 
                     goalsAdded += game.mngrLvl.items.Count(o => o.BlockType == Type.Goal &&
-                    o.X == actors[i].X && o.Y == actors[i].Y && o.Layer == actors[i].Layer);
+                    o.X == actor.X && o.Y == actor.Y && o.Layer == actor.Layer);
 
                     if (onFinish &&
                         game.mngrLvl.ActorGoals + goalsAdded >= game.mngrLvl.OpReqGoals)
@@ -1164,13 +1206,6 @@ namespace EnduranceTheMaze
                 new Vector3(game.GetScreenSize().X * 0.5f,
                             game.GetScreenSize().Y * 0.5f, 0));
         }
-        /// <summary>
-        /// Draws any sprites that underlay the rest.
-        /// </summary>
-        public void DrawHudStart()
-        {
-            sprInGameLevelEditorBg.Draw(game.GameSpriteBatch);
-        }
 
         /// <summary>
         /// Draws blocks, including adjacent layers at 25% alpha.
@@ -1178,13 +1213,13 @@ namespace EnduranceTheMaze
         public void Draw()
         {
             //Organizes all items by sprite depth.
-            List<GameObj> combinedItems = new List<GameObj>(items.Count + itemsDecor.Count);
+            List<GameObj> combinedItems = new(items.Count + itemsDecor.Count);
             combinedItems.AddRange(items);
             combinedItems.AddRange(itemsDecor);
             combinedItems = combinedItems.OrderByDescending(o => o.BlockSprite.depth).ToList();
 
             //Draws each item.
-            Rectangle scrnBounds = game.GetVisibleBounds(Camera, camZoom);
+            SmoothRect scrnBounds = game.GetVisibleBounds(Camera, camZoom);
 
             //Draws a message when the screen is paused.
             if (isPaused)
@@ -1192,14 +1227,10 @@ namespace EnduranceTheMaze
                 //Updates the camera position.
                 Camera = Matrix.CreateScale(new Vector3(camZoom, camZoom, 1));
 
-                Vector2 scrnCenter = new Vector2(
-                scrnBounds.X + scrnBounds.Width / 2f,
-                scrnBounds.Y + scrnBounds.Height / 2f);
-
                 string pausedText = "Paused: Press P to unpause.";
-                game.GameSpriteBatch.DrawString(game.fntBold,
+                game.GameSpriteBatch.DrawString(game.fntBoldBig,
                     pausedText,
-                    game.GetScreenSize() / 2 - (game.fntBold.MeasureString(pausedText) / 2),
+                    game.GetScreenSize() / 2 - (game.fntBoldBig.MeasureString(pausedText) / 2),
                     Color.Black);
 
                 return;
@@ -1210,19 +1241,12 @@ namespace EnduranceTheMaze
             {
                 //Updates the camera position.
                 Camera = Matrix.CreateScale(new Vector3(camZoom, camZoom, 1));
-
-                Vector2 scrnCenter = new Vector2(
-                scrnBounds.X + scrnBounds.Width / 2f,
-                scrnBounds.Y + scrnBounds.Height / 2f);
+                Vector2 scrnCenter = scrnBounds.Center;
 
                 game.GameSpriteBatch.DrawString(game.fntBoldBig,
                     message, scrnCenter, Color.Black, 0,
                     game.fntBoldBig.MeasureString(message) / 2,
                     1, SpriteEffects.None, 0);
-
-                Vector2 scrnCenterShifted = new Vector2(
-                scrnBounds.X + scrnBounds.Width / 2f,
-                scrnBounds.Y + MainLoop.TileSizeHalf + scrnBounds.Height / 2f);
 
                 string pauseText = "Press P to continue.";
                 game.GameSpriteBatch.DrawString(game.fntBoldBig,
@@ -1235,33 +1259,41 @@ namespace EnduranceTheMaze
 
             foreach (GameObj item in combinedItems)
             {
+                int layerDiff = Math.Abs(actor.Layer - item.Layer);
+                bool onScreen = SmoothRect.IsIntersecting(scrnBounds, item.BlockSprite.rectDest);
+
+                // Turns lights or shadows on/off based on distance.
+                bool lightsVisible = layerDiff == 0;
+                bool shadowsVisible = layerDiff == 0 && onScreen;
+                if (lightsVisible && !onScreen && item.Lighting.light != null)
+                {
+                    // Check if lights are actually off-screen.
+                    var halfLightRadius = item.Lighting.light.Scale / 2;
+                    var destWithLight = new SmoothRect(
+                        item.BlockSprite.rectDest.Position - halfLightRadius,
+                        item.BlockSprite.rectDest.Width + halfLightRadius.X,
+                        item.BlockSprite.rectDest.Height + halfLightRadius.Y);
+
+                    lightsVisible = SmoothRect.IsIntersecting(scrnBounds, destWithLight);
+                }
+                item.UpdateLighting(lightsVisible, shadowsVisible);
+
+                // Don't draw items on far-away layers or when they're off-screen.
+                if (layerDiff > 1 || !onScreen)
+                {
+                    continue;
+                }
+
+                // Draw decor only for same layer.
+                // Draws non-decor for same/above/below layer.
                 if (item.IsDecor)
                 {
-                    if (item.Layer == actor.Layer)
-                    {
-                        item.Draw();
-                    }
+                    if (layerDiff == 0) { item.Draw(); }
                 }
                 else
                 {
-                    //Renders above/below layers at 25% alpha.
-                    if (item.Layer == actor.Layer + 1 ||
-                        item.Layer == actor.Layer - 1)
-                    {
-                        item.BlockSprite.alpha = 0.25f;
-                    }
-                    else
-                    {
-                        item.BlockSprite.alpha = 1;
-                    }
-
-                    //Only draws the current, below, and above layers.
-                    if (item.Layer == actor.Layer ||
-                        item.Layer == actor.Layer + 1 ||
-                        item.Layer == actor.Layer - 1)
-                    {
-                        item.Draw();
-                    }
+                    item.BlockSprite.alpha = layerDiff == 1 ? 0.25f : 1;
+                    item.Draw();
                 }
             }
         }
@@ -1272,21 +1304,19 @@ namespace EnduranceTheMaze
         public void DrawHud()
         {
             //Sets up health and coins text.
-            SpriteText hudHp =
-                new SpriteText(game.fntBoldBig, actor.hp.ToString());
+            SpriteText hudHp = new(game.fntBold, actor.hp.ToString());
             hudHp.CenterOriginHor();
-            hudHp.color = Color.Black;
+            hudHp.color = Color.LightPink;
             hudHp.drawBehavior = SpriteDraw.all;
             hudHp.position = new Vector2(MainLoop.TileSizeHalf,
-                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18);
+                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18); // 18 is ad-hoc visual balancing.
 
-            SpriteText hudCoins =
-                new SpriteText(game.fntBoldBig, ActorCoins.ToString());
+            SpriteText hudCoins = new(game.fntBold, ActorCoins.ToString());
             hudCoins.CenterOriginHor();
-            hudCoins.color = Color.Black;
+            hudCoins.color = Color.Yellow;
             hudCoins.drawBehavior = SpriteDraw.all;
             hudCoins.position = new Vector2(MainLoop.TileSize + MainLoop.TileSizeHalf,
-                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18);
+                (int)game.GetScreenSize().Y - MainLoop.TileSize + 18); // 18 is ad-hoc visual balancing.
 
             //Draws the bottom info bar with health and coins.
             sprHudOverlay.Draw(game.GameSpriteBatch);
@@ -1297,7 +1327,7 @@ namespace EnduranceTheMaze
             //Removes the ending item separator on the tooltip.
             if (tooltip.EndsWith("| "))
             {
-                tooltip = tooltip.Substring(0, tooltip.Length - 2);
+                tooltip = tooltip[..^2];
             }
 
             //Draws the tooltip.

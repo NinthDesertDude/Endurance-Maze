@@ -31,6 +31,9 @@ namespace EnduranceTheMaze
             //Sets sprite information.
             BlockSprite = new Sprite(true, TexWall);
             BlockSprite.depth = 0.413f;
+
+            // Walls occlude.
+            Lighting = new(null, new(TileHull));
         }
 
         /// <summary>
@@ -43,22 +46,13 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Returns an exact copy of the object.
+        /// Returns a copy of the object.
         /// </summary>
         public override GameObj Clone()
         {
-            //Sets common variables.
-            MazeWall newBlock = new MazeWall(game, X, Y, Layer);
-            newBlock.ActionIndex = ActionIndex;
-            newBlock.ActionIndex2 = ActionIndex2;
-            newBlock.ActionType = ActionType;
-            newBlock.CustInt1 = CustInt1;
-            newBlock.CustInt2 = CustInt2;
-            newBlock.CustStr = CustStr;
-            newBlock.BlockDir = BlockDir;
-            newBlock.IsActivated = IsActivated;
-            newBlock.IsEnabled = IsEnabled;
-            newBlock.IsVisible = IsVisible;
+            MazeWall newBlock = new(game, X, Y, Layer);
+            newBlock.CopyFrom(this);
+
             return newBlock;
         }
     }
