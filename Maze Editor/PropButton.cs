@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Represents a button used to change properties of an active item.
@@ -105,21 +105,11 @@ namespace EnduranceTheMaze
             TexOpEmpty = Content.Load<Texture2D>("Content/Sprites/Gui/sprOpEmpty");
         }
 
-        /// <summary>
-        /// Updates the sprite atlas for sprites, esp. animated ones.
-        /// </summary>
         public virtual void Update()
         {
-            //If hovered, sets hovered to true. Else, sets it to false.
-            if (game.MsState.X >= pos.X && game.MsState.X <= pos.X + 64 &&
-                game.MsState.Y >= pos.Y && game.MsState.Y <= pos.Y + 64)
-            {
-                IsHovered = true;
-            }
-            else
-            {
-                IsHovered = false;
-            }
+            IsHovered =
+                game.MsState.X >= pos.X && game.MsState.X <= BttnSprite.rectDest.Right &&
+                game.MsState.Y >= pos.Y && game.MsState.Y <= BttnSprite.rectDest.Bottom;
         }
 
         /// <summary>

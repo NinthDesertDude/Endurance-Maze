@@ -1,4 +1,4 @@
-﻿namespace EnduranceTheMaze
+﻿namespace Maze
 {
     /// <summary>
     /// Represents different game states.

@@ -1,6 +1,6 @@
 ﻿using ImpossiMaze;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Visual effect for when a crate breaks.
@@ -18,7 +18,7 @@ namespace EnduranceTheMaze
             : base(game, x, y, layer, true)
         {
             //Sets default values.
-            IsSynchronized = false;
+            SyncToGrid = false;
 
             //Sets sprite information.
             BlockSprite = new Sprite(true, MazeCrate.TexCrate);

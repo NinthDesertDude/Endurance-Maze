@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Visual effect for when a crate is pushed by an actor.

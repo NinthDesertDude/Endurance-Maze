@@ -1,4 +1,4 @@
-﻿namespace EnduranceTheMaze
+﻿namespace Maze
 {
     /// <summary>
     /// Represents directions of movement.

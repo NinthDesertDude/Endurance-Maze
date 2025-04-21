@@ -1,12 +1,13 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>Contains useful tools.</summary>
     public static class Utils
     {
         public static Random Rng { get; private set; }
+        public static readonly string PropertyNameCustomString = "customString";
 
         /// <summary>
         /// Sets the Random instance.
@@ -14,6 +15,24 @@ namespace EnduranceTheMaze
         static Utils()
         {
             Rng = new Random();
+        }
+
+        /// <summary>
+        /// Time is usually an expression creating a constant increase, like current / total. Making it a linear
+        /// increase, or quadratic, or higher exponent makes the output increasingly non-linear and speedy.
+        /// </summary>
+        public static double Lerp(double time, double val, double target, double speedMult = 1)
+        {
+            return val + Math.Min(time * speedMult, 1) * (target - val);
+        }
+
+        /// <summary>
+        /// Time is usually an expression creating a constant increase, like current / total. Making it a linear
+        /// increase, or quadratic, or higher exponent makes the output increasingly non-linear and speedy.
+        /// </summary>
+        public static float Lerp(float time, float val, float target, float speedMult = 1)
+        {
+            return val + Math.Min(time * speedMult, 1) * (target - val);
         }
 
         /// <summary>
@@ -304,6 +323,54 @@ namespace EnduranceTheMaze
                 default:
                     return null;
             }
+        }
+
+        /// <summary>
+        /// Returns a string representing the given block type, or an empty string if not matching.
+        /// </summary>
+        public static string GetBlockName(Type type)
+        {
+            return type switch
+            {
+                Type.Actor => "Actor",
+                Type.Belt => "Belt",
+                Type.Checkpoint => "Checkpoint",
+                Type.Click => "Click actuator",
+                Type.Coin => "Coin",
+                Type.CoinLock => "Coin lock",
+                Type.Crate => "Crate",
+                Type.CrateHole => "Crate hole",
+                Type.EAuto => "E-auto",
+                Type.ELight => "E-light",
+                Type.Enemy => "Enemy",
+                Type.EPusher => "E-pusher",
+                Type.Filter => "Filter",
+                Type.Finish => "Finish",
+                Type.Floor => "Floor",
+                Type.Freeze => "Freeze",
+                Type.FX => "Visual effect",
+                Type.Gate => "Gate",
+                Type.Goal => "Goal",
+                Type.Health => "Health",
+                Type.Ice => "Ice",
+                Type.Key => "Key",
+                Type.LaserActuator => "Laser actuator",
+                Type.Lock => "Lock",
+                Type.Message => "Message",
+                Type.Mirror => "Mirror",
+                Type.MultiWay => "Multi-way",
+                Type.Panel => "Panel",
+                Type.Rotate => "Rotator",
+                Type.Spawner => "Spawner",
+                Type.Spike => "Spike",
+                Type.Stairs => "Stairs",
+                Type.Teleporter => "Teleporter",
+                Type.Thaw => "Thaw",
+                Type.Turret => "Turret",
+                Type.TurretBullet => "Turret bullet",
+                Type.Wall => "Wall",
+                _ => "",
+            };
         }
     }
 }

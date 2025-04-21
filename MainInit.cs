@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
 #if WINDOWS || LINUX
     /// <summary>

@@ -2,7 +2,7 @@
 using System;
 using System.IO;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Represents a chain of connected levels.

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Handles the transition between campaign levels.

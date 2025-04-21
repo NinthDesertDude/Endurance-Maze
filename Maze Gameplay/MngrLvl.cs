@@ -9,7 +9,7 @@ using System.IO;
 using System.Linq;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// The level manager. Handles loading/saving levels and all gameplay
@@ -97,8 +97,7 @@ namespace EnduranceTheMaze
         public bool doRestart, doRevert, doCheckpoint, doWin;
 
         //Whether a message is being shown or not.
-        public bool isMessageShown = false;
-        private bool isPaused = false;
+        public bool isPaused { get; private set; } = false;
 
         //When shown, this message will cover the screen until dismissed.
         public string message = "";
@@ -218,10 +217,7 @@ namespace EnduranceTheMaze
 
             //Miscellaneous.
             LightingEngine?.Dispose();
-            LightingEngine = new(game)
-            {
-                AmbientColor = new Color(20, 20, 40)
-            };
+            LightingEngine = new(game) { AmbientColor = LightEngineColor.BrightBlue };
         }
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
@@ -500,15 +496,15 @@ namespace EnduranceTheMaze
                         //Creates and adds the block with the values.
                         tempBlock = Utils.BlockFromType(game, tempType,
                             tempX, tempY, tempLayer);
-                        tempBlock.ActionIndex = tempAInd;
-                        tempBlock.ActionIndex2 = tempAInd2;
+                        tempBlock.SignalListenChannel = tempAInd;
+                        tempBlock.SignalSendChannel = tempAInd2;
                         tempBlock.ActionType = tempAType;
-                        tempBlock.CustInt1 = tempInt1;
-                        tempBlock.CustInt2 = tempInt2;
+                        tempBlock.SlotValueInt1 = tempInt1;
+                        tempBlock.SlotValueInt2 = tempInt2;
                         tempBlock.BlockDir = (Dir)Enum.Parse(typeof(Dir),
                             strBlock[10]);
                         tempBlock.IsEnabled = tempEnabled;
-                        tempBlock.CustStr =
+                        tempBlock.SlotValueString =
                             strBlock[12].Replace("\t", ",");
 
                         if (tempBlock.IsDecor)
@@ -613,6 +609,7 @@ namespace EnduranceTheMaze
             }
 
             item.UpdateLighting(false, false);
+            item.Lighting = new(null, null);
         }
 
         /// <summary>
@@ -623,7 +620,7 @@ namespace EnduranceTheMaze
             bool pausedDuringThisFrame = false;
 
             //Enables pausing the game.
-            if (!isPaused && !isMessageShown &&
+            if (!isPaused &&
                 game.KbState.IsKeyUp(Keys.P) &&
                 game.KbStateOld.IsKeyDown(Keys.P))
             {
@@ -676,14 +673,13 @@ namespace EnduranceTheMaze
             }
 
             //Does not update the game while a message is displayed.
-            if (isPaused || isMessageShown)
+            if (isPaused)
             {
                 if (!pausedDuringThisFrame &&
                     game.KbState.IsKeyUp(Keys.P) &&
                     game.KbStateOld.IsKeyDown(Keys.P))
                 {
                     isPaused = false;
-                    isMessageShown = false;
                 }
 
                 return;
@@ -717,13 +713,13 @@ namespace EnduranceTheMaze
                 if (item.BlockType != Type.TurretBullet) { return; }
 
                 //Moves the bullet.
-                item.X += (int)Utils.DirVector(item.BlockDir).X * item.CustInt2;
-                item.Y += (int)Utils.DirVector(item.BlockDir).Y * item.CustInt2;
+                item.X += (int)Utils.DirVector(item.BlockDir).X * item.SlotValueInt2;
+                item.Y += (int)Utils.DirVector(item.BlockDir).Y * item.SlotValueInt2;
 
                 //Gets a list of all solids in front of the bullet.
                 List<GameObj> itemsFront = items.Where(obj =>
-                    Math.Abs(obj.X * MainLoop.TileSize + MainLoop.TileSizeHalf - item.X + item.CustInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
-                    Math.Abs(obj.Y * MainLoop.TileSize + MainLoop.TileSizeHalf - item.Y + item.CustInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
+                    Math.Abs(obj.X * MainLoop.TileSize + MainLoop.TileSizeHalf - item.X + item.SlotValueInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
+                    Math.Abs(obj.Y * MainLoop.TileSize + MainLoop.TileSizeHalf - item.Y + item.SlotValueInt2 / MazeTurret.bulletSpeedTileSizeMult) < 15 &&
                     obj.Layer == item.Layer && obj.IsSolid).ToList();
 
                 foreach (GameObj item2 in itemsFront)
@@ -741,7 +737,7 @@ namespace EnduranceTheMaze
                     if (item2.BlockType == Type.MultiWay &&
                         (item.BlockDir == item2.BlockDir ||
                         item2.IsEnabled == false ||
-                        (item2.CustInt1 == 1 &&
+                        (item2.SlotValueInt1 == 1 &&
                         item.BlockDir == Utils.DirOpp(item2.BlockDir))))
                     {
                         continue;
@@ -828,8 +824,8 @@ namespace EnduranceTheMaze
                         #region Interaction: MazeMultiWay.cs
                         itemsFront = itemsFront.Where(o =>
                             !(o.BlockType == Type.MultiWay && o.IsEnabled &&
-                            ((o.CustInt1 == 0 && o.BlockDir == belt.BlockDir) ||
-                            (o.CustInt1 != 0 && (o.BlockDir == belt.BlockDir ||
+                            ((o.SlotValueInt1 == 0 && o.BlockDir == belt.BlockDir) ||
+                            (o.SlotValueInt1 != 0 && (o.BlockDir == belt.BlockDir ||
                             o.BlockDir == Utils.DirOpp(belt.BlockDir)))))).ToList();
                         #endregion
 
@@ -867,8 +863,8 @@ namespace EnduranceTheMaze
                     #region Interaction: MazeMultiWay.cs
                     itemsFront = itemsFront.Where(o =>
                         !(o.BlockType == Type.MultiWay && o.IsEnabled &&
-                        ((o.CustInt1 == 0 && o.BlockDir == item.BlockDir) ||
-                        (o.CustInt1 != 0 && (o.BlockDir == item.BlockDir ||
+                        ((o.SlotValueInt1 == 0 && o.BlockDir == item.BlockDir) ||
+                        (o.SlotValueInt1 != 0 && (o.BlockDir == item.BlockDir ||
                         o.BlockDir == Utils.DirOpp(item.BlockDir)))))).ToList();
                     #endregion
 
@@ -968,8 +964,8 @@ namespace EnduranceTheMaze
                             #region Interaction: MazeMultiWay.cs
                             itemsFront = itemsFront.Where(o =>
                                 !(o.BlockType == Type.MultiWay && o.IsEnabled &&
-                                ((o.CustInt1 == 0 && o.BlockDir == block.BlockDir) ||
-                                (o.CustInt1 != 0 && (o.BlockDir == block.BlockDir ||
+                                ((o.SlotValueInt1 == 0 && o.BlockDir == block.BlockDir) ||
+                                (o.SlotValueInt1 != 0 && (o.BlockDir == block.BlockDir ||
                                 o.BlockDir == Utils.DirOpp(block.BlockDir))))))
                                 .ToList();
                             #endregion
@@ -1116,8 +1112,7 @@ namespace EnduranceTheMaze
 
             //If there are no valid actors, reverts.
             //If the max steps has been reached, reverts.
-            if ((actor.hp <= 0 || !actor.IsEnabled) ||
-                (OpMaxSteps != 0 && LvlSteps >= OpMaxSteps))
+            if (actor.hp <= 0 || !actor.IsEnabled || (OpMaxSteps != 0 && LvlSteps >= OpMaxSteps))
             {
                 doRevert = true;
 
@@ -1133,10 +1128,9 @@ namespace EnduranceTheMaze
                         o.X == actor.X && o.Y == actor.Y && o.Layer == actor.Layer);
 
                     goalsAdded += game.mngrLvl.items.Count(o => o.BlockType == Type.Goal &&
-                    o.X == actor.X && o.Y == actor.Y && o.Layer == actor.Layer);
+                        o.X == actor.X && o.Y == actor.Y && o.Layer == actor.Layer);
 
-                    if (onFinish &&
-                        game.mngrLvl.ActorGoals + goalsAdded >= game.mngrLvl.OpReqGoals)
+                    if (onFinish && game.mngrLvl.ActorGoals + goalsAdded >= game.mngrLvl.OpReqGoals)
                     {
                         doWin = true;
                         doRevert = false;
@@ -1236,27 +1230,6 @@ namespace EnduranceTheMaze
                 return;
             }
 
-            //Draws any custom messages to the screen.
-            else if (isMessageShown)
-            {
-                //Updates the camera position.
-                Camera = Matrix.CreateScale(new Vector3(camZoom, camZoom, 1));
-                Vector2 scrnCenter = scrnBounds.Center;
-
-                game.GameSpriteBatch.DrawString(game.fntBoldBig,
-                    message, scrnCenter, Color.Black, 0,
-                    game.fntBoldBig.MeasureString(message) / 2,
-                    1, SpriteEffects.None, 0);
-
-                string pauseText = "Press P to continue.";
-                game.GameSpriteBatch.DrawString(game.fntBoldBig,
-                    pauseText, scrnCenter + new Vector2(0, 24),
-                    Color.Black, 0, game.fntDefault.MeasureString(pauseText) / 2,
-                    1, SpriteEffects.None, 0);
-
-                return;
-            }
-
             foreach (GameObj item in combinedItems)
             {
                 int layerDiff = Math.Abs(actor.Layer - item.Layer);
@@ -1268,14 +1241,14 @@ namespace EnduranceTheMaze
                 if (lightsVisible && !onScreen && item.Lighting.light != null)
                 {
                     // Check if lights are actually off-screen.
-                    var halfLightRadius = item.Lighting.light.Scale / 2;
                     var destWithLight = new SmoothRect(
-                        item.BlockSprite.rectDest.Position - halfLightRadius,
-                        item.BlockSprite.rectDest.Width + halfLightRadius.X,
-                        item.BlockSprite.rectDest.Height + halfLightRadius.Y);
+                        item.BlockSprite.rectDest.Position - item.Lighting.light.Scale / 2,
+                        item.BlockSprite.rectDest.Width + item.Lighting.light.Scale.X,
+                        item.BlockSprite.rectDest.Height + item.Lighting.light.Scale.Y);
 
                     lightsVisible = SmoothRect.IsIntersecting(scrnBounds, destWithLight);
                 }
+
                 item.UpdateLighting(lightsVisible, shadowsVisible);
 
                 // Don't draw items on far-away layers or when they're off-screen.

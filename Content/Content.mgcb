@@ -322,6 +322,18 @@
 /processorParam:TextureFormat=Color
 /build:Content/Sprites/Game/sprEAuto.png
 
+#begin Content/Sprites/Game/sprEAutoProperty.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Content/Sprites/Game/sprEAutoProperty.png
+
 #begin Content/Sprites/Game/sprELight.png
 /importer:TextureImporter
 /processor:TextureProcessor

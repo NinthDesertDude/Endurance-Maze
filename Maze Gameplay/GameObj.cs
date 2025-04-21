@@ -2,8 +2,9 @@
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Penumbra;
+using System.Collections.Generic;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Serves as a base class for all block objects.
@@ -21,40 +22,6 @@ namespace EnduranceTheMaze
     /// </summary>
     public abstract class GameObj
     {
-        //Relevant assets.
-        public static SoundEffect sndActivated;
-
-        //Refers to the game instance.
-        protected MainLoop game;
-
-        //Contains a sprite.
-        private Sprite _sprite;
-
-        //Contains a sprite.
-        public Sprite BlockSprite
-        {
-            get
-            {
-                return _sprite;
-            }
-            protected set
-            {
-                _sprite = value;
-
-                //Sets the initial position.
-                if (IsSynchronized)
-                {
-                    _sprite.rectDest.X = X * MainLoop.TileSize;
-                    _sprite.rectDest.Y = Y * MainLoop.TileSize;
-                }
-                else
-                {
-                    _sprite.rectDest.X = X;
-                    _sprite.rectDest.Y = Y;
-                }
-            }
-        }
-
         private int _x;
         private int _y;
         private int _layer;
@@ -64,16 +31,35 @@ namespace EnduranceTheMaze
         private bool _isEnabled = true;
         private bool _isVisible = true;
         private bool _isDecor = false;
-        private int _actionIndex = -1;
+        private int _signalListenChannel = -1;
         private int _actionType = -1;
-        private int _actionIndex2 = -1;
+        private int _signalSendChannel = -1;
         private bool _isActivated = false;
-        private int _custInt1 = 0;
-        private int _custInt2 = 0;
-        private string _custStr = "";
+        private int _slotValueInt1 = 0;
+        private int _slotValueInt2 = 0;
+        private string _slotValueString = "";
+        private Sprite _sprite;
+        protected MainLoop game;
+
+        #region Static Members
+
+        public static SoundEffect SndActivated { get; private set; }
 
         /// <summary>
-        /// The x-location. If <see cref="IsSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// The lighting hull used for shadowed tiles, conveniently sized to a tile.
+        /// </summary>
+        public static readonly Vector2[] TileHull = new[]
+        {
+            Vector2.Zero,
+            new(MainLoop.TileSize, 0),
+            new(MainLoop.TileSize, MainLoop.TileSize),
+            new(0, MainLoop.TileSize)
+        };
+        #endregion
+
+        #region Variables
+        /// <summary>
+        /// The x-location. If <see cref="SyncToGrid"/> is true, this is multiplied by the tile size and acts as
         /// the position of the tile.
         /// </summary>
         public virtual int X
@@ -90,7 +76,7 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// The y-location. If <see cref="IsSynchronized"/> is true, this is multiplied by the tile size and acts as
+        /// The y-location. If <see cref="SyncToGrid"/> is true, this is multiplied by the tile size and acts as
         /// the position of the tile.
         /// </summary>
         public virtual int Y
@@ -126,7 +112,7 @@ namespace EnduranceTheMaze
         /// When true, the X,Y location provided is multiplied by the universal tile size (to support e.g. O(1) access
         /// by X,Y position). When false, the X,Y coordinates should be multiplied by the tile size manually.
         /// </summary>
-        public bool IsSynchronized
+        public bool SyncToGrid
         {
             get
             {
@@ -227,16 +213,16 @@ namespace EnduranceTheMaze
         /// <summary>
         /// The activation channel: this block becomes activated only if an actuator activates on the same channel.
         /// </summary>
-        public virtual int ActionIndex
+        public virtual int SignalListenChannel
         {
             get
             {
-                return _actionIndex;
+                return _signalListenChannel;
             }
 
             internal set
             {
-                _actionIndex = value;
+                _signalListenChannel = value;
             }
         }
 
@@ -259,16 +245,16 @@ namespace EnduranceTheMaze
         /// <summary>
         /// The actuation channel: if this block can activate other blocks, it will activate the ones on this channel.
         /// </summary>
-        public virtual int ActionIndex2
+        public virtual int SignalSendChannel
         {
             get
             {
-                return _actionIndex2;
+                return _signalSendChannel;
             }
 
             internal set
             {
-                _actionIndex2 = value;
+                _signalSendChannel = value;
             }
         }
 
@@ -291,48 +277,75 @@ namespace EnduranceTheMaze
         /// <summary>
         /// Custom properties are used differently by different block types, usually to determine how they behave.
         /// </summary>
-        public virtual int CustInt1
+        public virtual int SlotValueInt1
         {
             get
             {
-                return _custInt1;
+                return _slotValueInt1;
             }
 
             internal set
             {
-                _custInt1 = value;
+                _slotValueInt1 = value;
             }
         }
 
         /// <summary>
         /// Custom properties are used differently by different block types, usually to determine how they behave.
         /// </summary>
-        public virtual int CustInt2
+        public virtual int SlotValueInt2
         {
             get
             {
-                return _custInt2;
+                return _slotValueInt2;
             }
 
             internal set
             {
-                _custInt2 = value;
+                _slotValueInt2 = value;
             }
         }
 
         /// <summary>
         /// A custom string property, used only by certain block types.
         /// </summary>
-        public virtual string CustStr
+        public virtual string SlotValueString
         {
             get
             {
-                return _custStr;
+                return _slotValueString;
             }
 
             internal set
             {
-                _custStr = value;
+                _slotValueString = value;
+            }
+        }
+
+        /// <summary>
+        /// The sprite associated to the object.
+        /// </summary>
+        public Sprite BlockSprite
+        {
+            get
+            {
+                return _sprite;
+            }
+            protected set
+            {
+                _sprite = value;
+
+                //Sets the initial position.
+                if (SyncToGrid)
+                {
+                    _sprite.rectDest.X = X * MainLoop.TileSize;
+                    _sprite.rectDest.Y = Y * MainLoop.TileSize;
+                }
+                else
+                {
+                    _sprite.rectDest.X = X;
+                    _sprite.rectDest.Y = Y;
+                }
             }
         }
 
@@ -340,7 +353,7 @@ namespace EnduranceTheMaze
         /// These are the lighting elements associated with this game object. Registrations with the lighting engine
         /// will be lazily updated as needed.
         /// </summary>
-        public (Light light, Hull shadow) Lighting { get; protected set; }
+        public (Light light, Hull shadow) Lighting { get; set; }
 
         /// <summary>
         /// This keeps track of when this item has its lighting elements actively registered to the
@@ -349,15 +362,11 @@ namespace EnduranceTheMaze
         public (bool light, bool shadow) LightingRegistered { get; private set; }
 
         /// <summary>
-        /// The lighting hull used for shadowed tiles, conveniently sized to a tile.
+        /// Contains a serializable list of all properties, which are stored as strings but interpreted as whatever
+        /// their intended types are.
         /// </summary>
-        public static readonly Vector2[] TileHull = new[]
-        {
-            Vector2.Zero,
-            new(MainLoop.TileSize, 0),
-            new(MainLoop.TileSize, MainLoop.TileSize),
-            new(0, MainLoop.TileSize)
-        };
+        public Dictionary<string, object> Properties { get; set; }
+        #endregion
 
         /// <summary>
         /// Sets the block's location.
@@ -372,6 +381,7 @@ namespace EnduranceTheMaze
             Y = y;
             Layer = layer;
             IsDecor = isDecor;
+            Properties = new();
 
             if (IsDecor) { BlockType = Type.FX; }
         }
@@ -383,7 +393,7 @@ namespace EnduranceTheMaze
         /// <param name="Content">A game content loader.</param>
         public static void LoadContent(ContentManager Content)
         {
-            sndActivated = Content.Load<SoundEffect>("Content/Sounds/sndActivated");
+            SndActivated = Content.Load<SoundEffect>("Content/Sounds/sndActivated");
         }
 
         /// <summary>
@@ -398,17 +408,18 @@ namespace EnduranceTheMaze
         /// </summary>
         public void CopyFrom(GameObj newBlock)
         {
-            ActionIndex = newBlock.ActionIndex;
-            ActionIndex2 = newBlock.ActionIndex2;
+            SignalListenChannel = newBlock.SignalListenChannel;
+            SignalSendChannel = newBlock.SignalSendChannel;
             ActionType = newBlock.ActionType;
             BlockDir = newBlock.BlockDir;
-            CustInt1 = newBlock.CustInt1;
-            CustInt2 = newBlock.CustInt2;
-            CustStr = newBlock.CustStr;
+            SlotValueInt1 = newBlock.SlotValueInt1;
+            SlotValueInt2 = newBlock.SlotValueInt2;
+            SlotValueString = newBlock.SlotValueString;
             IsActivated = newBlock.IsActivated;
             IsEnabled = newBlock.IsEnabled;
             IsVisible = newBlock.IsVisible;
             IsDecor = newBlock.IsDecor;
+            Properties = new(newBlock.Properties);
         }
 
         /// <summary>
@@ -433,24 +444,24 @@ namespace EnduranceTheMaze
                 {
                     IsActivated = false;
                     BlockDir = Utils.DirNext(BlockDir);
-                    game.playlist.Play(sndActivated, X, Y);
+                    game.playlist.Play(SndActivated, X, Y);
                 }
                 else if (ActionType == 3 && IsEnabled)
                 {
                     IsActivated = false;
                     BlockDir = Utils.DirPrev(BlockDir);
-                    game.playlist.Play(sndActivated, X, Y);
+                    game.playlist.Play(SndActivated, X, Y);
                 }
                 else if (ActionType == 4 && IsEnabled)
                 {
                     IsActivated = false;
                     game.mngrLvl.RemoveItem(this);
-                    game.playlist.Play(sndActivated, X, Y);
+                    game.playlist.Play(SndActivated, X, Y);
                 }
             }
 
             //Synchronizes sprite position to location.
-            if (IsSynchronized)
+            if (SyncToGrid)
             {
                 BlockSprite.rectDest.X = X * MainLoop.TileSize;
                 BlockSprite.rectDest.Y = Y * MainLoop.TileSize;
@@ -464,8 +475,8 @@ namespace EnduranceTheMaze
             //Updates lighting.
             if (IsVisible)
             {
-                if (Lighting.light != null) { Lighting.light.Position = BlockSprite.rectDest.Center; }
-                if (Lighting.shadow != null) { Lighting.shadow.Position = BlockSprite.rectDest.Position; }
+                if (Lighting.light != null && LightingRegistered.light) { Lighting.light.Position = BlockSprite.rectDest.Center; }
+                if (Lighting.shadow != null && LightingRegistered.shadow) { Lighting.shadow.Position = BlockSprite.rectDest.Position; }
             }
 
             UpdateLighting();

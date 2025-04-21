@@ -1,7 +1,7 @@
 ﻿using ImpossiMaze;
 using Microsoft.Xna.Framework;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Visual effect for when a receiver is used.
@@ -19,7 +19,7 @@ namespace EnduranceTheMaze
             : base(game, x, y, layer, true)
         {
             //Sets default values.
-            IsSynchronized = true;
+            SyncToGrid = true;
 
             //Sets sprite information.
             BlockSprite = new Sprite(true, MngrLvl.TexFx);

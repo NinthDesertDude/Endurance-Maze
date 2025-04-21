@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text.Json;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     public static class FileUtils
     {

@@ -2,7 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Handles fullscreening logic.

@@ -1,7 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Visually represents an item, but doesn't simulate behavior.

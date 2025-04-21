@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// The user preferences format.

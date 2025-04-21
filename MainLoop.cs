@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Handles the logic and display of all items on the screen. Uses a tree
@@ -272,7 +272,10 @@ namespace EnduranceTheMaze
             if (GmState == GameState.stateGameplay ||
                 GmState == GameState.stateGameplayEditor)
             {
-                MngrLvl.LightingEngine?.BeginDraw();
+                if (!mngrLvl.isPaused)
+                {
+                    MngrLvl.LightingEngine.BeginDraw();
+                }
 
                 GameSpriteBatch.Begin(SpriteSortMode.Deferred, null, null,
                     null, null, null, mngrLvl.Camera);
@@ -309,13 +312,17 @@ namespace EnduranceTheMaze
                 case GameState.stateGameplayEditor:
                     mngrLvl.Draw();
 
-                    GameSpriteBatch.End();
-                    MngrLvl.LightingEngine.Transform = mngrLvl.Camera;
-                    MngrLvl.LightingEngine?.Draw(gameTime);
+                    if (!mngrLvl.isPaused)
+                    {
+                        GameSpriteBatch.End();
+                    
+                        MngrLvl.LightingEngine.Transform = mngrLvl.Camera;
+                        MngrLvl.LightingEngine.Draw(gameTime);
 
-                    //Draws static sprites afterwards.
-                    GameSpriteBatch.Begin();
-                    mngrLvl.DrawHud();
+                        //Draws static sprites afterwards.
+                        GameSpriteBatch.Begin();
+                        mngrLvl.DrawHud();
+                    }
                     break;
                 case GameState.stateGameplaySeriesComplete:
                     mngrCampaign.Draw();

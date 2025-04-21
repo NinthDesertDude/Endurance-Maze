@@ -36,27 +36,17 @@ the game is in (menu, level editing, and gameplay are some).
 MngrTitle handles menus. TitleItem objects make up the buttons. MngrLvl loads
 and saves levels, but most importantly, ties all gameplay logic together. It
 loads all block textures and updates/draws them in a loaded block list of
-MazeBlock objects (which are templates for all blocks).
+GameObj objects (base class of all blocks).
 
-MngrEditor handles level editing. The toolbar contains customization tools for
+MngrEditor handles level editing. The bottom bar contains customization tools for
 each block and the sidebar contains a populated list of each item to work
 with. The sidebar uses ImgType objects and the toolbar uses PropButton. The
 level itself uses ImgBlock objects to represent all of the blocks.
 
-For items, actionIndex is used to give items unique or corresponding action
-indices. This is used with actuators to trigger isActivated, causing any
-activated objects to perform behaviors according to their actionType. For all
-blocks, 0 and 1 toggle visibility/enabled, 2 destroys the item. 3 rotates
-clockwise and 4 counter-clockwise.
-
-To add a menu item, load its texture and make a TitleItem object. Add what
-happens when clicked to MngrTitle's Update method.
-
-To add a maze block, include the sprite asset and make a MazeBlock child
-object. Add the game logic as you see fit. Load its content under MngrLvl's
-LoadContent method. Include it in Utils.BlockFromType. Add it to Type enum.
-Add it to itemTypes in LoadContent under MngrEditor. Add it to AdjustSprite
-method in ImgBlock. Add customization restrictions under MngrEditor in Update.
+For all blocks, signalListenChannel specifies the channel they respond to signals sent, if any, via the
+signalSendChannel property. The actionType is what it does when a signal is heard. This is the basis for
+automation support in the game. For all blocks, 0 and 1 toggle visibility/enabled, 2 rotates clockwise,
+3 counter-clockwise, and 4 destroys the block.
 
 ***Bugs, workarounds, and bad design***
 Cruft tends to be encapsulated in blocks titled "Interaction:" and the name of
@@ -95,7 +85,6 @@ When crates/actors are first spawned, if they're on ice, they slide to the right
 
 Actors next to each other trying to move in the same direction are sometimes offset as a result of how blocks are updated.
  
-Add a laser-bullet-activated actuator (triggers every # bullets that hit it).
 Add some way to activate a certain behavior of linked objects directly.
 Add some way to activate multiple channels from one actuator. Maybe some sort of actuator linker?
 
@@ -106,25 +95,22 @@ If multi-select is active, it fills that selection.
 
 Add multi-select to the editor.
 Change the "You Win!" dialog to make it nice. Make a separate room for it.
-Give coins a purpose by making some sort of coin lock.
 Make more actuators and types of actuators. Think of physical interactions.
 Rewrite the whole thing from the ground up. Yeah, sure. Some day.
 For anything that has instances of another object, you should be able to set that object's properties too.
 
 For actuators:
 - proximity based
-- absorbs X laser bullets and activates
 
 For linked items:
 - swap all linked items with an instance of another item
 - set the direction of all linked items to some direction
-- rotate all linked items counter, clockwise, or 180 degrees
+- rotate all linked items 180 degrees
 - set or toggle visibility of all linked items
 - set or toggle enabledness of all linked items
 - proximity-based actuator
 
 Items to do:
- - Make a coin lock
  - Make a goal lock
  - Trap that hurts you if you stand on it too long. No indication until you stand on it.
  - Trap that hurts you if you stand on it, but on a repeating timer. Visible.
@@ -189,11 +175,9 @@ Game object behaviors:
 15 - Move down if possible
 16 - Delete object
 
-The actual world coordinates of each block will always be given. This means
-bullets don't need to convert coords. The grid size will be 64x64. All sprites
-will be redone. The level editor's action behavior sprite will be a lightning
-bolt. Draw culling will be reinstated. Consider lazy-loading textures and even
-unloading them if unnecessary.
+All sprites will be redone. The level editor's action behavior sprite will be a
+lightning bolt. Draw culling will be reinstated. Consider lazy-loading textures
+and even unloading them if unnecessary.
 
 Every level will have a description and title. Escape key will pause the game
 rather than return to last menu if testing or playing. The pause menu will

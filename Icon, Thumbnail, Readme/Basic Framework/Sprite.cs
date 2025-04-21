@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using EnduranceTheMaze;
+using Maze;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 

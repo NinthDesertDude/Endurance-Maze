@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Keys = Microsoft.Xna.Framework.Input.Keys;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// The menu manager. Handles all menu logic.

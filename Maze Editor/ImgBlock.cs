@@ -1,8 +1,9 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 
-namespace EnduranceTheMaze
+namespace Maze
 {
     /// <summary>
     /// Visually represents an item, but doesn't simulate behavior.
@@ -31,14 +32,16 @@ namespace EnduranceTheMaze
         public bool IsEnabled { get; internal set; }
 
         //Block activation.
-        public int ActionIndex { get; internal set; } //The activation channel.
-        public int ActionIndex2 { get; internal set; } //Actuator channels.
+        public int SignalListenChannel { get; internal set; } //The activation channel.
+        public int SignalSendChannel { get; internal set; } //Actuator channels.
         public int ActionType { get; internal set; } //The activation behavior.
 
         //Custom block properties.
-        public int CustInt1 { get; internal set; }
-        public int CustInt2 { get; internal set; }
-        public string CustStr { get; internal set; }
+        public int SlotValueInt1 { get; internal set; }
+        public int SlotValueInt2 { get; internal set; }
+
+        public Dictionary<string, object> Properties { get; internal set; }
+
         private bool isShrinking;
 
         /// <summary>
@@ -56,14 +59,17 @@ namespace EnduranceTheMaze
             Layer = layer;
 
             //Sets default values.
-            ActionIndex = 0;
-            ActionIndex2 = 0;
+            SignalListenChannel = 0;
+            SignalSendChannel = 0;
             ActionType = 0;
-            CustInt1 = 0;
-            CustInt2 = 0;
-            CustStr = "";
+            SlotValueInt1 = 0;
+            SlotValueInt2 = 0;
             BlockDir = Dir.Right;
             IsEnabled = true;
+            Properties = new()
+            {
+                { Utils.PropertyNameCustomString, "" }
+            };
 
             //Sets up the appearance information.
             AdjustSprite();
@@ -116,11 +122,26 @@ namespace EnduranceTheMaze
         }
 
         /// <summary>
-        /// Draws the sprite.
+        /// Draws the sprite and any GUI aspects.
         /// </summary>
         public virtual void Draw()
         {
             BlockSprite.Draw(game.GameSpriteBatch);
+
+            // Draws the message text.
+            if (BlockType == Type.Message)
+            {
+                SpriteText txt = new(game.fntBoldBig, Properties[Utils.PropertyNameCustomString].ToString())
+                {
+                    color = Color.Black,
+                    depth = 0.009f,
+                    drawBehavior = SpriteDraw.all,
+                    position = BlockSprite.rectDest.Center
+                };
+
+                txt.CenterOriginVert();
+                txt.Draw(game.GameSpriteBatch);
+            }
         }
 
         /// <summary>
@@ -203,7 +224,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.208f;
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.35f;
-                    BlockSprite.color = CustInt1 == 1 ? MazeCheckpoint.colorChkptOneUse : MazeCheckpoint.colorChkptMultiUse;
+                    BlockSprite.color = SlotValueInt1 == 1 ? MazeCheckpoint.colorChkptOneUse : MazeCheckpoint.colorChkptMultiUse;
                     break;
                 case Type.Click:
                     //Sets sprite information.
@@ -372,7 +393,7 @@ namespace EnduranceTheMaze
                     BlockSprite = new Sprite(true, MazeGate.TexGate);
                     BlockSprite.depth = 0.102f;
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
-                    if (CustInt2 == 1)
+                    if (SlotValueInt2 == 1)
                     {
                         BlockSpriteAtlas.frame = 1;
                     }
@@ -403,7 +424,7 @@ namespace EnduranceTheMaze
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 19, 2, 10);
                     BlockSpriteAtlas.frameSpeed = 0.2f;
                     #region Chooses key color by custInt1.
-                    switch (CustInt1)
+                    switch (SlotValueInt1)
                     {
                         case (0):
                             BlockSprite.color = Color.Blue;
@@ -454,7 +475,7 @@ namespace EnduranceTheMaze
                     BlockSprite.depth = 0.407f;
                     BlockSprite.drawBehavior = SpriteDraw.all;
                     #region Chooses lock color by custInt1.
-                    switch (CustInt1)
+                    switch (SlotValueInt1)
                     {
                         case (0):
                             BlockSprite.color = Color.Blue;
@@ -543,7 +564,7 @@ namespace EnduranceTheMaze
 
                     //Determines the frame used.
                     //Dependent on frame order.
-                    if (CustInt1 == 0)
+                    if (SlotValueInt1 == 0)
                     {
                         BlockSpriteAtlas.frame = 0;
                     }
@@ -623,7 +644,7 @@ namespace EnduranceTheMaze
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 2, 1, 2);
                     #region Chooses frame by custInt1.
                     //Adjusts the sprite frame.
-                    if (CustInt1 == 0)
+                    if (SlotValueInt1 == 0)
                     {
                         BlockSpriteAtlas.frame = 0; //up.
                     }
@@ -639,7 +660,7 @@ namespace EnduranceTheMaze
                     BlockSpriteAtlas = new SpriteAtlas(BlockSprite, MainLoop.TileSize, MainLoop.TileSize, 4, 1, 4);
                     #region Chooses sprite by frame and isEnabled.
                     //Adjusts the sprite frame.
-                    if (CustInt1 == 0)
+                    if (SlotValueInt1 == 0)
                     {
                         BlockSpriteAtlas.frame = 0; //Sender.
                     }
